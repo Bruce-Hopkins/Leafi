@@ -1,0 +1,89 @@
+{
+  "name": "AI signal radar — Reddit + Hacker News + LinkedIn, overlap-ranked",
+  "nodes": [
+    {
+      "id": "reddit",
+      "label": "Reddit sweep",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "needs": "Searches Reddit through a real browser and hands over one short line per relevant post: title, URL, date and what it says.",
+      "prompt": "You sweep Reddit for the last month of discussion on five topics: open-weight model releases, Hermes (the Nous Research agent), the Pi agent, Rust, and Anthropic. You have a browser and no shell: never call run_bash.\n\nReddit refuses plain HTTP fetches and blocks obvious automation; your browser tools drive a real, headed Chrome over its DevTools port, so use the browser tools rather than curl, and never try to hide or spoof who you are.\n\nBUDGET: you have a hard limit of 16 tool calls for this whole task — count them. On your 16th call, or as soon as you have the posts you can get, call complete_task straight away with whatever you have. A partial list that names what was blocked is the correct answer and far better than running out of turns.\n\nThe run input, when present, may name extra topics or a different time window; honour it. Otherwise use the topics above and a one-month window.\n\nVisit these URLs in this order — new_page for the first, navigate_page for the rest — with one evaluate_script extraction each. Never call take_snapshot, whose output is enormous.\n1. https://old.reddit.com/r/LocalLLaMA/new/\n2. https://old.reddit.com/r/rust/new/\n3. https://old.reddit.com/r/ClaudeAI/new/\n4. https://www.reddit.com/search/?q=%22open%20weights%22&sort=new&t=month\n5. https://www.reddit.com/search/?q=hermes%20nous&sort=new&t=month\n6. https://www.reddit.com/search/?q=%22pi%20agent%22&sort=new\n\nAfter each navigation wait two seconds with wait_for, then run ONE evaluate_script call whose expression returns only compact data:\n(() => Array.from(document.querySelectorAll('a[href*=\"/comments/\"]')).slice(0,20).map(a => ({t: a.innerText.trim().slice(0,140), u: a.href.split('?')[0]})))()\nAdapt the selector if it returns nothing, but only once per URL.\n\nBLOCKED PAGES: if a page shows 'You've been blocked by network security', a 'verify you are human' check, a captcha, or a body with no post links, record that URL as blocked and go straight to the next one. Never reload and never retry a blocked URL — not once. Three blocked URLs in a row means Reddit is refusing this client outright: stop visiting URLs, call complete_task, and say so plainly.\n\nKeep at most 12 posts per URL and 30 in total, deduplicated by URL. Ignore anything that is not about AI or Rust: the Hermes JavaScript engine, Hermes parcel delivery, Hermes the Greek god, and the video game Rust are all irrelevant.\n\nYour complete_task output is plain lines, one per post, in exactly this shape:\n[open-weights|hermes|pi-agent|rust|anthropic] TITLE | URL | DATE (or 'date not shown') | one sentence on what the post says\n\nIf a field is not visible, write 'unknown'; never invent a title, date or URL. Finish with one line: 'Reddit: N posts from M URLs; blocked: <list or none>'. Output those lines and nothing else — no preamble, no ranking, no essay.",
+      "permissions": {
+        "browser": true
+      }
+    },
+    {
+      "id": "hackernews",
+      "label": "Hacker News sweep",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "position": {
+        "x": 0,
+        "y": 260
+      },
+      "needs": "Queries the Hacker News Algolia API for the last 30 days and hands over one short line per story with points, comments and URL.",
+      "prompt": "You sweep Hacker News for the last 30 days on five topics: open weights, Hermes (Nous Research), the Pi agent, Rust, and Anthropic. Use run_bash only; do not browse.\n\nWrite this script to hn.sh with write_file, then run it with run_bash. hn.sh is the only file you create and you must not create or modify any other file. It queries the official Algolia API once per topic, projects only the fields you need, merges and deduplicates, and prints at most 50 compact lines — well under the 8 KiB tool cap.\n\ncat > hn.sh <<'SH'\nset -u\nSINCE=$(( $(date +%s) - 30*86400 ))\nfetch() {\n  curl -sS -m 30 \"https://hn.algolia.com/api/v1/search?query=$1&tags=story&hitsPerPage=30&numericFilters=created_at_i%3E$SINCE\" -o \"$2\" || return 1\n  jq -r '.hits[]? | [(.points // 0), (.num_comments // 0), (.created_at // \"\"), (.title // \"\"), (.url // (\"https://news.ycombinator.com/item?id=\" + .objectID))] | @tsv' \"$2\"\n}\nfetch 'open%20weights' q1.json > a.tsv\nfetch 'hermes' q2.json > b.tsv\nfetch 'pi%20agent' q3.json > c.tsv\nfetch 'rust' q4.json > d.tsv\nfetch 'anthropic' q5.json > e.tsv\ncat a.tsv b.tsv c.tsv d.tsv e.tsv | awk -F'\\t' '!seen[$4]++' | sort -t$'\\t' -k3 -r | head -50\nSH\nbash hn.sh\n\nIf a request fails, name the query that failed in your output rather than silently dropping it. Do not print any raw JSON and do not paste the script back.\n\nYour complete_task output is the story lines and nothing else — no preamble, no briefing, no ranking, no essay. One line per story, in exactly this shape:\nDATE | POINTS pts, COMMENTS comments | TITLE | URL | one sentence on why it matches (open weights / hermes / pi agent / rust / anthropic)\n\nMark irrelevant hits honestly (for example the Hermes JavaScript engine, or Rust the video game). Never invent a story, a score or a URL. Finish with one line: 'HN: N stories; failed queries: <list or none>'.",
+      "permissions": {
+        "bash": true,
+        "write": true
+      }
+    },
+    {
+      "id": "linkedin",
+      "label": "LinkedIn sweep",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "position": {
+        "x": 0,
+        "y": 520
+      },
+      "needs": "Reads LinkedIn's guest-visible AI trends page in a browser and hands over the items about agents, open-weight models, Rust or Anthropic, with links and short gists.",
+      "prompt": "You sweep LinkedIn's AI trends and innovations page for recent material on open-weight models, Hermes (Nous Research), the Pi agent, Rust and Anthropic. You have a browser and no shell: never call run_bash, and never sign in — if a page asks for credentials, record the wall and move on.\n\nBUDGET: you have a hard limit of 16 tool calls for this whole task — count them. Call complete_task on or before your 16th call with whatever you have collected. A short honest list beats running out of turns. If any browser tool fails, or reports that the browser is already running for a profile directory or that it cannot start, record that once and call complete_task immediately — do not retry it.\n\nOpen https://www.linkedin.com/top-content/innovation/ai-trends-and-innovations/ with new_page. After it loads, wait two seconds with wait_for, then use evaluate_script to read the visible cards. Never call take_snapshot, whose output is enormous. For example:\n(() => ({title: document.title, items: Array.from(document.querySelectorAll('a[href*=\"/pulse/\"], a[href*=\"/posts/\"], a[href*=\"/news/\"]')).slice(0,40).map(a => ({t: a.innerText.trim().slice(0,160), u: a.href.split('?')[0]}))}))()\n\nScroll once with evaluate_script (window.scrollBy(0, 2000)) and extract again if the first pass yields fewer than eight distinct items.\n\nPick the eight items most relevant to AI agents, open-weight or open-source models, model releases and the named topics. For the three most relevant, open the item in a new tab with new_page and read its visible text with evaluate_script (document.body.innerText.slice(0, 1200)); if LinkedIn shows a sign-in wall, record 'sign-in wall' and do not attempt to log in.\n\nNote honestly that this page is AI-focused: it will rarely carry Rust or general Anthropic news. Do not stretch an unrelated item to fit a topic.\n\nYour complete_task output is plain lines, one per item, in exactly this shape:\nHEADLINE | URL | AUTHOR or OUTLET (or 'not shown') | one or two sentences on what it says | topic (open-weights / hermes / pi-agent / rust / anthropic / general-AI)\n\nInclude every item you actually saw, even when the body was gated — mark it 'headline only'. Never invent a headline or URL. Finish with one line: 'LinkedIn: N items; gated bodies: <list or none>'.",
+      "permissions": {
+        "browser": true
+      }
+    },
+    {
+      "id": "radar",
+      "label": "Find overlap, rank, brief the reader",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "position": {
+        "x": 560,
+        "y": 260
+      },
+      "audience": "person",
+      "inputs": [
+        "reddit",
+        "hackernews",
+        "linkedin"
+      ],
+      "needs": "Clusters the three handoffs into stories, finds what more than one source is talking about, ranks the stories by importance, and briefs the reader in prose.",
+      "prompt": "You write one short brief for a person who follows open-weight model releases, Nous Research's Hermes agent, the Pi agent, Rust, and Anthropic. They have two or three minutes. A new release, a breaking change, a benchmark result or a security problem is urgent; funding news, hiring posts and opinion pieces are not.\n\nYou receive three handoffs — Reddit, Hacker News and LinkedIn — and nothing else. They are notes, not rows to re-format: each carries a title, a URL, a date and a sentence of gist. Labels like [open-weights] and tags such as 'hermes' are the sweep's own guess; trust the wording of the item over the label, and drop anything that is plainly about the Hermes JavaScript engine, Rust the video game, or parcel delivery.\n\nWork in two passes, and output only the second.\n\nPASS 1 — OVERLAP. Cluster the items into the underlying stories people are actually discussing, regardless of which source they came from. A cluster is a real story, not a topic: 'open weights' is a topic, 'DeepSeek released a new open-weight model' is a story, and every post about that release belongs in one cluster whatever its label. For each cluster count how many of the three sources mention it. A story carried by two or three of the sources is the signal this brief exists to find; a story on one source is a lead, not a consensus. Do this in your reasoning only — do not print it.\n\nPASS 2 — RANK AND WRITE. Rank the clusters by importance in this order: first how many of the three sources are on it (three beats two beats one), then how much it would change what the reader does — a shipped release, a number that beats the previous best, a breaking change, a security issue — then how recent it is. A single-source item can still outrank a two-source item when it is a major release, and you should say why when it does.\n\nThen write the brief as prose for that reader, the way a sharp colleague would tell them over coffee: warm but not chatty, no headings, no bullet lists, no numbered list, no template, no section labels. Two minutes of reading. Open with two or three sentences on what the sweep found overall and which one story matters most. Then work down the ranking, one short paragraph each, carrying the specifics a reader would act on — the model and its size, the benchmark numbers, the licence, the date, the repo or the post — and where two or three sources are on the same story, say so plainly and name them ('Reddit and Hacker News are both on this', 'this is the one thing all three sources are discussing'). Keep single-source rumours clearly marked as rumours. Close with two or three sentences on the pattern across the three sources and what to watch next. Then, only if a source was blocked or gated, add one final sentence saying which source was thin and why, so the reader knows what the sweep could not see.\n\nBe exact. Every claim must come from a handoff; if a number is not in the notes, leave it out rather than estimating. Never invent a story, a URL, a number or a date. Do not mention that you are an agent, do not describe your method, and do not list your sources at the end — the reader wants the news, not the plumbing."
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "reddit",
+      "target": "radar",
+      "condition": "Reddit notes collected"
+    },
+    {
+      "id": "e2",
+      "source": "hackernews",
+      "target": "radar",
+      "condition": "Hacker News notes collected"
+    },
+    {
+      "id": "e3",
+      "source": "linkedin",
+      "target": "radar",
+      "condition": "LinkedIn notes collected"
+    }
+  ]
+}

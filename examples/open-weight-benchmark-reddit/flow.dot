@@ -1,0 +1,8 @@
+digraph flow {
+  rankdir=TB;
+  "papers" [label="Find and reduce 20 open-weight benchmark papers\ndeepseek/deepseek-v4.1-flash"];
+  "reddit" [label="Pull the Reddit conversation on those models\ndeepseek/deepseek-v4.1-flash"];
+  "report" [label="Write the comparison for a person\ndeepseek/deepseek-v4.1-flash"];
+  "papers" -> "reddit";
+  "reddit" -> "report";
+}

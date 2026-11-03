@@ -1,0 +1,78 @@
+{
+  "name": "agents-automations",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Build, check and run automations made of linked LLM agents, from the terminal or from your agent",
+  "packageManager": "pnpm@12.8.1",
+  "bin": {
+    "agents-automations": "dist/main.js",
+    "agents-automations-mcp": "dist/mcp/main.js"
+  },
+  "scripts": {
+    "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\"",
+    "build": "tsc -p tsconfig.json",
+    "prepack": "npm run clean && npm run build",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
+    "cli": "pnpm build && node dist/main.js",
+    "dev": "tsx src/main.ts",
+    "test": "pnpm build && tsx --test test/*.test.ts",
+    "start": "node dist/main.js",
+    "build:plugin": "pnpm build && node scripts/build-hermes-plugin.mjs",
+    "test:plugin": "pnpm build:plugin && tsx --test test/hermes-plugin.test.ts",
+    "test:pack": "node scripts/pack-test.mjs",
+    "bench": "tsx bench/node-bench.ts"
+  },
+  "dependencies": {
+    "@langchain/anthropic": "^1.5.12",
+    "@langchain/core": "^1.2.14",
+    "@langchain/google-genai": "^2.3.2",
+    "@langchain/langgraph": "^1.4.18",
+    "@langchain/openai": "^1.6.2",
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "dotenv": "^18.0.5",
+    "imapflow": "^2.4.2",
+    "undici": "7.30.1",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "esbuild": "^0.28.2",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bruce-Hopkins/agents-automations.git"
+  },
+  "homepage": "https://github.com/Bruce-Hopkins/agents-automations",
+  "bugs": {
+    "url": "https://github.com/Bruce-Hopkins/agents-automations/issues"
+  },
+  "license": "MIT",
+  "keywords": [
+    "agents",
+    "workflows",
+    "graph",
+    "mcp",
+    "llm",
+    "cli"
+  ],
+  "author": {
+    "name": "Bruce Hopkins"
+  },
+  "files": [
+    "dist",
+    "!dist/**/*.map",
+    "!dist/tsconfig.tsbuildinfo",
+    "docs",
+    "examples",
+    "README.md",
+    "AGENTS.md",
+    "agents",
+    "SECURITY.md",
+    "LICENSE"
+  ]
+}

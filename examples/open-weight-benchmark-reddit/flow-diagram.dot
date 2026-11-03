@@ -1,0 +1,25 @@
+digraph flow {
+  rankdir=TB;
+  nodesep=0.5;
+  ranksep=0.45;
+  bgcolor="#12151c";
+  nodesep=0.55;
+  ranksep=0.9;
+  fontname="Helvetica";
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=13,
+        color="#3a4356", penwidth=1.4, margin="0.22,0.16"];
+  edge [color="#6b7a99", penwidth=1.6, arrowsize=0.8, fontname="Helvetica",
+        fontsize=10, fontcolor="#9aa7bf"];
+
+  papers [fillcolor="#1d2733", fontcolor="#e8eef8",
+          label=<<b>1 · papers</b><br/><font point-size="11" color="#9fb0c9">Find and reduce 20 open-weight benchmark papers</font><br/><font point-size="10" color="#7f8ea6">deepseek/deepseek-v4.1-flash · read, write, bash</font>>];
+
+  reddit [fillcolor="#1d2733", fontcolor="#e8eef8",
+          label=<<b>2 · reddit</b><br/><font point-size="11" color="#9fb0c9">Pull the Reddit conversation on those models</font><br/><font point-size="10" color="#7f8ea6">deepseek/deepseek-v4.1-flash · read, write, bash</font>>];
+
+  report [fillcolor="#243428", fontcolor="#e9f5ea", color="#5f9e6b",
+          label=<<b>3 · report</b><br/><font point-size="11" color="#b9d8be">Write the comparison for a person</font><br/><font point-size="10" color="#8fb597">deepseek/deepseek-v4.1-flash · no tools · person reads this</font>>];
+
+  papers -> reddit [label="20 papers, one line each"];
+  reddit -> report [label="reddit notes vs. paper claims"];
+}
