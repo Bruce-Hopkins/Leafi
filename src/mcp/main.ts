@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import path from 'node:path';
+import { FlowLibrary } from '../app/flow-library';
 import { FlowService } from '../app/flow-service';
 import { RunService } from '../app/run-service';
 import { disableImplicitTracing, loadEnvironment } from '../config/env';
@@ -125,11 +126,11 @@ async function main(): Promise<void> {
     return;
   }
 
-  if (!args.noEnv) {
-    loadEnvironment({ envFile: args.envFile, dataDir: args.dataDir });
-  }
+  // With --no-env (the Hermes plugin) the settings arrive in the environment,
+  // so there is no file to save an "always allow" to.
+  const settingsFile = args.noEnv ? undefined : loadEnvironment({ envFile: args.envFile, dataDir: args.dataDir });
   disableImplicitTracing();
-  const context = buildContext(args);
+  const context = buildContext(args, settingsFile);
 
   const server = createMcpServer(context);
   process.once('SIGINT', () => void shutdown(context, server));
@@ -139,7 +140,7 @@ async function main(): Promise<void> {
   await serveStdio(server);
 }
 
-function buildContext(args: McpArgs): McpContext {
+function buildContext(args: McpArgs, settingsFile: string | undefined): McpContext {
   const config = new RuntimeConfig({ dataDir: args.dataDir });
   const logger = createStderrLogger();
   const store = new RunStore(config);
@@ -154,11 +155,13 @@ function buildContext(args: McpArgs): McpContext {
   return {
     config,
     flows: new FlowService(),
+    library: new FlowLibrary(config),
     runs,
     runManager: new RunManager(runs, store, policy),
     store,
     providers: new ProviderService(config),
     policy,
+    ...(settingsFile !== undefined ? { settingsFile } : {}),
     logger,
     results: createMcpResults(policy.maxResultBytes),
   };

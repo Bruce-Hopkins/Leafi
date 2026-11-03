@@ -1,4 +1,5 @@
 import type { RuntimeConfig } from '../config/runtime-config';
+import type { FlowLibrary } from '../app/flow-library';
 import type { FlowService } from '../app/flow-service';
 import type { RunService } from '../app/run-service';
 import type { ProviderService } from '../providers/provider-service';
@@ -12,11 +13,15 @@ import type { RunManager } from './run-manager';
 export interface McpContext {
   config: RuntimeConfig;
   flows: FlowService;
+  /** The flows this server has run, saved by name. */
+  library: FlowLibrary;
   runs: RunService;
   runManager: RunManager;
   store: RunStore;
   providers: ProviderService;
   policy: McpPolicy;
+  /** The settings file the server loaded at start, where a permission the person always allows is saved. */
+  settingsFile?: string;
   logger: McpLogger;
   results: McpResults;
 }

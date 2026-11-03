@@ -44,6 +44,11 @@ export async function runRun(parsed: ParsedArgs, context: CommandContext): Promi
     return EXIT.invalidInput;
   }
 
+  // Other design warnings belong to `validate`; this one changes what the run returns.
+  for (const warning of validation.warnings.filter((entry) => entry.code === 'parallel-limit-one')) {
+    process.stderr.write(`Warning: ${warning.message} ${warning.hint}\n`);
+  }
+
   if (shouldDrawDiagram(parsed, eventMode)) {
     process.stderr.write(`${renderFlow(graph, 'ascii')}\n\n`);
   }

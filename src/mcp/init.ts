@@ -112,8 +112,9 @@ function settingsFilesFor(chosen: readonly Agent[], options: SetupOptions): Sett
  * Asks for one provider key and the AGENTS_AUTOMATIONS_ALLOW_* policy once,
  * and writes to each file only the answers that change what its server
  * reads; every other line is kept. A key counts as set only when every file
- * has it. A permission no file sets is offered ticked; one a file sets is
- * ticked only when every file that sets it allows it. The data directory's
+ * has it. A permission no file sets is offered as it recommends (see
+ * `PERMISSIONS`); one a file sets is ticked only when every file that sets it
+ * allows it. The data directory's
  * file is created even when nothing changes, so `settings` knows it is in use.
  */
 export async function initSettings(files: readonly SettingsFile[], prompts: InitPrompts): Promise<InitResult[]> {
@@ -134,14 +135,15 @@ export async function initSettings(files: readonly SettingsFile[], prompts: Init
     await prompts.secret(`${provider.envKey} (input hidden, Enter to ${everywhere(provider.envKey) ? 'keep the current key' : 'skip'}): `)
   ).trim();
 
-  // Unlike `settings`, which shows what the server reads now, init offers an
-  // unset permission ticked.
+  // Unlike `settings`, which shows what the server reads now, init offers a
+  // permission no file sets as the permission recommends: the ones confined to
+  // the run's workspace ticked, the rest unticked.
   const ticked = await prompts.checklist(
     PERMISSIONS_QUESTION,
-    PERMISSIONS.map(({ name, label }) => ({
-      label,
-      checked: read.filter(({ current }) => isSet(current, name)).every(({ current }) => isTrue(current[name])),
-    })),
+    PERMISSIONS.map(({ name, label, offered }) => {
+      const setIn = read.filter(({ current }) => isSet(current, name));
+      return { label, checked: setIn.length === 0 ? offered : setIn.every(({ current }) => isTrue(current[name])) };
+    }),
   );
   const allowed = new Map(PERMISSIONS.map(({ name }, index) => [name, ticked[index] ?? false]));
 

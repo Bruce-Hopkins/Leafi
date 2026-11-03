@@ -15,7 +15,13 @@ curl -fsSL https://raw.githubusercontent.com/Bruce-Hopkins/agent-automations/mai
 ```
 
 On Windows, in PowerShell:
-`irm https://raw.githubusercontent.com/Bruce-Hopkins/agent-automations/main/install.ps1 | iex`.
+
+
+```shell
+irm https://raw.githubusercontent.com/Bruce-Hopkins/agent-automations/main/install.ps1 | iex
+```
+
+
 
 ## Manual Installation
 
@@ -30,7 +36,7 @@ And then restart Hermes.
 
 **Update** with:
 
-```
+```bash
 hermes plugins update agents-automations
 ```
 
@@ -39,15 +45,18 @@ hermes plugins update agents-automations
 The plugin reads Hermes's own `.env` (with a Hermes profile, set `HERMES_HOME`
 to its folder first), not the CLI's `~/.agents-automations/.env`.
 
+
 | To                          | Run                                                                  |
 | --------------------------- | -------------------------------------------------------------------- |
 | Set the key and permissions | `node ~/.hermes/plugins/agents-automations/dist/server.mjs init`     |
 | Change only the permissions | `node ~/.hermes/plugins/agents-automations/dist/server.mjs settings` |
 | Edit the file by hand       | Copy from [`.env.example`](../.env.example)                          |
 
-Both commands show a checklist: arrow keys, space to tick, Enter to save. Most
-flows need `web`; leave `bash` unticked unless you want flows to run any command
-you can. After any change, start a new Hermes session.
+
+Both commands show a checklist: arrow keys, space to tick, Enter to save. `web`
+and `write` start ticked; `bash`, `email` and `browser` start unticked, and a
+flow that needs one asks you for it when it starts. After any change, start a
+new Hermes session.
 
 ## Using it
 
@@ -66,6 +75,3 @@ The plugin is marked `trust: untrusted`, so Hermes asks before the two tools
 that change state, `start_run` and `cancel_run`; the rest are read-only. That
 is a confirmation, not a sandbox: once started, a flow can do whatever its
 permissions allow. See [`SECURITY.md`](../SECURITY.md).
-
-Building and releasing the plugin are covered in
-[`docs/hermes-plugin.md`](../docs/hermes-plugin.md).

@@ -2,7 +2,7 @@ import type { RunService } from '../app/run-service';
 import type { Graph, Run, RunEvent } from '../domain/types';
 import type { RunStore } from '../runtime/run-store';
 import type { McpContext } from './context';
-import { assertFlowAllowed, PolicyError } from './policy';
+import { assertFlowAllowed, PolicyError, type AllowSetting } from './policy';
 
 interface ActiveRun {
   run: Run;
@@ -25,7 +25,8 @@ export class RunManager {
     private readonly policy: McpContext['policy'],
   ) {}
 
-  async start(graph: Graph, input: string): Promise<Run> {
+  /** `granted` holds the permissions the person allowed for this run only. */
+  async start(graph: Graph, input: string, granted?: ReadonlySet<AllowSetting>): Promise<Run> {
     // The slot is taken before the first await: pre-flight can take seconds, and
     // every start_run that arrives meanwhile must see it as spent.
     const running = this.active.size + this.starting;
@@ -34,7 +35,7 @@ export class RunManager {
         `The MCP server is already running ${running} flow(s); its limit is ${this.policy.maxConcurrentRuns}.`,
       );
     }
-    assertFlowAllowed(graph, this.policy);
+    assertFlowAllowed(graph, this.policy, granted);
     this.starting += 1;
 
     const controller = new AbortController();

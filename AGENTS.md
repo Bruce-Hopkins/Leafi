@@ -172,6 +172,7 @@ with `"lintIgnore": ["<code>"]`.
 | `downstream-reads-input` | a non-entry node expecting the run input |
 | `rigid-deliverable` | a template or a line check on a node a person reads (`audience: "person"`) |
 | `concurrent-write` | two nodes that may run at once writing the same workspace path |
+| `parallel-limit-one` | `MAX_PARALLEL_NODES` at 1 while two nodes can be ready at once, which loses outputs |
 
 ## A node is a context boundary, not a step
 
@@ -387,15 +388,53 @@ can be written once for the live stream and the stored log.
 
 ## MCP server
 
-The same engine is exposed over stdio by `agents-automations-mcp`. All logs go to
-stderr because stdout carries JSON-RPC. Runs are asynchronous: `start_run`
-returns a run id, and the client polls `get_run` and `get_run_events`. Dangerous
-permissions are denied unless the server environment grants the matching
-`AGENTS_AUTOMATIONS_ALLOW_*` setting. `agents-automations settings --allow <ids>` /
+The same engine is exposed over stdio by `agents-automations-mcp` from a clone,
+and by `~/.agents-automations/server.mjs --transport stdio` when installed. All
+logs go to stderr because stdout carries JSON-RPC.
+
+| Tool | What it returns |
+| --- | --- |
+| `get_flow_schema` | The flow JSON Schema plus `designGuide`; read the guide before authoring. |
+| `get_example_flow` | The example flow (`schema example` in the CLI). |
+| `validate_flow` | `ok`, `issues`, `warnings`, each node's `minimum` and the ASCII `diagram`. |
+| `render_flow` | A drawing; `format` is `ascii`, `mermaid` or `dot`. |
+| `list_providers` | The providers whose keys are set, with their models. |
+| `start_run` | The run, with its `id` and `flowFile`; the run continues in the background. |
+| `list_flows` | Every saved flow, newest first: `name`, `file`, `nodes`, `savedAt`. |
+| `get_flow` | One saved flow's document and file, by `name`. |
+| `get_run` | `status`, `outputs`, `personOutput`, `usage`, `costUsd`, `jobs`, `error`. |
+| `get_run_events` | Events with `seq >= afterSeq` (`limit` 100 by default, at most 500); `reasoning: true` adds reasoning text. |
+| `cancel_run` | Whether an in-flight run was cancelled. |
+| `list_runs` | Recent runs, newest first (`limit` 20 by default, at most 100). |
+
+The flow tools take exactly one of `flow` (the document) or `flowPath`, and
+`flowPath` works only while `AGENTS_AUTOMATIONS_ALLOW_FLOW_PATHS` is true. The
+loop is the one under *Delivery*: `validate_flow` and show its `diagram`, state
+the node → model mapping and the minimum, call `start_run` only once the user
+agrees, poll `get_run` until `status` is no longer `running`, then reproduce
+`personOutput` in full with `costUsd`. To follow progress, page
+`get_run_events` with `afterSeq` set to the last `seq` you saw plus one.
+
+`start_run` saves every flow it runs to `<data dir>/flows/<name>.json`,
+replacing a saved flow with the same name, so a flow outlives the conversation
+that wrote it. Call `list_flows` before designing a flow the user may already
+have, and run a saved one with `flowPath`.
+
+Dangerous permissions are denied unless the server environment grants the
+matching `AGENTS_AUTOMATIONS_ALLOW_*` setting; `init` offers `web` and `write`
+on and `bash`, `email` and `browser` off. When a flow requests a denied one,
+`start_run` asks the person through the client (MCP elicitation), naming the
+nodes; the agent cannot answer. Accepting allows it for that run; "always"
+also saves it to the settings file the server read. A refusal, or a client that
+cannot ask, fails the flow before any model call. `agents-automations settings --allow <ids>` /
 `--deny <ids>` writes those settings without editing the file, to every file in
 use (Hermes's `.env` when the Hermes plugin is installed, and
-`~/.agents-automations/.env`); with neither flag off a terminal it prints them. Ask the user before granting one. See `docs/mcp.md` for the complete tool reference, policy
-and approval loop.
+`~/.agents-automations/.env`); with neither flag off a terminal it prints them.
+Ask the user before granting one; a change made this way needs the server restarted.
+
+To change the server: `src/mcp` is an adapter with no graph logic. It calls the
+same `src/app` services as the CLI, and each tool is one file in
+`src/mcp/tools`, registered in `src/mcp/registry.ts`.
 
 ## What a run can see
 

@@ -45,3 +45,16 @@ test('dangerous permissions are named when denied', () => {
 test('an explicit allow lets the permission through', () => {
   assert.doesNotThrow(() => assertFlowAllowed(graphWith({ bash: true }), { ...DENY_ALL, allowBash: true }));
 });
+
+test('the refusal names the exact command that allows every denied permission', () => {
+  assert.throws(
+    () => assertFlowAllowed(graphWith({ bash: true, email_read: true, browser: true }), DENY_ALL),
+    (error: unknown) => error instanceof PolicyError && /settings --allow bash,email,browser`/.test(error.message),
+  );
+});
+
+test('a permission granted for one run lets the flow through without changing the policy', () => {
+  const policy = { ...DENY_ALL };
+  assert.doesNotThrow(() => assertFlowAllowed(graphWith({ bash: true }), policy, new Set(['AGENTS_AUTOMATIONS_ALLOW_BASH'] as const)));
+  assert.equal(policy.allowBash, false);
+});

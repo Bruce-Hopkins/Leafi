@@ -18,12 +18,20 @@ export interface Permission {
   /** The short name `settings --allow` and `--deny` take. */
   id: string;
   name: AllowSetting;
+  /** What it lets a flow do, for the checklist and for the question a flow's run asks. */
+  about: string;
   /** The checklist line: the id, then what it lets a flow do. */
   label: string;
+  /**
+   * Whether init offers it ticked when no file sets it. The ones that reach
+   * beyond the run's workspace start unticked; a flow that needs one asks the
+   * person when it starts.
+   */
+  offered: boolean;
 }
 
-function permission(id: string, name: AllowSetting, about: string): Permission {
-  return { id, name, label: `${id.padEnd(11)} ${about}` };
+function permission(id: string, name: AllowSetting, about: string, offered: boolean): Permission {
+  return { id, name, about, label: `${id.padEnd(11)} ${about}`, offered };
 }
 
 /**
@@ -31,12 +39,12 @@ function permission(id: string, name: AllowSetting, about: string): Permission {
  * launcher need more than a tick, so they are left to the README.
  */
 export const PERMISSIONS: readonly Permission[] = [
-  permission('web', 'AGENTS_AUTOMATIONS_ALLOW_WEB', 'fetch web pages (web_fetch)'),
-  permission('write', 'AGENTS_AUTOMATIONS_ALLOW_WRITE', 'write files in the run workspace (write_file)'),
-  permission('bash', 'AGENTS_AUTOMATIONS_ALLOW_BASH', 'run shell commands (run_bash): any command you can'),
-  permission('email', 'AGENTS_AUTOMATIONS_ALLOW_EMAIL', 'read your mailbox, read-only (needs a mailbox login)'),
-  permission('browser', 'AGENTS_AUTOMATIONS_ALLOW_BROWSER', 'drive a headless Chrome (chrome-devtools-mcp)'),
-  permission('flow-paths', 'AGENTS_AUTOMATIONS_ALLOW_FLOW_PATHS', 'load a flow from a file path, not only inline JSON'),
+  permission('web', 'AGENTS_AUTOMATIONS_ALLOW_WEB', 'fetch web pages (web_fetch)', true),
+  permission('write', 'AGENTS_AUTOMATIONS_ALLOW_WRITE', 'write files in the run workspace (write_file)', true),
+  permission('bash', 'AGENTS_AUTOMATIONS_ALLOW_BASH', 'run shell commands (run_bash): any command you can', false),
+  permission('email', 'AGENTS_AUTOMATIONS_ALLOW_EMAIL', 'read your mailbox, read-only (needs a mailbox login)', false),
+  permission('browser', 'AGENTS_AUTOMATIONS_ALLOW_BROWSER', 'drive a headless Chrome (chrome-devtools-mcp)', false),
+  permission('flow-paths', 'AGENTS_AUTOMATIONS_ALLOW_FLOW_PATHS', 'load a flow from a file path, not only inline JSON', true),
 ];
 
 export type Permissions = ReadonlyMap<AllowSetting, boolean>;

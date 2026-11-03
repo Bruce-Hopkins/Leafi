@@ -54,10 +54,17 @@ The rules that matter most:
    say so instead of presenting a partial output as the answer.
 6. Use `cancel_run` when the user asks to stop.
 
-If a flow is denied by policy, explain which permission is needed and ask the
-user to enable it: they run
-`node ~/.hermes/plugins/agents-automations/dist/server.mjs settings` and tick it, then
-start a new Hermes session. Do not try to work around the policy.
+`start_run` saves the flow under its name and returns its path as `flowFile`.
+Before designing a flow, call `list_flows`: the user may already have one for
+the task. Run a saved flow again with `start_run` and `flowPath`; `get_flow`
+returns its document when it needs changing.
+
+If a flow needs a permission that is turned off (`bash`, `email_read` and
+`browser` are off by default), `start_run` asks the user for it directly, and
+Hermes shows that as an approval. If they decline, the error names the
+permission: explain why the flow needs it, and that they can allow it with
+`node ~/.hermes/plugins/agents-automations/dist/server.mjs settings --allow <permission>`
+and a new Hermes session. Do not try to work around the policy.
 
 ## Browser nodes
 
@@ -70,7 +77,8 @@ start a new Hermes session. Do not try to work around the policy.
   engine was to launch Chrome separately and pass
   `--browserUrl=http://127.0.0.1:9222`. Treat this as a version-specific
   workaround, not a universal requirement.
-- Do not set `MAX_PARALLEL_NODES=1` to serialise browser nodes. A run with that
-  setting completed after running only one entry node, with empty outputs. If
-  browser nodes must be serialised, use a real branch or reduce the number of
-  concurrent browser nodes instead.
+- Do not set `MAX_PARALLEL_NODES=1` to serialise browser nodes. At 1, a flow
+  with two entry nodes or any node with several outgoing edges (a branch
+  included) stops after the first of them and still reports "completed";
+  `validate_flow` warns with `parallel-limit-one`. Chain the browser nodes in a
+  single line instead.

@@ -7,7 +7,8 @@ export type LintCode =
   | 'qualitative-branch'
   | 'downstream-reads-input'
   | 'rigid-deliverable'
-  | 'concurrent-write';
+  | 'concurrent-write'
+  | 'parallel-limit-one';
 
 /**
  * A design warning, not a malformed document. Warnings never affect
@@ -62,6 +63,36 @@ export function lintGraph(graph: Graph): LintWarning[] {
     }
   }
   return warnings;
+}
+
+/**
+ * A warning about the run settings rather than the document. LangGraph's
+ * scheduler stops starting the nodes of a step once nothing is running, so with
+ * MAX_PARALLEL_NODES at 1 a step of two or more nodes runs only its first, and
+ * the run still reports "completed". A step holds two or more nodes when the
+ * flow has two entry nodes or a node with several outgoing edges (a branch
+ * node starts every successor; the ones not taken record a skip).
+ */
+export function lintParallelLimit(graph: Graph, maxParallelNodes: number): LintWarning[] {
+  if (maxParallelNodes > 1) {
+    return [];
+  }
+  const entries = graph.nodes.filter((node) => incomingEdges(graph, node.id).length === 0);
+  const forks = graph.nodes.filter((node) => outgoingEdges(graph, node.id).length > 1);
+  if (entries.length < 2 && forks.length === 0) {
+    return [];
+  }
+  const where = entries.length >= 2 ? `this flow has ${entries.length} entry nodes` : `"${forks[0]?.label}" has several outgoing edges`;
+  return [
+    {
+      severity: 'warning',
+      code: 'parallel-limit-one',
+      message:
+        `MAX_PARALLEL_NODES is ${maxParallelNodes}, and ${where}, so two nodes can be ready at once. ` +
+        'At 1, a run stops after the first of them and still reports "completed", without their outputs.',
+      hint: 'Set MAX_PARALLEL_NODES to 2 or more in the settings file, then restart the server or run the command again.',
+    },
+  ];
 }
 
 function ignored(node: AgentNode, code: LintCode): boolean {

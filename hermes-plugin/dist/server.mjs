@@ -1369,8 +1369,8 @@ var require_req = __commonJS({
       if (req.originalUrl) {
         _req.url = req.originalUrl;
       } else {
-        const path27 = req.path;
-        _req.url = typeof path27 === "string" ? path27 : req.url ? req.url.path || req.url : void 0;
+        const path28 = req.path;
+        _req.url = typeof path28 === "string" ? path28 : req.url ? req.url.path || req.url : void 0;
       }
       if (req.query) {
         _req.query = req.query;
@@ -1535,14 +1535,14 @@ var require_redact = __commonJS({
       }
       return obj;
     }
-    function parsePath(path27) {
+    function parsePath(path28) {
       const parts = [];
       let current = "";
       let inBrackets = false;
       let inQuotes = false;
       let quoteChar = "";
-      for (let i = 0; i < path27.length; i++) {
-        const char = path27[i];
+      for (let i = 0; i < path28.length; i++) {
+        const char = path28[i];
         if (!inBrackets && char === ".") {
           if (current) {
             parts.push(current);
@@ -1673,10 +1673,10 @@ var require_redact = __commonJS({
       return current;
     }
     function redactPaths(obj, paths, censor, remove = false) {
-      for (const path27 of paths) {
-        const parts = parsePath(path27);
+      for (const path28 of paths) {
+        const parts = parsePath(path28);
         if (parts.includes("*")) {
-          redactWildcardPath(obj, parts, censor, path27, remove);
+          redactWildcardPath(obj, parts, censor, path28, remove);
         } else {
           if (remove) {
             removeKey(obj, parts);
@@ -1761,8 +1761,8 @@ var require_redact = __commonJS({
           }
         } else {
           if (afterWildcard.includes("*")) {
-            const wrappedCensor = typeof censor === "function" ? (value, path27) => {
-              const fullPath = [...pathArray.slice(0, pathLength), ...path27];
+            const wrappedCensor = typeof censor === "function" ? (value, path28) => {
+              const fullPath = [...pathArray.slice(0, pathLength), ...path28];
               return censor(value, fullPath);
             } : censor;
             redactWildcardPath(current, afterWildcard, wrappedCensor, originalPath, remove);
@@ -1797,8 +1797,8 @@ var require_redact = __commonJS({
         return null;
       }
       const pathStructure = /* @__PURE__ */ new Map();
-      for (const path27 of pathsToClone) {
-        const parts = parsePath(path27);
+      for (const path28 of pathsToClone) {
+        const parts = parsePath(path28);
         let current = pathStructure;
         for (let i = 0; i < parts.length; i++) {
           const part = parts[i];
@@ -1850,24 +1850,24 @@ var require_redact = __commonJS({
       }
       return cloneSelectively(obj, pathStructure);
     }
-    function validatePath(path27) {
-      if (typeof path27 !== "string") {
+    function validatePath(path28) {
+      if (typeof path28 !== "string") {
         throw new Error("Paths must be (non-empty) strings");
       }
-      if (path27 === "") {
+      if (path28 === "") {
         throw new Error("Invalid redaction path ()");
       }
-      if (path27.includes("..")) {
-        throw new Error(`Invalid redaction path (${path27})`);
+      if (path28.includes("..")) {
+        throw new Error(`Invalid redaction path (${path28})`);
       }
-      if (path27.includes(",")) {
-        throw new Error(`Invalid redaction path (${path27})`);
+      if (path28.includes(",")) {
+        throw new Error(`Invalid redaction path (${path28})`);
       }
       let bracketCount = 0;
       let inQuotes = false;
       let quoteChar = "";
-      for (let i = 0; i < path27.length; i++) {
-        const char = path27[i];
+      for (let i = 0; i < path28.length; i++) {
+        const char = path28[i];
         if ((char === '"' || char === "'") && bracketCount > 0) {
           if (!inQuotes) {
             inQuotes = true;
@@ -1881,20 +1881,20 @@ var require_redact = __commonJS({
         } else if (char === "]" && !inQuotes) {
           bracketCount--;
           if (bracketCount < 0) {
-            throw new Error(`Invalid redaction path (${path27})`);
+            throw new Error(`Invalid redaction path (${path28})`);
           }
         }
       }
       if (bracketCount !== 0) {
-        throw new Error(`Invalid redaction path (${path27})`);
+        throw new Error(`Invalid redaction path (${path28})`);
       }
     }
     function validatePaths(paths) {
       if (!Array.isArray(paths)) {
         throw new TypeError("paths must be an array");
       }
-      for (const path27 of paths) {
-        validatePath(path27);
+      for (const path28 of paths) {
+        validatePath(path28);
       }
     }
     function slowRedact(options = {}) {
@@ -2062,8 +2062,8 @@ var require_redaction = __commonJS({
         if (shape[k] === null) {
           o[k] = (value) => topCensor(value, [k]);
         } else {
-          const wrappedCensor = typeof censor === "function" ? (value, path27) => {
-            return censor(value, [k, ...path27]);
+          const wrappedCensor = typeof censor === "function" ? (value, path28) => {
+            return censor(value, [k, ...path28]);
           } : censor;
           o[k] = Redact({
             paths: shape[k],
@@ -2281,10 +2281,10 @@ var require_atomic_sleep = __commonJS({
 var require_sonic_boom = __commonJS({
   "node_modules/.pnpm/sonic-boom@4.2.1/node_modules/sonic-boom/index.js"(exports, module) {
     "use strict";
-    var fs18 = __require("fs");
+    var fs19 = __require("fs");
     var EventEmitter2 = __require("events");
     var inherits = __require("util").inherits;
-    var path27 = __require("path");
+    var path28 = __require("path");
     var sleep5 = require_atomic_sleep();
     var assert4 = __require("assert");
     var BUSY_WRITE_TIMEOUT = 100;
@@ -2338,20 +2338,20 @@ var require_sonic_boom = __commonJS({
       const mode = sonic.mode;
       if (sonic.sync) {
         try {
-          if (sonic.mkdir) fs18.mkdirSync(path27.dirname(file2), { recursive: true });
-          const fd = fs18.openSync(file2, flags2, mode);
+          if (sonic.mkdir) fs19.mkdirSync(path28.dirname(file2), { recursive: true });
+          const fd = fs19.openSync(file2, flags2, mode);
           fileOpened(null, fd);
         } catch (err) {
           fileOpened(err);
           throw err;
         }
       } else if (sonic.mkdir) {
-        fs18.mkdir(path27.dirname(file2), { recursive: true }, (err) => {
+        fs19.mkdir(path28.dirname(file2), { recursive: true }, (err) => {
           if (err) return fileOpened(err);
-          fs18.open(file2, flags2, mode, fileOpened);
+          fs19.open(file2, flags2, mode, fileOpened);
         });
       } else {
-        fs18.open(file2, flags2, mode, fileOpened);
+        fs19.open(file2, flags2, mode, fileOpened);
       }
     }
     function SonicBoom(opts) {
@@ -2392,8 +2392,8 @@ var require_sonic_boom = __commonJS({
         this.flush = flushBuffer;
         this.flushSync = flushBufferSync;
         this._actualWrite = actualWriteBuffer;
-        fsWriteSync = () => fs18.writeSync(this.fd, this._writingBuf);
-        fsWrite = () => fs18.write(this.fd, this._writingBuf, this.release);
+        fsWriteSync = () => fs19.writeSync(this.fd, this._writingBuf);
+        fsWrite = () => fs19.write(this.fd, this._writingBuf, this.release);
       } else if (contentMode === void 0 || contentMode === kContentModeUtf8) {
         this._writingBuf = "";
         this.write = write;
@@ -2402,15 +2402,15 @@ var require_sonic_boom = __commonJS({
         this._actualWrite = actualWrite;
         fsWriteSync = () => {
           if (Buffer.isBuffer(this._writingBuf)) {
-            return fs18.writeSync(this.fd, this._writingBuf);
+            return fs19.writeSync(this.fd, this._writingBuf);
           }
-          return fs18.writeSync(this.fd, this._writingBuf, "utf8");
+          return fs19.writeSync(this.fd, this._writingBuf, "utf8");
         };
         fsWrite = () => {
           if (Buffer.isBuffer(this._writingBuf)) {
-            return fs18.write(this.fd, this._writingBuf, this.release);
+            return fs19.write(this.fd, this._writingBuf, this.release);
           }
-          return fs18.write(this.fd, this._writingBuf, "utf8", this.release);
+          return fs19.write(this.fd, this._writingBuf, "utf8", this.release);
         };
       } else {
         throw new Error(`SonicBoom supports "${kContentModeUtf8}" and "${kContentModeBuffer}", but passed ${contentMode}`);
@@ -2467,7 +2467,7 @@ var require_sonic_boom = __commonJS({
           }
         }
         if (this._fsync) {
-          fs18.fsyncSync(this.fd);
+          fs19.fsyncSync(this.fd);
         }
         const len = this._len;
         if (this._reopening) {
@@ -2581,7 +2581,7 @@ var require_sonic_boom = __commonJS({
       const onDrain = () => {
         if (!this._fsync) {
           try {
-            fs18.fsync(this.fd, (err) => {
+            fs19.fsync(this.fd, (err) => {
               this._flushPending = false;
               cb(err);
             });
@@ -2683,7 +2683,7 @@ var require_sonic_boom = __commonJS({
       const fd = this.fd;
       this.once("ready", () => {
         if (fd !== this.fd) {
-          fs18.close(fd, (err) => {
+          fs19.close(fd, (err) => {
             if (err) {
               return this.emit("error", err);
             }
@@ -2732,7 +2732,7 @@ var require_sonic_boom = __commonJS({
           buf = this._bufs[0];
         }
         try {
-          const n3 = Buffer.isBuffer(buf) ? fs18.writeSync(this.fd, buf) : fs18.writeSync(this.fd, buf, "utf8");
+          const n3 = Buffer.isBuffer(buf) ? fs19.writeSync(this.fd, buf) : fs19.writeSync(this.fd, buf, "utf8");
           const releasedBufObj = releaseWritingBuf(buf, this._len, n3);
           buf = releasedBufObj.writingBuf;
           this._len = releasedBufObj.len;
@@ -2748,7 +2748,7 @@ var require_sonic_boom = __commonJS({
         }
       }
       try {
-        fs18.fsyncSync(this.fd);
+        fs19.fsyncSync(this.fd);
       } catch {
       }
     }
@@ -2769,7 +2769,7 @@ var require_sonic_boom = __commonJS({
           buf = mergeBuf(this._bufs[0], this._lens[0]);
         }
         try {
-          const n3 = fs18.writeSync(this.fd, buf);
+          const n3 = fs19.writeSync(this.fd, buf);
           buf = buf.subarray(n3);
           this._len = Math.max(this._len - n3, 0);
           if (buf.length <= 0) {
@@ -2797,13 +2797,13 @@ var require_sonic_boom = __commonJS({
       this._writingBuf = this._writingBuf.length ? this._writingBuf : this._bufs.shift() || "";
       if (this.sync) {
         try {
-          const written = Buffer.isBuffer(this._writingBuf) ? fs18.writeSync(this.fd, this._writingBuf) : fs18.writeSync(this.fd, this._writingBuf, "utf8");
+          const written = Buffer.isBuffer(this._writingBuf) ? fs19.writeSync(this.fd, this._writingBuf) : fs19.writeSync(this.fd, this._writingBuf, "utf8");
           release(null, written);
         } catch (err) {
           release(err);
         }
       } else {
-        fs18.write(this.fd, this._writingBuf, release);
+        fs19.write(this.fd, this._writingBuf, release);
       }
     }
     function actualWriteBuffer() {
@@ -2812,7 +2812,7 @@ var require_sonic_boom = __commonJS({
       this._writingBuf = this._writingBuf.length ? this._writingBuf : mergeBuf(this._bufs.shift(), this._lens.shift());
       if (this.sync) {
         try {
-          const written = fs18.writeSync(this.fd, this._writingBuf);
+          const written = fs19.writeSync(this.fd, this._writingBuf);
           release(null, written);
         } catch (err) {
           release(err);
@@ -2821,7 +2821,7 @@ var require_sonic_boom = __commonJS({
         if (kCopyBuffer) {
           this._writingBuf = Buffer.from(this._writingBuf);
         }
-        fs18.write(this.fd, this._writingBuf, release);
+        fs19.write(this.fd, this._writingBuf, release);
       }
     }
     function actualClose(sonic) {
@@ -2837,12 +2837,12 @@ var require_sonic_boom = __commonJS({
       sonic._lens = [];
       assert4(typeof sonic.fd === "number", `sonic.fd must be a number, got ${typeof sonic.fd}`);
       try {
-        fs18.fsync(sonic.fd, closeWrapped);
+        fs19.fsync(sonic.fd, closeWrapped);
       } catch {
       }
       function closeWrapped() {
         if (sonic.fd !== 1 && sonic.fd !== 2) {
-          fs18.close(sonic.fd, done);
+          fs19.close(sonic.fd, done);
         } else {
           done();
         }
@@ -3678,15 +3678,15 @@ var require_transport = __commonJS({
       if (!unquoted) {
         return false;
       }
-      let path27 = unquoted;
-      if (path27.startsWith("file://")) {
+      let path28 = unquoted;
+      if (path28.startsWith("file://")) {
         try {
-          path27 = fileURLToPath(path27);
+          path28 = fileURLToPath(path28);
         } catch {
           return false;
         }
       }
-      return isAbsolute2(path27) && !existsSync3(path27);
+      return isAbsolute2(path28) && !existsSync3(path28);
     }
     function stripQuotes(value) {
       const first = value[0];
@@ -36884,17 +36884,17 @@ var node_exports = {};
 __export(node_exports, {
   child_process: () => child_process,
   crypto: () => crypto2,
-  fs: () => fs3,
+  fs: () => fs5,
   os: () => os2,
-  path: () => path7,
+  path: () => path10,
   stream: () => stream,
   util: () => util2
 });
 import * as child_process from "node:child_process";
 import * as crypto2 from "node:crypto";
-import * as fs3 from "node:fs";
+import * as fs5 from "node:fs";
 import * as os2 from "node:os";
-import * as path7 from "node:path";
+import * as path10 from "node:path";
 import * as stream from "node:stream";
 import * as util2 from "node:util";
 var init_node = __esm({
@@ -36960,15 +36960,15 @@ function redactSensitive(body) {
   }
   return null;
 }
-async function checkCredentialsFileSafety(path27, onWarn = (m) => console.warn(`anthropic-sdk: ${m}`)) {
+async function checkCredentialsFileSafety(path28, onWarn = (m) => console.warn(`anthropic-sdk: ${m}`)) {
   if (typeof process === "undefined" || process.platform === "win32")
     return;
-  const { fs: fs18 } = await Promise.resolve().then(() => (init_node(), node_exports));
-  let resolved = path27;
+  const { fs: fs19 } = await Promise.resolve().then(() => (init_node(), node_exports));
+  let resolved = path28;
   let st;
   try {
-    resolved = await fs18.promises.realpath(path27);
-    st = await fs18.promises.stat(resolved);
+    resolved = await fs19.promises.realpath(path28);
+    st = await fs19.promises.stat(resolved);
   } catch {
     return;
   }
@@ -36984,26 +36984,26 @@ async function checkCredentialsFileSafety(path27, onWarn = (m) => console.warn(`
   }
 }
 async function writeCredentialsFileAtomic(targetPath, data) {
-  const { fs: fs18, path: path27 } = await Promise.resolve().then(() => (init_node(), node_exports));
-  const dir = path27.dirname(targetPath);
-  await fs18.promises.mkdir(dir, { recursive: true, mode: 448 });
+  const { fs: fs19, path: path28 } = await Promise.resolve().then(() => (init_node(), node_exports));
+  const dir = path28.dirname(targetPath);
+  await fs19.promises.mkdir(dir, { recursive: true, mode: 448 });
   const tmpPath = `${targetPath}.${process.pid}.${Math.random().toString(36).slice(2)}.tmp`;
   try {
-    const fh = await fs18.promises.open(tmpPath, "w", 384);
+    const fh = await fs19.promises.open(tmpPath, "w", 384);
     try {
       await fh.writeFile(JSON.stringify(data, null, 2));
       await fh.sync();
     } finally {
       await fh.close();
     }
-    await fs18.promises.rename(tmpPath, targetPath);
+    await fs19.promises.rename(tmpPath, targetPath);
   } catch (err) {
-    await fs18.promises.unlink(tmpPath).catch(() => {
+    await fs19.promises.unlink(tmpPath).catch(() => {
     });
     throw err;
   }
   try {
-    const dirFh = await fs18.promises.open(dir, "r");
+    const dirFh = await fs19.promises.open(dir, "r");
     try {
       await dirFh.sync();
     } finally {
@@ -37405,11 +37405,11 @@ var init_credentials = __esm({
         return null;
       }
       validateProfileName(profileName);
-      const { fs: fs18, path: path27 } = await Promise.resolve().then(() => (init_node(), node_exports));
-      const configPath = path27.join(rootConfigPath, "configs", `${profileName}.json`);
+      const { fs: fs19, path: path28 } = await Promise.resolve().then(() => (init_node(), node_exports));
+      const configPath = path28.join(rootConfigPath, "configs", `${profileName}.json`);
       let configRaw;
       try {
-        configRaw = await fs18.promises.readFile(configPath, "utf-8");
+        configRaw = await fs19.promises.readFile(configPath, "utf-8");
       } catch (err) {
         if (err?.code !== "ENOENT") {
           throw new Error(`failed to read config file ${configPath}: ${err}`);
@@ -37490,14 +37490,14 @@ var init_credentials = __esm({
         return null;
       }
       validateProfileName(profileName);
-      const { path: path27 } = await Promise.resolve().then(() => (init_node(), node_exports));
-      return path27.join(rootConfigPath, "credentials", `${profileName}.json`);
+      const { path: path28 } = await Promise.resolve().then(() => (init_node(), node_exports));
+      return path28.join(rootConfigPath, "credentials", `${profileName}.json`);
     };
     getRootConfigPath = async () => {
       if (!supportsLocalConfigFiles()) {
         return null;
       }
-      const { path: path27 } = await Promise.resolve().then(() => (init_node(), node_exports));
+      const { path: path28 } = await Promise.resolve().then(() => (init_node(), node_exports));
       const configDir = readEnv3("ANTHROPIC_CONFIG_DIR");
       if (configDir) {
         return configDir;
@@ -37506,21 +37506,21 @@ var init_credentials = __esm({
       if (os6 === "Windows") {
         const appData = readEnv3("APPDATA");
         if (appData) {
-          return path27.join(appData, "Anthropic");
+          return path28.join(appData, "Anthropic");
         }
         const userProfile = readEnv3("USERPROFILE");
         if (userProfile) {
-          return path27.join(userProfile, "AppData", "Roaming", "Anthropic");
+          return path28.join(userProfile, "AppData", "Roaming", "Anthropic");
         }
         return null;
       }
       const xdgConfigHome = readEnv3("XDG_CONFIG_HOME");
       if (xdgConfigHome) {
-        return path27.join(xdgConfigHome, "anthropic");
+        return path28.join(xdgConfigHome, "anthropic");
       }
       const home = readEnv3("HOME");
       if (home) {
-        return path27.join(home, ".config", "anthropic");
+        return path28.join(home, ".config", "anthropic");
       }
       return null;
     };
@@ -37537,10 +37537,10 @@ var init_credentials = __esm({
       if (profileName) {
         return profileName;
       }
-      const { fs: fs18, path: path27 } = await Promise.resolve().then(() => (init_node(), node_exports));
-      const filePath = path27.join(rootConfigPath, "active_config");
+      const { fs: fs19, path: path28 } = await Promise.resolve().then(() => (init_node(), node_exports));
+      const filePath = path28.join(rootConfigPath, "active_config");
       try {
-        return (await fs18.promises.readFile(filePath, "utf-8")).trim() || "default";
+        return (await fs19.promises.readFile(filePath, "utf-8")).trim() || "default";
       } catch (err) {
         if (err?.code !== "ENOENT") {
           throw new Error(`failed to read ${filePath}: ${err}`);
@@ -37552,21 +37552,21 @@ var init_credentials = __esm({
 });
 
 // node_modules/.pnpm/@anthropic-ai+sdk@0.129.0_zod@4.6.7/node_modules/@anthropic-ai/sdk/lib/credentials/identity-token.mjs
-function identityTokenFromFile(path27) {
-  if (!path27) {
+function identityTokenFromFile(path28) {
+  if (!path28) {
     throw new AnthropicError("Identity token file path is empty");
   }
   return async () => {
-    const { fs: fs18 } = await Promise.resolve().then(() => (init_node(), node_exports));
+    const { fs: fs19 } = await Promise.resolve().then(() => (init_node(), node_exports));
     let content;
     try {
-      content = await fs18.promises.readFile(path27, "utf-8");
+      content = await fs19.promises.readFile(path28, "utf-8");
     } catch (err) {
-      throw new AnthropicError(`Failed to read identity token file at ${path27}: ${err}`);
+      throw new AnthropicError(`Failed to read identity token file at ${path28}: ${err}`);
     }
     const token = content.trim();
     if (!token) {
-      throw new AnthropicError(`Identity token file at ${path27} is empty`);
+      throw new AnthropicError(`Identity token file at ${path28} is empty`);
     }
     return token;
   };
@@ -37651,11 +37651,11 @@ var init_oidc_federation = __esm({
 // node_modules/.pnpm/@anthropic-ai+sdk@0.129.0_zod@4.6.7/node_modules/@anthropic-ai/sdk/lib/credentials/user-oauth.mjs
 function userOAuthProvider(config2) {
   return async (opts) => {
-    const { fs: fs18 } = await Promise.resolve().then(() => (init_node(), node_exports));
+    const { fs: fs19 } = await Promise.resolve().then(() => (init_node(), node_exports));
     await checkCredentialsFileSafety(config2.credentialsPath, config2.onSafetyWarning);
     let raw;
     try {
-      raw = await fs18.promises.readFile(config2.credentialsPath, "utf-8");
+      raw = await fs19.promises.readFile(config2.credentialsPath, "utf-8");
     } catch (err) {
       throw new WorkloadIdentityError(`Credentials file not found at ${config2.credentialsPath}: ${err}`);
     }
@@ -37827,11 +37827,11 @@ function resolveIdentityTokenProvider(auth) {
 }
 function cachedExchangeProvider(exchange, credentialsPath, onCacheWriteError, onSafetyWarning) {
   return async (opts) => {
-    const { fs: fs18 } = await Promise.resolve().then(() => (init_node(), node_exports));
+    const { fs: fs19 } = await Promise.resolve().then(() => (init_node(), node_exports));
     await checkCredentialsFileSafety(credentialsPath, onSafetyWarning);
     let existing;
     try {
-      const raw = await fs18.promises.readFile(credentialsPath, "utf-8");
+      const raw = await fs19.promises.readFile(credentialsPath, "utf-8");
       existing = JSON.parse(raw);
       const token = existing?.["access_token"];
       if (token && !opts?.forceRefresh) {
@@ -38882,17 +38882,17 @@ var init_headers = __esm({
 function encodeURIPath2(str) {
   return str.replace(/[^A-Za-z0-9\-._~!$&'()*+,;=:@]+/g, encodeURIComponent);
 }
-var EMPTY2, createPathTagFunction2, path8;
+var EMPTY2, createPathTagFunction2, path11;
 var init_path = __esm({
   "node_modules/.pnpm/@anthropic-ai+sdk@0.129.0_zod@4.6.7/node_modules/@anthropic-ai/sdk/internal/utils/path.mjs"() {
     init_error();
     EMPTY2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.create(null));
-    createPathTagFunction2 = (pathEncoder = encodeURIPath2) => function path27(statics, ...params) {
+    createPathTagFunction2 = (pathEncoder = encodeURIPath2) => function path28(statics, ...params) {
       if (statics.length === 1)
         return statics[0];
       let postPath = false;
       const invalidSegments = [];
-      const path28 = statics.reduce((previousValue, currentValue, index2) => {
+      const path29 = statics.reduce((previousValue, currentValue, index2) => {
         if (/[?#]/.test(currentValue)) {
           postPath = true;
         }
@@ -38909,7 +38909,7 @@ var init_path = __esm({
         }
         return previousValue + currentValue + (index2 === params.length ? "" : encoded);
       }, "");
-      const pathOnly = path28.split(/[?#]/, 1)[0];
+      const pathOnly = path29.split(/[?#]/, 1)[0];
       const invalidSegmentPattern = /(?<=^|\/)(?:\.|%2e){1,2}(?=\/|$)/gi;
       let match;
       while ((match = invalidSegmentPattern.exec(pathOnly)) !== null) {
@@ -38930,12 +38930,12 @@ var init_path = __esm({
         }, "");
         throw new AnthropicError(`Path parameters result in path with invalid segments:
 ${invalidSegments.map((e) => e.error).join("\n")}
-${path28}
+${path29}
 ${underline}`);
       }
-      return path28;
+      return path29;
     };
-    path8 = /* @__PURE__ */ createPathTagFunction2(encodeURIPath2);
+    path11 = /* @__PURE__ */ createPathTagFunction2(encodeURIPath2);
   }
 });
 
@@ -38961,7 +38961,7 @@ var init_deployment_runs = __esm({
        */
       retrieve(deploymentRunID, params = {}, options) {
         const { betas, workspace_id } = params ?? {};
-        return this._client.get(path8`/v1/deployment_runs/${deploymentRunID}?beta=true`, {
+        return this._client.get(path11`/v1/deployment_runs/${deploymentRunID}?beta=true`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -39061,7 +39061,7 @@ var init_deployments = __esm({
        */
       retrieve(deploymentID, params = {}, options) {
         const { betas, workspace_id } = params ?? {};
-        return this._client.get(path8`/v1/deployments/${deploymentID}?beta=true`, {
+        return this._client.get(path11`/v1/deployments/${deploymentID}?beta=true`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -39085,7 +39085,7 @@ var init_deployments = __esm({
        */
       update(deploymentID, params, options) {
         const { betas, workspace_id, ...body } = params;
-        return this._client.post(path8`/v1/deployments/${deploymentID}?beta=true`, {
+        return this._client.post(path11`/v1/deployments/${deploymentID}?beta=true`, {
           body,
           ...options,
           headers: buildHeaders2([
@@ -39135,7 +39135,7 @@ var init_deployments = __esm({
        */
       archive(deploymentID, params = {}, options) {
         const { betas, workspace_id } = params ?? {};
-        return this._client.post(path8`/v1/deployments/${deploymentID}/archive?beta=true`, {
+        return this._client.post(path11`/v1/deployments/${deploymentID}/archive?beta=true`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -39159,7 +39159,7 @@ var init_deployments = __esm({
        */
       pause(deploymentID, params = {}, options) {
         const { betas, workspace_id } = params ?? {};
-        return this._client.post(path8`/v1/deployments/${deploymentID}/pause?beta=true`, {
+        return this._client.post(path11`/v1/deployments/${deploymentID}/pause?beta=true`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -39183,7 +39183,7 @@ var init_deployments = __esm({
        */
       run(deploymentID, params = {}, options) {
         const { betas, workspace_id } = params ?? {};
-        return this._client.post(path8`/v1/deployments/${deploymentID}/run?beta=true`, {
+        return this._client.post(path11`/v1/deployments/${deploymentID}/run?beta=true`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -39207,7 +39207,7 @@ var init_deployments = __esm({
        */
       unpause(deploymentID, params = {}, options) {
         const { betas, workspace_id } = params ?? {};
-        return this._client.post(path8`/v1/deployments/${deploymentID}/unpause?beta=true`, {
+        return this._client.post(path11`/v1/deployments/${deploymentID}/unpause?beta=true`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -39284,7 +39284,7 @@ var init_dreams = __esm({
        */
       retrieve(dreamID, params = {}, options) {
         const { betas, workspace_id } = params ?? {};
-        return this._client.get(path8`/v1/dreams/${dreamID}?beta=true`, {
+        return this._client.get(path11`/v1/dreams/${dreamID}?beta=true`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -39347,7 +39347,7 @@ var init_dreams = __esm({
        */
       archive(dreamID, params = {}, options) {
         const { betas, workspace_id } = params ?? {};
-        return this._client.post(path8`/v1/dreams/${dreamID}/archive?beta=true`, {
+        return this._client.post(path11`/v1/dreams/${dreamID}/archive?beta=true`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -39379,7 +39379,7 @@ var init_dreams = __esm({
        */
       cancel(dreamID, params = {}, options) {
         const { betas, workspace_id } = params ?? {};
-        return this._client.post(path8`/v1/dreams/${dreamID}/cancel?beta=true`, {
+        return this._client.post(path11`/v1/dreams/${dreamID}/cancel?beta=true`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -39500,7 +39500,7 @@ var init_files = __esm({
        */
       delete(fileID, params = {}, options) {
         const { betas, workspace_id } = params ?? {};
-        return this._client.delete(path8`/v1/files/${fileID}?beta=true`, {
+        return this._client.delete(path11`/v1/files/${fileID}?beta=true`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -39526,7 +39526,7 @@ var init_files = __esm({
        */
       download(fileID, params = {}, options) {
         const { betas, workspace_id } = params ?? {};
-        return this._client.get(path8`/v1/files/${fileID}/content?beta=true`, {
+        return this._client.get(path11`/v1/files/${fileID}/content?beta=true`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -39550,7 +39550,7 @@ var init_files = __esm({
        */
       retrieveMetadata(fileID, params = {}, options) {
         const { betas, workspace_id } = params ?? {};
-        return this._client.get(path8`/v1/files/${fileID}?beta=true`, {
+        return this._client.get(path11`/v1/files/${fileID}?beta=true`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -39614,7 +39614,7 @@ var init_models = __esm({
        */
       retrieve(modelID, params = {}, options) {
         const { betas, workspace_id } = params ?? {};
-        return this._client.get(path8`/v1/models/${modelID}?beta=true`, {
+        return this._client.get(path11`/v1/models/${modelID}?beta=true`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -39702,7 +39702,7 @@ var init_user_profiles = __esm({
        */
       retrieve(userProfileID, params = {}, options) {
         const { betas, workspace_id } = params ?? {};
-        return this._client.get(path8`/v1/user_profiles/${userProfileID}?beta=true`, {
+        return this._client.get(path11`/v1/user_profiles/${userProfileID}?beta=true`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -39726,7 +39726,7 @@ var init_user_profiles = __esm({
        */
       update(userProfileID, params, options) {
         const { betas, workspace_id, ...body } = params;
-        return this._client.post(path8`/v1/user_profiles/${userProfileID}?beta=true`, {
+        return this._client.post(path11`/v1/user_profiles/${userProfileID}?beta=true`, {
           body,
           ...options,
           headers: buildHeaders2([
@@ -39776,7 +39776,7 @@ var init_user_profiles = __esm({
        */
       createEnrollmentURL(userProfileID, params = {}, options) {
         const { betas, workspace_id } = params ?? {};
-        return this._client.post(path8`/v1/user_profiles/${userProfileID}/enrollment_url?beta=true`, {
+        return this._client.post(path11`/v1/user_profiles/${userProfileID}/enrollment_url?beta=true`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -40637,7 +40637,7 @@ var init_versions = __esm({
        */
       list(agentID, params = {}, options) {
         const { betas, workspace_id, ...query } = params ?? {};
-        return this._client.getAPIList(path8`/v1/agents/${agentID}/versions?beta=true`, PageCursor, {
+        return this._client.getAPIList(path11`/v1/agents/${agentID}/versions?beta=true`, PageCursor, {
           query,
           ...options,
           headers: buildHeaders2([
@@ -40708,7 +40708,7 @@ var init_agents = __esm({
          */
         retrieve(agentID, params = {}, options) {
           const { betas, workspace_id, ...query } = params ?? {};
-          return this._client.get(path8`/v1/agents/${agentID}?beta=true`, {
+          return this._client.get(path11`/v1/agents/${agentID}?beta=true`, {
             query,
             ...options,
             headers: buildHeaders2([
@@ -40734,7 +40734,7 @@ var init_agents = __esm({
          */
         update(agentID, params, options) {
           const { betas, workspace_id, ...body } = params;
-          return this._client.post(path8`/v1/agents/${agentID}?beta=true`, {
+          return this._client.post(path11`/v1/agents/${agentID}?beta=true`, {
             body,
             ...options,
             headers: buildHeaders2([
@@ -40784,7 +40784,7 @@ var init_agents = __esm({
          */
         archive(agentID, params = {}, options) {
           const { betas, workspace_id } = params ?? {};
-          return this._client.post(path8`/v1/agents/${agentID}/archive?beta=true`, {
+          return this._client.post(path11`/v1/agents/${agentID}/archive?beta=true`, {
             ...options,
             headers: buildHeaders2([
               {
@@ -41857,12 +41857,12 @@ var init_promise = __esm({
 
 // node_modules/.pnpm/@anthropic-ai+sdk@0.129.0_zod@4.6.7/node_modules/@anthropic-ai/sdk/tools/agent-toolset/fs-util.mjs
 function isWithin(root, p) {
-  const rel = path7.relative(root, p);
-  return rel === "" || !rel.startsWith(".." + path7.sep) && rel !== ".." && !path7.isAbsolute(rel);
+  const rel = path10.relative(root, p);
+  return rel === "" || !rel.startsWith(".." + path10.sep) && rel !== ".." && !path10.isAbsolute(rel);
 }
 async function containingRoot(roots, target) {
   for (const root of roots) {
-    if (isWithin(await canonicalize(path7.resolve(root)), target))
+    if (isWithin(await canonicalize(path10.resolve(root)), target))
       return root;
   }
   return void 0;
@@ -41878,19 +41878,19 @@ async function canonicalize(abs) {
   for (; ; ) {
     let real;
     try {
-      real = await fs4.realpath(prefix);
+      real = await fs6.realpath(prefix);
     } catch (realpathErr) {
       let isLink;
       try {
-        isLink = (await fs4.lstat(prefix)).isSymbolicLink();
+        isLink = (await fs6.lstat(prefix)).isSymbolicLink();
       } catch (lstatErr) {
         const code = errnoCode(lstatErr);
         if (code !== "ENOENT" && code !== "ENOTDIR")
           throw lstatErr;
-        const parent = path7.dirname(prefix);
+        const parent = path10.dirname(prefix);
         if (parent === prefix)
           throw lstatErr;
-        tail.push(path7.basename(prefix));
+        tail.push(path10.basename(prefix));
         prefix = parent;
         continue;
       }
@@ -41899,18 +41899,18 @@ async function canonicalize(abs) {
       if (++hops > MAX_SYMLINK_HOPS) {
         throw Object.assign(new Error("too many levels of symbolic links"), { code: "ELOOP" });
       }
-      prefix = path7.resolve(path7.dirname(prefix), await fs4.readlink(prefix));
+      prefix = path10.resolve(path10.dirname(prefix), await fs6.readlink(prefix));
       continue;
     }
-    return tail.length ? path7.join(real, ...tail.reverse()) : real;
+    return tail.length ? path10.join(real, ...tail.reverse()) : real;
   }
 }
 async function confineToRoot(root, p, opts) {
   const allowedRoots = opts?.allowedRoots ?? [];
-  const realRoot = await canonicalize(path7.resolve(root));
+  const realRoot = await canonicalize(path10.resolve(root));
   let real;
   try {
-    real = await canonicalize(path7.resolve(realRoot, p));
+    real = await canonicalize(path10.resolve(realRoot, p));
   } catch (err) {
     throw new ToolError(fsErrorMessage(err, `path ${JSON.stringify(p)}`));
   }
@@ -41921,24 +41921,24 @@ async function confineToRoot(root, p, opts) {
   throw new ToolError(`path ${JSON.stringify(p)} is outside ${permitted}`);
 }
 async function atomicWriteFile(targetPath, content) {
-  const dir = path7.dirname(targetPath);
-  const tempPath = path7.join(dir, `.tmp-${process.pid}-${crypto2.randomUUID()}`);
-  const existingMode = await fs4.stat(targetPath).then((st) => st.mode & 511, () => void 0);
+  const dir = path10.dirname(targetPath);
+  const tempPath = path10.join(dir, `.tmp-${process.pid}-${crypto2.randomUUID()}`);
+  const existingMode = await fs6.stat(targetPath).then((st) => st.mode & 511, () => void 0);
   let handle;
   try {
-    handle = await fs4.open(tempPath, "wx", FILE_CREATE_MODE);
+    handle = await fs6.open(tempPath, "wx", FILE_CREATE_MODE);
     if (existingMode !== void 0)
       await handle.chmod(existingMode);
     await handle.writeFile(content, "utf-8");
     await handle.sync();
     await handle.close();
     handle = void 0;
-    await fs4.rename(tempPath, targetPath);
+    await fs6.rename(tempPath, targetPath);
   } catch (err) {
     if (handle)
       await handle.close().catch(() => {
       });
-    await fs4.unlink(tempPath).catch(() => {
+    await fs6.unlink(tempPath).catch(() => {
     });
     throw err;
   }
@@ -41968,12 +41968,12 @@ function fsErrorMessage(err, file2) {
       return `${file2}: ${code !== void 0 ? `i/o error (${code})` : "i/o error"}`;
   }
 }
-var fs4, DIR_CREATE_MODE, FILE_CREATE_MODE, MAX_SYMLINK_HOPS;
+var fs6, DIR_CREATE_MODE, FILE_CREATE_MODE, MAX_SYMLINK_HOPS;
 var init_fs_util = __esm({
   "node_modules/.pnpm/@anthropic-ai+sdk@0.129.0_zod@4.6.7/node_modules/@anthropic-ai/sdk/tools/agent-toolset/fs-util.mjs"() {
     init_node();
     init_ToolError();
-    fs4 = fs3.promises;
+    fs6 = fs5.promises;
     DIR_CREATE_MODE = 448;
     FILE_CREATE_MODE = 384;
     MAX_SYMLINK_HOPS = 40;
@@ -41995,16 +41995,16 @@ async function setupSkills(ctx) {
     log.warn("AgentToolContext.sessionId is deprecated and costs an extra session fetch; fetch the session once and set `session` instead", { component: "agent-tool-context" });
     session = await client2.beta.sessions.retrieve(sessionId);
   }
-  const skillsRoot = path7.resolve(ctx.workdir, "skills");
+  const skillsRoot = path10.resolve(ctx.workdir, "skills");
   const created = [];
   for (const skill of session.agent.skills) {
     try {
       const version5 = await client2.beta.skills.versions.retrieve(skill.version, { skill_id: skill.skill_id });
-      let dirname2 = path7.basename(version5.name.trim());
+      let dirname2 = path10.basename(version5.name.trim());
       if (dirname2 === "" || dirname2 === "." || dirname2 === "..")
         dirname2 = skill.skill_id;
-      const dest = path7.resolve(skillsRoot, dirname2);
-      if (dest !== skillsRoot && !dest.startsWith(skillsRoot + path7.sep)) {
+      const dest = path10.resolve(skillsRoot, dirname2);
+      if (dest !== skillsRoot && !dest.startsWith(skillsRoot + path10.sep)) {
         log.warn("skill name escapes the skills dir; skipping", {
           component: "agent-tool-context",
           name: version5.name
@@ -42012,8 +42012,8 @@ async function setupSkills(ctx) {
         continue;
       }
       const resp = await client2.beta.skills.versions.download(version5.id, { skill_id: skill.skill_id });
-      await fs5.rm(dest, { recursive: true, force: true });
-      await fs5.mkdir(dest, { recursive: true, mode: DIR_CREATE_MODE });
+      await fs7.rm(dest, { recursive: true, force: true });
+      await fs7.mkdir(dest, { recursive: true, mode: DIR_CREATE_MODE });
       created.push(dest);
       await extractSkillArchive(resp, dest);
       log.info("downloaded skill", {
@@ -42032,7 +42032,7 @@ async function setupSkills(ctx) {
   }
   return async () => {
     for (const dest of created) {
-      await fs5.rm(dest, { recursive: true, force: true }).catch((e) => {
+      await fs7.rm(dest, { recursive: true, force: true }).catch((e) => {
         log.warn("failed to clean up skill", { component: "agent-tool-context", dest, error: String(e) });
       });
     }
@@ -42043,7 +42043,7 @@ function assertSafeMemberNames(names2) {
     const entry = raw.trim();
     if (!entry)
       continue;
-    if (path7.isAbsolute(entry) || entry.split(/[\\/]/).includes("..")) {
+    if (path10.isAbsolute(entry) || entry.split(/[\\/]/).includes("..")) {
       throw new AnthropicError(`refusing to extract unsafe archive member: ${entry}`);
     }
   }
@@ -42077,9 +42077,9 @@ function classifyArchiveListing(cmd, names2, typed) {
   return { plain, special };
 }
 async function assertOnlyPlainEntries(dir) {
-  for (const entry of await fs5.readdir(dir, { withFileTypes: true })) {
+  for (const entry of await fs7.readdir(dir, { withFileTypes: true })) {
     if (entry.isDirectory())
-      await assertOnlyPlainEntries(path7.join(dir, entry.name));
+      await assertOnlyPlainEntries(path10.join(dir, entry.name));
     else if (!entry.isFile())
       throw new AnthropicError(INCONSISTENT_LISTING);
   }
@@ -42113,13 +42113,13 @@ function archiveTopDir(names2) {
   return top !== void 0 && nested ? top : "";
 }
 async function extractSkillArchive(resp, dest) {
-  const tmp = path7.join(dest, `.skill-archive-${process.pid}-${Date.now()}`);
+  const tmp = path10.join(dest, `.skill-archive-${process.pid}-${Date.now()}`);
   if (!resp.body) {
     throw new AnthropicError("skill download response had no body");
   }
-  await stream.promises.pipeline(stream.Readable.fromWeb(resp.body), fs3.createWriteStream(tmp));
-  const stage = path7.join(path7.dirname(dest), `.skill-stage-${process.pid}-${Date.now()}`);
-  const excludeFile = path7.join(path7.dirname(dest), `.skill-exclude-${process.pid}-${Date.now()}`);
+  await stream.promises.pipeline(stream.Readable.fromWeb(resp.body), fs5.createWriteStream(tmp));
+  const stage = path10.join(path10.dirname(dest), `.skill-stage-${process.pid}-${Date.now()}`);
+  const excludeFile = path10.join(path10.dirname(dest), `.skill-exclude-${process.pid}-${Date.now()}`);
   try {
     const head = await readHead(tmp, 4);
     const isZip = head.length >= 4 && head[0] === 80 && head[1] === 75 && head[2] === 3 && head[3] === 4;
@@ -42129,22 +42129,22 @@ async function extractSkillArchive(resp, dest) {
     const { plain, special } = classifyArchiveListing(archiveCmd, names2, typed);
     assertSafeMemberNames([...plain, ...special]);
     const top = archiveTopDir(plain);
-    await fs5.mkdir(stage, { recursive: true, mode: DIR_CREATE_MODE });
+    await fs7.mkdir(stage, { recursive: true, mode: DIR_CREATE_MODE });
     if (plain.length > 0) {
       await runArchiveTool(archiveCmd, await extractArgs(archiveCmd, tmp, stage, special, excludeFile));
     }
     await assertOnlyPlainEntries(stage);
-    const srcRoot = top ? path7.join(stage, top) : stage;
-    const entries = await fs5.readdir(srcRoot).catch((e) => {
+    const srcRoot = top ? path10.join(stage, top) : stage;
+    const entries = await fs7.readdir(srcRoot).catch((e) => {
       throw errnoCode(e) === "ENOENT" ? new AnthropicError(INCONSISTENT_LISTING) : e;
     });
     for (const entry of entries) {
-      await fs5.rename(path7.join(srcRoot, entry), path7.join(dest, entry));
+      await fs7.rename(path10.join(srcRoot, entry), path10.join(dest, entry));
     }
   } finally {
-    await fs5.rm(tmp, { force: true });
-    await fs5.rm(excludeFile, { force: true });
-    await fs5.rm(stage, { recursive: true, force: true });
+    await fs7.rm(tmp, { force: true });
+    await fs7.rm(excludeFile, { force: true });
+    await fs7.rm(stage, { recursive: true, force: true });
   }
 }
 async function extractArgs(cmd, archive, stage, special, excludeFile) {
@@ -42154,11 +42154,11 @@ async function extractArgs(cmd, archive, stage, special, excludeFile) {
   }
   if (patterns.length === 0)
     return ["-xf", archive, "-C", stage];
-  await fs5.writeFile(excludeFile, patterns.join("\n") + "\n", { flag: "wx", mode: 384 });
+  await fs7.writeFile(excludeFile, patterns.join("\n") + "\n", { flag: "wx", mode: 384 });
   return ["-xf", archive, "-C", stage, "-X", excludeFile];
 }
 async function readHead(file2, n3) {
-  const handle = await fs5.open(file2, "r");
+  const handle = await fs7.open(file2, "r");
   try {
     const buf = Buffer.alloc(n3);
     const { bytesRead } = await handle.read(buf, 0, n3, 0);
@@ -42167,14 +42167,14 @@ async function readHead(file2, n3) {
     await handle.close();
   }
 }
-var fs5, execFileAsync, INCONSISTENT_LISTING, PLAIN_TYPE_CHARS;
+var fs7, execFileAsync, INCONSISTENT_LISTING, PLAIN_TYPE_CHARS;
 var init_skills = __esm({
   "node_modules/.pnpm/@anthropic-ai+sdk@0.129.0_zod@4.6.7/node_modules/@anthropic-ai/sdk/tools/agent-toolset/skills.mjs"() {
     init_node();
     init_error();
     init_log();
     init_fs_util();
-    fs5 = fs3.promises;
+    fs7 = fs5.promises;
     execFileAsync = util2.promisify(child_process.execFile);
     INCONSISTENT_LISTING = "skill archive listing is inconsistent; refusing to extract";
     PLAIN_TYPE_CHARS = { unzip: /* @__PURE__ */ new Set(["-", "d", "?"]), tar: /* @__PURE__ */ new Set(["-", "d", "C"]) };
@@ -42201,7 +42201,7 @@ async function makeDirAndAncestors(dir) {
         throw e;
     }
     missing.push(current);
-    const parent = path7.dirname(current);
+    const parent = path10.dirname(current);
     if (parent === current)
       break;
     current = parent;
@@ -42216,12 +42216,12 @@ async function makeDirAndAncestors(dir) {
   }
 }
 async function makeDirsBelowRoot(root, dir) {
-  const below = path7.relative(root, dir);
+  const below = path10.relative(root, dir);
   if (below === "")
     return;
   let current = root;
-  for (const part of below.split(path7.sep)) {
-    current = path7.join(current, part);
+  for (const part of below.split(path10.sep)) {
+    current = path10.join(current, part);
     try {
       await fsp.mkdir(current, { mode: OWNER_ONLY_DIR_MODE });
     } catch (e) {
@@ -42232,7 +42232,7 @@ async function makeDirsBelowRoot(root, dir) {
 }
 async function replaceViaTemp(dest, data, isExecutable) {
   const mode = isExecutable ? OWNER_ONLY_EXEC_MODE : OWNER_ONLY_FILE_MODE;
-  const tmp = path7.join(path7.dirname(dest), `.fs-${crypto2.randomBytes(8).toString("hex")}.tmp`);
+  const tmp = path10.join(path10.dirname(dest), `.fs-${crypto2.randomBytes(8).toString("hex")}.tmp`);
   let handle;
   try {
     handle = await fsp.open(tmp, C.O_WRONLY | C.O_CREAT | C.O_EXCL | O_NOFOLLOW, mode);
@@ -42273,7 +42273,7 @@ async function openRegularFile(relPath, dest) {
 }
 async function hashFile(full) {
   const digest = crypto2.createHash("sha256");
-  const handle = await openRegularFile(path7.basename(full), full);
+  const handle = await openRegularFile(path10.basename(full), full);
   const buf = new Uint8Array(1024 * 1024);
   try {
     for (; ; ) {
@@ -42293,13 +42293,13 @@ async function filenamesInDir(root, under, base) {
   const out = [];
   await walk(base, (full, entry) => {
     if (entry.isFile())
-      out.push([path7.relative(root, full).split(path7.sep).join("/"), full]);
+      out.push([path10.relative(root, full).split(path10.sep).join("/"), full]);
   });
   out.sort();
   return out;
 }
 async function symlinksInDir(root, under, base) {
-  const relOf = (full) => path7.relative(root, full).split(path7.sep).join("/");
+  const relOf = (full) => path10.relative(root, full).split(path10.sep).join("/");
   let st;
   try {
     st = await fsp.lstat(base, { bigint: true });
@@ -42347,7 +42347,7 @@ async function walk(base, visit3) {
       throw e;
     }
     for (const entry of entries) {
-      const full = path7.join(dir, entry.name);
+      const full = path10.join(dir, entry.name);
       visit3(full, entry);
       if (entry.isDirectory() && !entry.isSymbolicLink())
         stack.push(full);
@@ -42366,8 +42366,8 @@ var init_file_store = __esm({
   "node_modules/.pnpm/@anthropic-ai+sdk@0.129.0_zod@4.6.7/node_modules/@anthropic-ai/sdk/internal/file-store.mjs"() {
     init_node();
     init_bytes();
-    fsp = fs3.promises;
-    C = fs3.constants;
+    fsp = fs5.promises;
+    C = fs5.constants;
     OWNER_ONLY_DIR_MODE = 448;
     OWNER_ONLY_FILE_MODE = 384;
     OWNER_ONLY_EXEC_MODE = 448;
@@ -42412,7 +42412,7 @@ var init_file_store = __esm({
               throw e;
             removedOnDispose = true;
           }
-          return new FileStore2(path7.resolve(root), removedOnDispose, opts?.utf8 ?? false);
+          return new FileStore2(path10.resolve(root), removedOnDispose, opts?.utf8 ?? false);
         }
         /** Create the root directory and any missing ancestors; already existing is fine. */
         async createRoot() {
@@ -42447,7 +42447,7 @@ var init_file_store = __esm({
           const dest = this.resolveUnderRoot(relPath);
           const payload = typeof data === "string" ? encodeUTF8(data) : data;
           this.requireUtf8(relPath, payload);
-          await makeDirsBelowRoot(this.rootPath, path7.dirname(dest));
+          await makeDirsBelowRoot(this.rootPath, path10.dirname(dest));
           await replaceViaTemp(dest, payload, opts?.executable ?? false);
         }
         /** The file's bytes; `null` when absent. */
@@ -42516,7 +42516,7 @@ var init_file_store = __esm({
             throw new FileStoreError(FileStoreError.IS_A_SYMLINK, relPath);
           if (!st.isFile())
             throw new FileStoreError(FileStoreError.NOT_A_FILE, relPath);
-          const rel = path7.relative(this.rootPath, dest).split(path7.sep).join("/");
+          const rel = path10.relative(this.rootPath, dest).split(path10.sep).join("/");
           return this.hashViaCache(rel, dest, _internals.nowNs());
         }
         /**
@@ -42531,7 +42531,7 @@ var init_file_store = __esm({
           const dstExists = await fsp.stat(d).then(() => true, () => false);
           if (dstExists)
             throw new FileStoreError(FileStoreError.MOVE_DESTINATION_EXISTS, dst);
-          await makeDirsBelowRoot(this.rootPath, path7.dirname(d));
+          await makeDirsBelowRoot(this.rootPath, path10.dirname(d));
           await fsp.rename(s, d);
         }
         /** Delete a file or subtree; absent — and the banned store root — do nothing. */
@@ -42561,10 +42561,10 @@ var init_file_store = __esm({
         resolveUnderRoot(relPath) {
           const norm = relPath.replace(/\\/g, "/").replace(/^\/+/, "");
           const parts = norm.split("/").filter((p) => p !== "" && p !== ".");
-          if (path7.posix.isAbsolute(norm) || parts.includes("..")) {
+          if (path10.posix.isAbsolute(norm) || parts.includes("..")) {
             throw new FileStoreError(FileStoreError.ESCAPES_ROOT, relPath);
           }
-          return parts.length === 0 ? this.rootPath : path7.join(this.rootPath, ...parts);
+          return parts.length === 0 ? this.rootPath : path10.join(this.rootPath, ...parts);
         }
         requireUtf8(relPath, data) {
           if (!this.decoder)
@@ -42872,7 +42872,7 @@ var init_memories = __esm({
           }
           return resource.mount_path;
         }
-        return path7.join(__classPrivateFieldGet2(this, _SessionMemoryStores_workdir, "f"), "memory", resource.name || resource.memory_store_id);
+        return path10.join(__classPrivateFieldGet2(this, _SessionMemoryStores_workdir, "f"), "memory", resource.name || resource.memory_store_id);
       }, _SessionMemoryStores_scanMarker = async function _SessionMemoryStores_scanMarker2(store2) {
         const local = await store2.files.hashtree();
         const marker = local[MARKER_PATH];
@@ -43368,9 +43368,9 @@ __export(node_exports2, {
   resolvePath: () => resolvePath,
   setupSkills: () => setupSkills
 });
-import * as fs6 from "node:fs/promises";
+import * as fs8 from "node:fs/promises";
 import * as fssync from "node:fs";
-import * as path9 from "node:path";
+import * as path12 from "node:path";
 import * as cp from "node:child_process";
 import * as crypto3 from "node:crypto";
 import * as readline from "node:readline";
@@ -43493,7 +43493,7 @@ function betaReadTool(ctx) {
       }
       let data;
       try {
-        const st = await fs6.stat(abs);
+        const st = await fs8.stat(abs);
         if (!st.isFile()) {
           throw new ToolError(`read: ${file_path} is not a regular file`);
         }
@@ -43505,7 +43505,7 @@ function betaReadTool(ctx) {
           const [startLine2, endLine2] = view_range;
           return await readRangeStreaming(abs, file_path, startLine2, endLine2, limit4);
         }
-        data = await fs6.readFile(abs, "utf8");
+        data = await fs8.readFile(abs, "utf8");
       } catch (e) {
         if (e instanceof ToolError)
           throw e;
@@ -43556,7 +43556,7 @@ function betaWriteTool(ctx) {
         throw new ToolError(`write: ${file_path} is inside read-only directory ${ro}`);
       }
       try {
-        await fs6.mkdir(path9.dirname(abs), { recursive: true, mode: DIR_CREATE_MODE });
+        await fs8.mkdir(path12.dirname(abs), { recursive: true, mode: DIR_CREATE_MODE });
         await atomicWriteFile(abs, content ?? "");
       } catch (e) {
         throw new ToolError(`write: ${fsErrorMessage(e, file_path)}`);
@@ -43592,7 +43592,7 @@ function betaEditTool(ctx) {
       }
       let data;
       try {
-        const st = await fs6.stat(abs);
+        const st = await fs8.stat(abs);
         if (!st.isFile()) {
           throw new ToolError(`edit: ${file_path} is not a regular file`);
         }
@@ -43600,7 +43600,7 @@ function betaEditTool(ctx) {
         if (limit4 !== null && st.size > limit4) {
           throw new ToolError(`edit: ${file_path} is ${st.size} bytes, exceeds ${limit4}-byte limit. The edit tool loads the whole file and cannot modify a file this large.`);
         }
-        data = await fs6.readFile(abs, "utf8");
+        data = await fs8.readFile(abs, "utf8");
       } catch (e) {
         if (e instanceof ToolError)
           throw e;
@@ -43645,13 +43645,13 @@ function betaGlobTool(ctx) {
     run: async ({ pattern, path: searchPath }) => {
       if (!pattern)
         throw new ToolError("glob: pattern is required");
-      if (path9.isAbsolute(pattern)) {
+      if (path12.isAbsolute(pattern)) {
         throw new ToolError("glob: absolute pattern not permitted; pass a relative pattern (and optionally path)");
       }
       if (patternCanAscend(pattern)) {
         throw new ToolError('glob: ".." is not permitted in the pattern');
       }
-      const root = searchPath ? await resolvePath(ctx, searchPath) : path9.resolve(ctx.workdir);
+      const root = searchPath ? await resolvePath(ctx, searchPath) : path12.resolve(ctx.workdir);
       const realRoot = searchPath ? root : await canonicalize(root);
       const matches = [];
       let remaining = WALK_MAX_ENTRIES;
@@ -43665,10 +43665,10 @@ function betaGlobTool(ctx) {
             break;
           if (!entry.isFile())
             continue;
-          const full = path9.join(entry.parentPath, entry.name);
+          const full = path12.join(entry.parentPath, entry.name);
           let real;
           try {
-            real = await fs6.realpath(full);
+            real = await fs8.realpath(full);
           } catch {
             continue;
           }
@@ -43676,7 +43676,7 @@ function betaGlobTool(ctx) {
             continue;
           let mtime = 0;
           try {
-            mtime = (await fs6.stat(full)).mtimeMs;
+            mtime = (await fs8.stat(full)).mtimeMs;
           } catch {
           }
           matches.push({ path: full, mtime });
@@ -43704,7 +43704,7 @@ function betaGrepTool(ctx) {
     run: async ({ pattern, path: p }, context2) => {
       if (!pattern)
         throw new ToolError("grep: pattern is required");
-      let searchPath = path9.resolve(ctx.workdir);
+      let searchPath = path12.resolve(ctx.workdir);
       if (p)
         searchPath = await resolvePath(ctx, p);
       const rg = await findRg();
@@ -43768,11 +43768,11 @@ async function runWalkGrep(pattern, root, signal) {
     hits.push(line);
     return true;
   };
-  const stat4 = await fs6.stat(root).catch(() => null);
+  const stat4 = await fs8.stat(root).catch(() => null);
   if (stat4?.isFile()) {
     await grepFile(root, re, push2);
   } else {
-    await walk2(root, "", (rel) => grepFile(path9.join(root, rel), re, push2), signal);
+    await walk2(root, "", (rel) => grepFile(path12.join(root, rel), re, push2), signal);
   }
   if (signal?.aborted)
     throw new ToolError("grep: aborted");
@@ -43807,7 +43807,7 @@ async function walk2(root, rel, fn, signal) {
       return false;
     let entries;
     try {
-      entries = await fs6.readdir(path9.join(root, rel2), { withFileTypes: true });
+      entries = await fs8.readdir(path12.join(root, rel2), { withFileTypes: true });
     } catch {
       return true;
     }
@@ -43818,7 +43818,7 @@ async function walk2(root, rel, fn, signal) {
         return false;
       if (signal?.aborted)
         return false;
-      const childRel = rel2 ? path9.join(rel2, e.name) : e.name;
+      const childRel = rel2 ? path12.join(rel2, e.name) : e.name;
       if (e.isDirectory()) {
         if (!await inner(childRel, depth + 1))
           return false;
@@ -43832,11 +43832,11 @@ async function walk2(root, rel, fn, signal) {
   await inner(rel, 0);
 }
 async function findRg() {
-  const dirs = (process.env["PATH"] ?? "").split(path9.delimiter);
+  const dirs = (process.env["PATH"] ?? "").split(path12.delimiter);
   for (const d of dirs) {
-    const candidate = path9.join(d, "rg");
+    const candidate = path12.join(d, "rg");
     try {
-      await fs6.access(candidate, fssync.constants.X_OK);
+      await fs8.access(candidate, fssync.constants.X_OK);
       return candidate;
     } catch {
     }
@@ -43870,7 +43870,7 @@ var init_node2 = __esm({
       }
     };
     ANSI_RE = /\x1b\[[0-9;?]*[ -/]*[@-~]/g;
-    fsGlob = fs6.glob;
+    fsGlob = fs8.glob;
     BashSession = /* @__PURE__ */ (() => {
       class BashSession2 {
         constructor(dir, env = scrubbedShellEnv()) {
@@ -44514,7 +44514,7 @@ var init_work = __esm({
          */
         retrieve(workID, params, options) {
           const { environment_id, betas, workspace_id } = params;
-          return this._client.get(path8`/v1/environments/${environment_id}/work/${workID}?beta=true`, {
+          return this._client.get(path11`/v1/environments/${environment_id}/work/${workID}?beta=true`, {
             ...options,
             headers: buildHeaders2([
               {
@@ -44544,7 +44544,7 @@ var init_work = __esm({
          */
         update(workID, params, options) {
           const { environment_id, betas, workspace_id, ...body } = params;
-          return this._client.post(path8`/v1/environments/${environment_id}/work/${workID}?beta=true`, {
+          return this._client.post(path11`/v1/environments/${environment_id}/work/${workID}?beta=true`, {
             body,
             ...options,
             headers: buildHeaders2([
@@ -44576,7 +44576,7 @@ var init_work = __esm({
          */
         list(environmentID, params = {}, options) {
           const { betas, ...query } = params ?? {};
-          return this._client.getAPIList(path8`/v1/environments/${environmentID}/work?beta=true`, PageCursor, {
+          return this._client.getAPIList(path11`/v1/environments/${environmentID}/work?beta=true`, PageCursor, {
             query,
             ...options,
             headers: buildHeaders2([
@@ -44604,7 +44604,7 @@ var init_work = __esm({
          */
         ack(workID, params, options) {
           const { environment_id, betas } = params;
-          return this._client.post(path8`/v1/environments/${environment_id}/work/${workID}/ack?beta=true`, {
+          return this._client.post(path11`/v1/environments/${environment_id}/work/${workID}/ack?beta=true`, {
             ...options,
             headers: buildHeaders2([
               { "anthropic-beta": [...betas ?? [], "managed-agents-2026-04-01"].toString() },
@@ -44630,7 +44630,7 @@ var init_work = __esm({
          */
         heartbeat(workID, params, options) {
           const { environment_id, desired_ttl_seconds, expected_last_heartbeat, betas } = params;
-          return this._client.post(path8`/v1/environments/${environment_id}/work/${workID}/heartbeat?beta=true`, {
+          return this._client.post(path11`/v1/environments/${environment_id}/work/${workID}/heartbeat?beta=true`, {
             query: { desired_ttl_seconds, expected_last_heartbeat },
             ...options,
             headers: buildHeaders2([
@@ -44657,7 +44657,7 @@ var init_work = __esm({
          */
         poll(environmentID, params = {}, options) {
           const { betas, "Anthropic-Worker-ID": anthropicWorkerID, ...query } = params ?? {};
-          return this._client.get(path8`/v1/environments/${environmentID}/work/poll?beta=true`, {
+          return this._client.get(path11`/v1/environments/${environmentID}/work/poll?beta=true`, {
             query,
             ...options,
             headers: buildHeaders2([
@@ -44682,7 +44682,7 @@ var init_work = __esm({
          */
         stats(environmentID, params = {}, options) {
           const { betas, workspace_id } = params ?? {};
-          return this._client.get(path8`/v1/environments/${environmentID}/work/stats?beta=true`, {
+          return this._client.get(path11`/v1/environments/${environmentID}/work/stats?beta=true`, {
             ...options,
             headers: buildHeaders2([
               {
@@ -44711,7 +44711,7 @@ var init_work = __esm({
          */
         stop(workID, params, options) {
           const { environment_id, betas, workspace_id, ...body } = params;
-          return this._client.post(path8`/v1/environments/${environment_id}/work/${workID}/stop?beta=true`, {
+          return this._client.post(path11`/v1/environments/${environment_id}/work/${workID}/stop?beta=true`, {
             body,
             ...options,
             headers: buildHeaders2([
@@ -44807,7 +44807,7 @@ var init_environments = __esm({
          */
         retrieve(environmentID, params = {}, options) {
           const { betas, workspace_id } = params ?? {};
-          return this._client.get(path8`/v1/environments/${environmentID}?beta=true`, {
+          return this._client.get(path11`/v1/environments/${environmentID}?beta=true`, {
             ...options,
             headers: buildHeaders2([
               {
@@ -44831,7 +44831,7 @@ var init_environments = __esm({
          */
         update(environmentID, params, options) {
           const { betas, workspace_id, ...body } = params;
-          return this._client.post(path8`/v1/environments/${environmentID}?beta=true`, {
+          return this._client.post(path11`/v1/environments/${environmentID}?beta=true`, {
             body,
             ...options,
             headers: buildHeaders2([
@@ -44881,7 +44881,7 @@ var init_environments = __esm({
          */
         delete(environmentID, params = {}, options) {
           const { betas, workspace_id } = params ?? {};
-          return this._client.delete(path8`/v1/environments/${environmentID}?beta=true`, {
+          return this._client.delete(path11`/v1/environments/${environmentID}?beta=true`, {
             ...options,
             headers: buildHeaders2([
               {
@@ -44906,7 +44906,7 @@ var init_environments = __esm({
          */
         archive(environmentID, params = {}, options) {
           const { betas, workspace_id } = params ?? {};
-          return this._client.post(path8`/v1/environments/${environmentID}/archive?beta=true`, {
+          return this._client.post(path11`/v1/environments/${environmentID}/archive?beta=true`, {
             ...options,
             headers: buildHeaders2([
               {
@@ -44947,7 +44947,7 @@ var init_memories2 = __esm({
        */
       create(memoryStoreID, params, options) {
         const { view: view2, betas, workspace_id, ...body } = params;
-        return this._client.post(path8`/v1/memory_stores/${memoryStoreID}/memories?beta=true`, {
+        return this._client.post(path11`/v1/memory_stores/${memoryStoreID}/memories?beta=true`, {
           query: { view: view2 },
           body,
           ...options,
@@ -44974,7 +44974,7 @@ var init_memories2 = __esm({
        */
       retrieve(memoryID, params, options) {
         const { memory_store_id, betas, workspace_id, ...query } = params;
-        return this._client.get(path8`/v1/memory_stores/${memory_store_id}/memories/${memoryID}?beta=true`, {
+        return this._client.get(path11`/v1/memory_stores/${memory_store_id}/memories/${memoryID}?beta=true`, {
           query,
           ...options,
           headers: buildHeaders2([
@@ -45000,7 +45000,7 @@ var init_memories2 = __esm({
        */
       update(memoryID, params, options) {
         const { memory_store_id, view: view2, betas, workspace_id, ...body } = params;
-        return this._client.post(path8`/v1/memory_stores/${memory_store_id}/memories/${memoryID}?beta=true`, {
+        return this._client.post(path11`/v1/memory_stores/${memory_store_id}/memories/${memoryID}?beta=true`, {
           query: { view: view2 },
           body,
           ...options,
@@ -45028,7 +45028,7 @@ var init_memories2 = __esm({
        */
       list(memoryStoreID, params = {}, options) {
         const { betas, workspace_id, ...query } = params ?? {};
-        return this._client.getAPIList(path8`/v1/memory_stores/${memoryStoreID}/memories?beta=true`, PageCursor, {
+        return this._client.getAPIList(path11`/v1/memory_stores/${memoryStoreID}/memories?beta=true`, PageCursor, {
           query,
           ...options,
           headers: buildHeaders2([
@@ -45054,7 +45054,7 @@ var init_memories2 = __esm({
        */
       delete(memoryID, params, options) {
         const { memory_store_id, expected_content_sha256, betas, workspace_id } = params;
-        return this._client.delete(path8`/v1/memory_stores/${memory_store_id}/memories/${memoryID}?beta=true`, {
+        return this._client.delete(path11`/v1/memory_stores/${memory_store_id}/memories/${memoryID}?beta=true`, {
           query: { expected_content_sha256 },
           ...options,
           headers: buildHeaders2([
@@ -45093,7 +45093,7 @@ var init_memory_versions = __esm({
        */
       retrieve(memoryVersionID, params, options) {
         const { memory_store_id, betas, workspace_id, ...query } = params;
-        return this._client.get(path8`/v1/memory_stores/${memory_store_id}/memory_versions/${memoryVersionID}?beta=true`, {
+        return this._client.get(path11`/v1/memory_stores/${memory_store_id}/memory_versions/${memoryVersionID}?beta=true`, {
           query,
           ...options,
           headers: buildHeaders2([
@@ -45120,7 +45120,7 @@ var init_memory_versions = __esm({
        */
       list(memoryStoreID, params = {}, options) {
         const { betas, workspace_id, ...query } = params ?? {};
-        return this._client.getAPIList(path8`/v1/memory_stores/${memoryStoreID}/memory_versions?beta=true`, PageCursor, {
+        return this._client.getAPIList(path11`/v1/memory_stores/${memoryStoreID}/memory_versions?beta=true`, PageCursor, {
           query,
           ...options,
           headers: buildHeaders2([
@@ -45146,7 +45146,7 @@ var init_memory_versions = __esm({
        */
       redact(memoryVersionID, params, options) {
         const { memory_store_id, betas, workspace_id } = params;
-        return this._client.post(path8`/v1/memory_stores/${memory_store_id}/memory_versions/${memoryVersionID}/redact?beta=true`, {
+        return this._client.post(path11`/v1/memory_stores/${memory_store_id}/memory_versions/${memoryVersionID}/redact?beta=true`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -45216,7 +45216,7 @@ var init_memory_stores = __esm({
          */
         retrieve(memoryStoreID, params = {}, options) {
           const { betas, workspace_id } = params ?? {};
-          return this._client.get(path8`/v1/memory_stores/${memoryStoreID}?beta=true`, {
+          return this._client.get(path11`/v1/memory_stores/${memoryStoreID}?beta=true`, {
             ...options,
             headers: buildHeaders2([
               {
@@ -45238,7 +45238,7 @@ var init_memory_stores = __esm({
          */
         update(memoryStoreID, params, options) {
           const { betas, workspace_id, ...body } = params;
-          return this._client.post(path8`/v1/memory_stores/${memoryStoreID}?beta=true`, {
+          return this._client.post(path11`/v1/memory_stores/${memoryStoreID}?beta=true`, {
             body,
             ...options,
             headers: buildHeaders2([
@@ -45286,7 +45286,7 @@ var init_memory_stores = __esm({
          */
         delete(memoryStoreID, params = {}, options) {
           const { betas, workspace_id } = params ?? {};
-          return this._client.delete(path8`/v1/memory_stores/${memoryStoreID}?beta=true`, {
+          return this._client.delete(path11`/v1/memory_stores/${memoryStoreID}?beta=true`, {
             ...options,
             headers: buildHeaders2([
               {
@@ -45308,7 +45308,7 @@ var init_memory_stores = __esm({
          */
         archive(memoryStoreID, params = {}, options) {
           const { betas, workspace_id } = params ?? {};
-          return this._client.post(path8`/v1/memory_stores/${memoryStoreID}/archive?beta=true`, {
+          return this._client.post(path11`/v1/memory_stores/${memoryStoreID}/archive?beta=true`, {
             ...options,
             headers: buildHeaders2([
               {
@@ -45450,7 +45450,7 @@ var init_batches = __esm({
        */
       retrieve(messageBatchID, params = {}, options) {
         const { betas, workspace_id } = params ?? {};
-        return this._client.get(path8`/v1/messages/batches/${messageBatchID}?beta=true`, {
+        return this._client.get(path11`/v1/messages/batches/${messageBatchID}?beta=true`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -45509,7 +45509,7 @@ var init_batches = __esm({
        */
       delete(messageBatchID, params = {}, options) {
         const { betas, workspace_id } = params ?? {};
-        return this._client.delete(path8`/v1/messages/batches/${messageBatchID}?beta=true`, {
+        return this._client.delete(path11`/v1/messages/batches/${messageBatchID}?beta=true`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -45544,7 +45544,7 @@ var init_batches = __esm({
        */
       cancel(messageBatchID, params = {}, options) {
         const { betas, workspace_id } = params ?? {};
-        return this._client.post(path8`/v1/messages/batches/${messageBatchID}/cancel?beta=true`, {
+        return this._client.post(path11`/v1/messages/batches/${messageBatchID}/cancel?beta=true`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -47555,7 +47555,7 @@ var init_api_keys = __esm({
        * ```
        */
       retrieve(apiKeyID, options) {
-        return this._client.get(path8`/v1/organizations/api_keys/${apiKeyID}?beta=true`, options);
+        return this._client.get(path11`/v1/organizations/api_keys/${apiKeyID}?beta=true`, options);
       }
       /**
        * Update API Key
@@ -47569,7 +47569,7 @@ var init_api_keys = __esm({
        * ```
        */
       update(apiKeyID, body, options) {
-        return this._client.post(path8`/v1/organizations/api_keys/${apiKeyID}?beta=true`, { body, ...options });
+        return this._client.post(path11`/v1/organizations/api_keys/${apiKeyID}?beta=true`, { body, ...options });
       }
       /**
        * List API Keys
@@ -47683,7 +47683,7 @@ var init_external_keys = __esm({
        * ```
        */
       retrieve(externalKeyID, options) {
-        return this._client.get(path8`/v1/organizations/external_keys/${externalKeyID}?beta=true`, options);
+        return this._client.get(path11`/v1/organizations/external_keys/${externalKeyID}?beta=true`, options);
       }
       /**
        * Partially update an external key config. Omitted fields are left unchanged.
@@ -47701,7 +47701,7 @@ var init_external_keys = __esm({
        * ```
        */
       update(externalKeyID, body, options) {
-        return this._client.post(path8`/v1/organizations/external_keys/${externalKeyID}?beta=true`, {
+        return this._client.post(path11`/v1/organizations/external_keys/${externalKeyID}?beta=true`, {
           body,
           ...options
         });
@@ -47740,7 +47740,7 @@ var init_external_keys = __esm({
        * ```
        */
       delete(externalKeyID, options) {
-        return this._client.delete(path8`/v1/organizations/external_keys/${externalKeyID}?beta=true`, options);
+        return this._client.delete(path11`/v1/organizations/external_keys/${externalKeyID}?beta=true`, options);
       }
       /**
        * Validate an external key config against the customer's KMS.
@@ -47759,7 +47759,7 @@ var init_external_keys = __esm({
        * ```
        */
       validate(externalKeyID, options) {
-        return this._client.post(path8`/v1/organizations/external_keys/${externalKeyID}/validate?beta=true`, options);
+        return this._client.post(path11`/v1/organizations/external_keys/${externalKeyID}/validate?beta=true`, options);
       }
     };
   }
@@ -47805,7 +47805,7 @@ var init_invites = __esm({
        * ```
        */
       retrieve(inviteID, options) {
-        return this._client.get(path8`/v1/organizations/invites/${inviteID}?beta=true`, options);
+        return this._client.get(path11`/v1/organizations/invites/${inviteID}?beta=true`, options);
       }
       /**
        * List the organization's invites.
@@ -47836,7 +47836,7 @@ var init_invites = __esm({
        * ```
        */
       delete(inviteID, options) {
-        return this._client.delete(path8`/v1/organizations/invites/${inviteID}?beta=true`, options);
+        return this._client.delete(path11`/v1/organizations/invites/${inviteID}?beta=true`, options);
       }
     };
   }
@@ -47892,7 +47892,7 @@ var init_users = __esm({
        * ```
        */
       retrieve(userID, options) {
-        return this._client.get(path8`/v1/organizations/users/${userID}?beta=true`, options);
+        return this._client.get(path11`/v1/organizations/users/${userID}?beta=true`, options);
       }
       /**
        * Update a member's organization role.
@@ -47906,7 +47906,7 @@ var init_users = __esm({
        * ```
        */
       update(userID, body, options) {
-        return this._client.post(path8`/v1/organizations/users/${userID}?beta=true`, { body, ...options });
+        return this._client.post(path11`/v1/organizations/users/${userID}?beta=true`, { body, ...options });
       }
       /**
        * List the organization's members.
@@ -47936,7 +47936,7 @@ var init_users = __esm({
        * ```
        */
       remove(userID, options) {
-        return this._client.delete(path8`/v1/organizations/users/${userID}?beta=true`, options);
+        return this._client.delete(path11`/v1/organizations/users/${userID}?beta=true`, options);
       }
     };
   }
@@ -48007,7 +48007,7 @@ var init_issuers = __esm({
        */
       retrieve(federationIssuerID, params = {}, options) {
         const { betas } = params ?? {};
-        return this._client.get(path8`/v1/organizations/federation_issuers/${federationIssuerID}?beta=true`, {
+        return this._client.get(path11`/v1/organizations/federation_issuers/${federationIssuerID}?beta=true`, {
           ...options,
           headers: buildHeaders2([
             { ...betas?.toString() != null ? { "anthropic-beta": betas?.toString() } : void 0 },
@@ -48039,7 +48039,7 @@ var init_issuers = __esm({
        */
       update(federationIssuerID, params, options) {
         const { betas, ...body } = params;
-        return this._client.post(path8`/v1/organizations/federation_issuers/${federationIssuerID}?beta=true`, {
+        return this._client.post(path11`/v1/organizations/federation_issuers/${federationIssuerID}?beta=true`, {
           body,
           ...options,
           headers: buildHeaders2([
@@ -48100,7 +48100,7 @@ var init_issuers = __esm({
        */
       archive(federationIssuerID, params = {}, options) {
         const { betas } = params ?? {};
-        return this._client.post(path8`/v1/organizations/federation_issuers/${federationIssuerID}/archive?beta=true`, {
+        return this._client.post(path11`/v1/organizations/federation_issuers/${federationIssuerID}/archive?beta=true`, {
           ...options,
           headers: buildHeaders2([
             { ...betas?.toString() != null ? { "anthropic-beta": betas?.toString() } : void 0 },
@@ -48147,7 +48147,7 @@ var init_workspaces = __esm({
        */
       list(federationRuleID, params = {}, options) {
         const { betas, ...query } = params ?? {};
-        return this._client.getAPIList(path8`/v1/organizations/federation_rules/${federationRuleID}/workspaces?beta=true`, PageCursor, {
+        return this._client.getAPIList(path11`/v1/organizations/federation_rules/${federationRuleID}/workspaces?beta=true`, PageCursor, {
           query,
           ...options,
           headers: buildHeaders2([
@@ -48183,7 +48183,7 @@ var init_workspaces = __esm({
        */
       add(federationRuleID, params, options) {
         const { betas, ...body } = params;
-        return this._client.post(path8`/v1/organizations/federation_rules/${federationRuleID}/workspaces?beta=true`, {
+        return this._client.post(path11`/v1/organizations/federation_rules/${federationRuleID}/workspaces?beta=true`, {
           body,
           ...options,
           headers: buildHeaders2([
@@ -48215,7 +48215,7 @@ var init_workspaces = __esm({
        */
       remove(workspaceID, params, options) {
         const { federation_rule_id, betas } = params;
-        return this._client.delete(path8`/v1/organizations/federation_rules/${federation_rule_id}/workspaces/${workspaceID}?beta=true`, {
+        return this._client.delete(path11`/v1/organizations/federation_rules/${federation_rule_id}/workspaces/${workspaceID}?beta=true`, {
           ...options,
           headers: buildHeaders2([
             { ...betas?.toString() != null ? { "anthropic-beta": betas?.toString() } : void 0 },
@@ -48308,7 +48308,7 @@ var init_rules = __esm({
          */
         retrieve(federationRuleID, params = {}, options) {
           const { betas } = params ?? {};
-          return this._client.get(path8`/v1/organizations/federation_rules/${federationRuleID}?beta=true`, {
+          return this._client.get(path11`/v1/organizations/federation_rules/${federationRuleID}?beta=true`, {
             ...options,
             headers: buildHeaders2([
               { ...betas?.toString() != null ? { "anthropic-beta": betas?.toString() } : void 0 },
@@ -48349,7 +48349,7 @@ var init_rules = __esm({
          */
         update(federationRuleID, params, options) {
           const { betas, ...body } = params;
-          return this._client.post(path8`/v1/organizations/federation_rules/${federationRuleID}?beta=true`, {
+          return this._client.post(path11`/v1/organizations/federation_rules/${federationRuleID}?beta=true`, {
             body,
             ...options,
             headers: buildHeaders2([
@@ -48413,7 +48413,7 @@ var init_rules = __esm({
          */
         archive(federationRuleID, params = {}, options) {
           const { betas } = params ?? {};
-          return this._client.post(path8`/v1/organizations/federation_rules/${federationRuleID}/archive?beta=true`, {
+          return this._client.post(path11`/v1/organizations/federation_rules/${federationRuleID}/archive?beta=true`, {
             ...options,
             headers: buildHeaders2([
               { ...betas?.toString() != null ? { "anthropic-beta": betas?.toString() } : void 0 },
@@ -48493,7 +48493,7 @@ var init_workspaces2 = __esm({
        */
       list(serviceAccountID, params = {}, options) {
         const { betas, ...query } = params ?? {};
-        return this._client.getAPIList(path8`/v1/organizations/service_accounts/${serviceAccountID}/workspaces?beta=true`, PageCursor, {
+        return this._client.getAPIList(path11`/v1/organizations/service_accounts/${serviceAccountID}/workspaces?beta=true`, PageCursor, {
           query,
           ...options,
           headers: buildHeaders2([
@@ -48530,7 +48530,7 @@ var init_workspaces2 = __esm({
        */
       add(serviceAccountID, params, options) {
         const { betas, ...body } = params;
-        return this._client.post(path8`/v1/organizations/service_accounts/${serviceAccountID}/workspaces?beta=true`, {
+        return this._client.post(path11`/v1/organizations/service_accounts/${serviceAccountID}/workspaces?beta=true`, {
           body,
           ...options,
           headers: buildHeaders2([
@@ -48566,7 +48566,7 @@ var init_workspaces2 = __esm({
        */
       remove(workspaceID, params, options) {
         const { service_account_id, betas } = params;
-        return this._client.delete(path8`/v1/organizations/service_accounts/${service_account_id}/workspaces/${workspaceID}?beta=true`, {
+        return this._client.delete(path11`/v1/organizations/service_accounts/${service_account_id}/workspaces/${workspaceID}?beta=true`, {
           ...options,
           headers: buildHeaders2([
             { ...betas?.toString() != null ? { "anthropic-beta": betas?.toString() } : void 0 },
@@ -48646,7 +48646,7 @@ var init_service_accounts = __esm({
          */
         retrieve(serviceAccountID, params = {}, options) {
           const { betas } = params ?? {};
-          return this._client.get(path8`/v1/organizations/service_accounts/${serviceAccountID}?beta=true`, {
+          return this._client.get(path11`/v1/organizations/service_accounts/${serviceAccountID}?beta=true`, {
             ...options,
             headers: buildHeaders2([
               { ...betas?.toString() != null ? { "anthropic-beta": betas?.toString() } : void 0 },
@@ -48677,7 +48677,7 @@ var init_service_accounts = __esm({
          */
         update(serviceAccountID, params, options) {
           const { betas, ...body } = params;
-          return this._client.post(path8`/v1/organizations/service_accounts/${serviceAccountID}?beta=true`, {
+          return this._client.post(path11`/v1/organizations/service_accounts/${serviceAccountID}?beta=true`, {
             body,
             ...options,
             headers: buildHeaders2([
@@ -48740,7 +48740,7 @@ var init_service_accounts = __esm({
          */
         archive(serviceAccountID, params = {}, options) {
           const { betas } = params ?? {};
-          return this._client.post(path8`/v1/organizations/service_accounts/${serviceAccountID}/archive?beta=true`, {
+          return this._client.post(path11`/v1/organizations/service_accounts/${serviceAccountID}/archive?beta=true`, {
             ...options,
             headers: buildHeaders2([
               { ...betas?.toString() != null ? { "anthropic-beta": betas?.toString() } : void 0 },
@@ -48777,7 +48777,7 @@ var init_members = __esm({
        */
       retrieve(userID, params, options) {
         const { workspace_id } = params;
-        return this._client.get(path8`/v1/organizations/workspaces/${workspace_id}/members/${userID}?beta=true`, options);
+        return this._client.get(path11`/v1/organizations/workspaces/${workspace_id}/members/${userID}?beta=true`, options);
       }
       /**
        * Update Workspace Member
@@ -48796,7 +48796,7 @@ var init_members = __esm({
        */
       update(userID, params, options) {
         const { workspace_id, ...body } = params;
-        return this._client.post(path8`/v1/organizations/workspaces/${workspace_id}/members/${userID}?beta=true`, {
+        return this._client.post(path11`/v1/organizations/workspaces/${workspace_id}/members/${userID}?beta=true`, {
           body,
           ...options
         });
@@ -48815,7 +48815,7 @@ var init_members = __esm({
        * ```
        */
       list(workspaceID, query = {}, options) {
-        return this._client.getAPIList(path8`/v1/organizations/workspaces/${workspaceID}/members?beta=true`, Page, { query, ...options });
+        return this._client.getAPIList(path11`/v1/organizations/workspaces/${workspaceID}/members?beta=true`, Page, { query, ...options });
       }
       /**
        * Create Workspace Member
@@ -48833,7 +48833,7 @@ var init_members = __esm({
        * ```
        */
       add(workspaceID, body, options) {
-        return this._client.post(path8`/v1/organizations/workspaces/${workspaceID}/members?beta=true`, {
+        return this._client.post(path11`/v1/organizations/workspaces/${workspaceID}/members?beta=true`, {
           body,
           ...options
         });
@@ -48852,7 +48852,7 @@ var init_members = __esm({
        */
       remove(userID, params, options) {
         const { workspace_id } = params;
-        return this._client.delete(path8`/v1/organizations/workspaces/${workspace_id}/members/${userID}?beta=true`, options);
+        return this._client.delete(path11`/v1/organizations/workspaces/${workspace_id}/members/${userID}?beta=true`, options);
       }
     };
   }
@@ -48889,7 +48889,7 @@ var init_rate_limits2 = __esm({
        * ```
        */
       list(workspaceID, query = {}, options) {
-        return this._client.getAPIList(path8`/v1/organizations/workspaces/${workspaceID}/rate_limits?beta=true`, PageCursor, { query, ...options });
+        return this._client.getAPIList(path11`/v1/organizations/workspaces/${workspaceID}/rate_limits?beta=true`, PageCursor, { query, ...options });
       }
     };
   }
@@ -48929,7 +48929,7 @@ var init_service_accounts2 = __esm({
        */
       retrieve(serviceAccountID, params, options) {
         const { workspace_id, betas } = params;
-        return this._client.get(path8`/v1/organizations/workspaces/${workspace_id}/service_accounts/${serviceAccountID}?beta=true`, {
+        return this._client.get(path11`/v1/organizations/workspaces/${workspace_id}/service_accounts/${serviceAccountID}?beta=true`, {
           ...options,
           headers: buildHeaders2([
             { ...betas?.toString() != null ? { "anthropic-beta": betas?.toString() } : void 0 },
@@ -48965,7 +48965,7 @@ var init_service_accounts2 = __esm({
        */
       update(serviceAccountID, params, options) {
         const { workspace_id, betas, ...body } = params;
-        return this._client.post(path8`/v1/organizations/workspaces/${workspace_id}/service_accounts/${serviceAccountID}?beta=true`, {
+        return this._client.post(path11`/v1/organizations/workspaces/${workspace_id}/service_accounts/${serviceAccountID}?beta=true`, {
           body,
           ...options,
           headers: buildHeaders2([
@@ -49000,7 +49000,7 @@ var init_service_accounts2 = __esm({
        */
       list(workspaceID, params = {}, options) {
         const { betas, ...query } = params ?? {};
-        return this._client.getAPIList(path8`/v1/organizations/workspaces/${workspaceID}/service_accounts?beta=true`, PageCursor, {
+        return this._client.getAPIList(path11`/v1/organizations/workspaces/${workspaceID}/service_accounts?beta=true`, PageCursor, {
           query,
           ...options,
           headers: buildHeaders2([
@@ -49039,7 +49039,7 @@ var init_service_accounts2 = __esm({
        */
       add(workspaceID, params, options) {
         const { betas, ...body } = params;
-        return this._client.post(path8`/v1/organizations/workspaces/${workspaceID}/service_accounts?beta=true`, {
+        return this._client.post(path11`/v1/organizations/workspaces/${workspaceID}/service_accounts?beta=true`, {
           body,
           ...options,
           headers: buildHeaders2([
@@ -49073,7 +49073,7 @@ var init_service_accounts2 = __esm({
        */
       remove(serviceAccountID, params, options) {
         const { workspace_id, betas } = params;
-        return this._client.delete(path8`/v1/organizations/workspaces/${workspace_id}/service_accounts/${serviceAccountID}?beta=true`, {
+        return this._client.delete(path11`/v1/organizations/workspaces/${workspace_id}/service_accounts/${serviceAccountID}?beta=true`, {
           ...options,
           headers: buildHeaders2([
             { ...betas?.toString() != null ? { "anthropic-beta": betas?.toString() } : void 0 },
@@ -49141,7 +49141,7 @@ var init_workspaces3 = __esm({
          * ```
          */
         retrieve(workspaceID, options) {
-          return this._client.get(path8`/v1/organizations/workspaces/${workspaceID}?beta=true`, options);
+          return this._client.get(path11`/v1/organizations/workspaces/${workspaceID}?beta=true`, options);
         }
         /**
          * Update Workspace
@@ -49155,7 +49155,7 @@ var init_workspaces3 = __esm({
          * ```
          */
         update(workspaceID, body, options) {
-          return this._client.post(path8`/v1/organizations/workspaces/${workspaceID}?beta=true`, {
+          return this._client.post(path11`/v1/organizations/workspaces/${workspaceID}?beta=true`, {
             body,
             ...options
           });
@@ -49189,7 +49189,7 @@ var init_workspaces3 = __esm({
          * ```
          */
         archive(workspaceID, options) {
-          return this._client.post(path8`/v1/organizations/workspaces/${workspaceID}/archive?beta=true`, options);
+          return this._client.post(path11`/v1/organizations/workspaces/${workspaceID}/archive?beta=true`, options);
         }
       }
       Workspaces4.RateLimits = RateLimits2;
@@ -49291,7 +49291,7 @@ var init_events = __esm({
          */
         list(sessionID, params = {}, options) {
           const { betas, workspace_id, ...query } = params ?? {};
-          return this._client.getAPIList(path8`/v1/sessions/${sessionID}/events?beta=true`, PageCursor, {
+          return this._client.getAPIList(path11`/v1/sessions/${sessionID}/events?beta=true`, PageCursor, {
             query,
             ...options,
             headers: buildHeaders2([
@@ -49329,7 +49329,7 @@ var init_events = __esm({
          */
         send(sessionID, params, options) {
           const { betas, workspace_id, ...body } = params;
-          return this._client.post(path8`/v1/sessions/${sessionID}/events?beta=true`, {
+          return this._client.post(path11`/v1/sessions/${sessionID}/events?beta=true`, {
             body,
             ...options,
             headers: buildHeaders2([
@@ -49354,7 +49354,7 @@ var init_events = __esm({
          */
         stream(sessionID, params = {}, options) {
           const { betas, workspace_id, ...query } = params ?? {};
-          return this._client.get(path8`/v1/sessions/${sessionID}/events/stream?beta=true`, {
+          return this._client.get(path11`/v1/sessions/${sessionID}/events/stream?beta=true`, {
             query,
             ...options,
             headers: buildHeaders2([
@@ -49419,7 +49419,7 @@ var init_resources = __esm({
        */
       retrieve(resourceID, params, options) {
         const { session_id, betas, workspace_id } = params;
-        return this._client.get(path8`/v1/sessions/${session_id}/resources/${resourceID}?beta=true`, {
+        return this._client.get(path11`/v1/sessions/${session_id}/resources/${resourceID}?beta=true`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -49447,7 +49447,7 @@ var init_resources = __esm({
        */
       update(resourceID, params, options) {
         const { session_id, betas, workspace_id, ...body } = params;
-        return this._client.post(path8`/v1/sessions/${session_id}/resources/${resourceID}?beta=true`, {
+        return this._client.post(path11`/v1/sessions/${session_id}/resources/${resourceID}?beta=true`, {
           body,
           ...options,
           headers: buildHeaders2([
@@ -49474,7 +49474,7 @@ var init_resources = __esm({
        */
       list(sessionID, params = {}, options) {
         const { betas, workspace_id, ...query } = params ?? {};
-        return this._client.getAPIList(path8`/v1/sessions/${sessionID}/resources?beta=true`, PageCursor, {
+        return this._client.getAPIList(path11`/v1/sessions/${sessionID}/resources?beta=true`, PageCursor, {
           query,
           ...options,
           headers: buildHeaders2([
@@ -49500,7 +49500,7 @@ var init_resources = __esm({
        */
       delete(resourceID, params, options) {
         const { session_id, betas, workspace_id } = params;
-        return this._client.delete(path8`/v1/sessions/${session_id}/resources/${resourceID}?beta=true`, {
+        return this._client.delete(path11`/v1/sessions/${session_id}/resources/${resourceID}?beta=true`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -49528,7 +49528,7 @@ var init_resources = __esm({
        */
       add(sessionID, params, options) {
         const { betas, workspace_id, ...body } = params;
-        return this._client.post(path8`/v1/sessions/${sessionID}/resources?beta=true`, {
+        return this._client.post(path11`/v1/sessions/${sessionID}/resources?beta=true`, {
           body,
           ...options,
           headers: buildHeaders2([
@@ -49569,7 +49569,7 @@ var init_events2 = __esm({
        */
       list(threadID, params, options) {
         const { session_id, betas, workspace_id, ...query } = params;
-        return this._client.getAPIList(path8`/v1/sessions/${session_id}/threads/${threadID}/events?beta=true`, PageCursor, {
+        return this._client.getAPIList(path11`/v1/sessions/${session_id}/threads/${threadID}/events?beta=true`, PageCursor, {
           query,
           ...options,
           headers: buildHeaders2([
@@ -49595,7 +49595,7 @@ var init_events2 = __esm({
        */
       stream(threadID, params, options) {
         const { session_id, betas, workspace_id, ...query } = params;
-        return this._client.get(path8`/v1/sessions/${session_id}/threads/${threadID}/stream?beta=true`, {
+        return this._client.get(path11`/v1/sessions/${session_id}/threads/${threadID}/stream?beta=true`, {
           query,
           ...options,
           headers: buildHeaders2([
@@ -49642,7 +49642,7 @@ var init_threads = __esm({
          */
         retrieve(threadID, params, options) {
           const { session_id, betas, workspace_id } = params;
-          return this._client.get(path8`/v1/sessions/${session_id}/threads/${threadID}?beta=true`, {
+          return this._client.get(path11`/v1/sessions/${session_id}/threads/${threadID}?beta=true`, {
             ...options,
             headers: buildHeaders2([
               {
@@ -49668,7 +49668,7 @@ var init_threads = __esm({
          */
         list(sessionID, params = {}, options) {
           const { betas, workspace_id, ...query } = params ?? {};
-          return this._client.getAPIList(path8`/v1/sessions/${sessionID}/threads?beta=true`, PageCursor, {
+          return this._client.getAPIList(path11`/v1/sessions/${sessionID}/threads?beta=true`, PageCursor, {
             query,
             ...options,
             headers: buildHeaders2([
@@ -49694,7 +49694,7 @@ var init_threads = __esm({
          */
         archive(threadID, params, options) {
           const { session_id, betas, workspace_id } = params;
-          return this._client.post(path8`/v1/sessions/${session_id}/threads/${threadID}/archive?beta=true`, {
+          return this._client.post(path11`/v1/sessions/${session_id}/threads/${threadID}/archive?beta=true`, {
             ...options,
             headers: buildHeaders2([
               {
@@ -49773,7 +49773,7 @@ var init_sessions = __esm({
          */
         retrieve(sessionID, params = {}, options) {
           const { betas, workspace_id } = params ?? {};
-          return this._client.get(path8`/v1/sessions/${sessionID}?beta=true`, {
+          return this._client.get(path11`/v1/sessions/${sessionID}?beta=true`, {
             ...options,
             headers: buildHeaders2([
               {
@@ -49797,7 +49797,7 @@ var init_sessions = __esm({
          */
         update(sessionID, params, options) {
           const { betas, workspace_id, ...body } = params;
-          return this._client.post(path8`/v1/sessions/${sessionID}?beta=true`, {
+          return this._client.post(path11`/v1/sessions/${sessionID}?beta=true`, {
             body,
             ...options,
             headers: buildHeaders2([
@@ -49847,7 +49847,7 @@ var init_sessions = __esm({
          */
         delete(sessionID, params = {}, options) {
           const { betas, workspace_id } = params ?? {};
-          return this._client.delete(path8`/v1/sessions/${sessionID}?beta=true`, {
+          return this._client.delete(path11`/v1/sessions/${sessionID}?beta=true`, {
             ...options,
             headers: buildHeaders2([
               {
@@ -49871,7 +49871,7 @@ var init_sessions = __esm({
          */
         archive(sessionID, params = {}, options) {
           const { betas, workspace_id } = params ?? {};
-          return this._client.post(path8`/v1/sessions/${sessionID}/archive?beta=true`, {
+          return this._client.post(path11`/v1/sessions/${sessionID}/archive?beta=true`, {
             ...options,
             headers: buildHeaders2([
               {
@@ -49914,7 +49914,7 @@ var init_versions2 = __esm({
        */
       create(skillID, params, options) {
         const { betas, workspace_id, ...body } = params;
-        return this._client.post(path8`/v1/skills/${skillID}/versions?beta=true`, multipartFormRequestOptions({
+        return this._client.post(path11`/v1/skills/${skillID}/versions?beta=true`, multipartFormRequestOptions({
           body,
           ...options,
           headers: buildHeaders2([
@@ -49939,7 +49939,7 @@ var init_versions2 = __esm({
        */
       retrieve(version5, params, options) {
         const { skill_id, betas, workspace_id } = params;
-        return this._client.get(path8`/v1/skills/${skill_id}/versions/${version5}?beta=true`, {
+        return this._client.get(path11`/v1/skills/${skill_id}/versions/${version5}?beta=true`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -49965,7 +49965,7 @@ var init_versions2 = __esm({
        */
       list(skillID, params = {}, options) {
         const { betas, workspace_id, ...query } = params ?? {};
-        return this._client.getAPIList(path8`/v1/skills/${skillID}/versions?beta=true`, PageCursor, {
+        return this._client.getAPIList(path11`/v1/skills/${skillID}/versions?beta=true`, PageCursor, {
           query,
           ...options,
           headers: buildHeaders2([
@@ -49990,7 +49990,7 @@ var init_versions2 = __esm({
        */
       delete(version5, params, options) {
         const { skill_id, betas, workspace_id } = params;
-        return this._client.delete(path8`/v1/skills/${skill_id}/versions/${version5}?beta=true`, {
+        return this._client.delete(path11`/v1/skills/${skill_id}/versions/${version5}?beta=true`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -50017,7 +50017,7 @@ var init_versions2 = __esm({
        */
       download(version5, params, options) {
         const { skill_id, betas, workspace_id } = params;
-        return this._client.get(path8`/v1/skills/${skill_id}/versions/${version5}/content?beta=true`, {
+        return this._client.get(path11`/v1/skills/${skill_id}/versions/${version5}/content?beta=true`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -50087,7 +50087,7 @@ var init_skills2 = __esm({
          */
         retrieve(skillID, params = {}, options) {
           const { betas, workspace_id } = params ?? {};
-          return this._client.get(path8`/v1/skills/${skillID}?beta=true`, {
+          return this._client.get(path11`/v1/skills/${skillID}?beta=true`, {
             ...options,
             headers: buildHeaders2([
               {
@@ -50135,7 +50135,7 @@ var init_skills2 = __esm({
          */
         delete(skillID, params = {}, options) {
           const { betas, workspace_id } = params ?? {};
-          return this._client.delete(path8`/v1/skills/${skillID}?beta=true`, {
+          return this._client.delete(path11`/v1/skills/${skillID}?beta=true`, {
             ...options,
             headers: buildHeaders2([
               {
@@ -50183,7 +50183,7 @@ var init_certificates = __esm({
        */
       create(tunnelID, params, options) {
         const { betas, workspace_id, ...body } = params;
-        return this._client.post(path8`/v1/tunnels/${tunnelID}/certificates?beta=true`, {
+        return this._client.post(path11`/v1/tunnels/${tunnelID}/certificates?beta=true`, {
           body,
           ...options,
           headers: buildHeaders2([
@@ -50214,7 +50214,7 @@ var init_certificates = __esm({
        */
       retrieve(certificateID, params, options) {
         const { tunnel_id, betas, workspace_id } = params;
-        return this._client.get(path8`/v1/tunnels/${tunnel_id}/certificates/${certificateID}?beta=true`, {
+        return this._client.get(path11`/v1/tunnels/${tunnel_id}/certificates/${certificateID}?beta=true`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -50246,7 +50246,7 @@ var init_certificates = __esm({
        */
       list(tunnelID, params = {}, options) {
         const { betas, workspace_id, ...query } = params ?? {};
-        return this._client.getAPIList(path8`/v1/tunnels/${tunnelID}/certificates?beta=true`, PageCursor, {
+        return this._client.getAPIList(path11`/v1/tunnels/${tunnelID}/certificates?beta=true`, PageCursor, {
           query,
           ...options,
           headers: buildHeaders2([
@@ -50280,7 +50280,7 @@ var init_certificates = __esm({
        */
       archive(certificateID, params, options) {
         const { tunnel_id, betas, workspace_id } = params;
-        return this._client.post(path8`/v1/tunnels/${tunnel_id}/certificates/${certificateID}/archive?beta=true`, {
+        return this._client.post(path11`/v1/tunnels/${tunnel_id}/certificates/${certificateID}/archive?beta=true`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -50357,7 +50357,7 @@ var init_tunnels = __esm({
          */
         retrieve(tunnelID, params = {}, options) {
           const { betas, workspace_id } = params ?? {};
-          return this._client.get(path8`/v1/tunnels/${tunnelID}?beta=true`, {
+          return this._client.get(path11`/v1/tunnels/${tunnelID}?beta=true`, {
             ...options,
             headers: buildHeaders2([
               {
@@ -50419,7 +50419,7 @@ var init_tunnels = __esm({
          */
         archive(tunnelID, params = {}, options) {
           const { betas, workspace_id } = params ?? {};
-          return this._client.post(path8`/v1/tunnels/${tunnelID}/archive?beta=true`, {
+          return this._client.post(path11`/v1/tunnels/${tunnelID}/archive?beta=true`, {
             ...options,
             headers: buildHeaders2([
               {
@@ -50449,7 +50449,7 @@ var init_tunnels = __esm({
          */
         revealToken(tunnelID, params = {}, options) {
           const { betas, workspace_id } = params ?? {};
-          return this._client.post(path8`/v1/tunnels/${tunnelID}/reveal_token?beta=true`, {
+          return this._client.post(path11`/v1/tunnels/${tunnelID}/reveal_token?beta=true`, {
             ...options,
             headers: buildHeaders2([
               {
@@ -50478,7 +50478,7 @@ var init_tunnels = __esm({
          */
         rotateToken(tunnelID, params, options) {
           const { betas, workspace_id, ...body } = params;
-          return this._client.post(path8`/v1/tunnels/${tunnelID}/rotate_token?beta=true`, {
+          return this._client.post(path11`/v1/tunnels/${tunnelID}/rotate_token?beta=true`, {
             body,
             ...options,
             headers: buildHeaders2([
@@ -50527,7 +50527,7 @@ var init_credentials2 = __esm({
        */
       create(vaultID, params, options) {
         const { betas, workspace_id, ...body } = params;
-        return this._client.post(path8`/v1/vaults/${vaultID}/credentials?beta=true`, {
+        return this._client.post(path11`/v1/vaults/${vaultID}/credentials?beta=true`, {
           body,
           ...options,
           headers: buildHeaders2([
@@ -50553,7 +50553,7 @@ var init_credentials2 = __esm({
        */
       retrieve(credentialID, params, options) {
         const { vault_id, betas, workspace_id } = params;
-        return this._client.get(path8`/v1/vaults/${vault_id}/credentials/${credentialID}?beta=true`, {
+        return this._client.get(path11`/v1/vaults/${vault_id}/credentials/${credentialID}?beta=true`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -50578,7 +50578,7 @@ var init_credentials2 = __esm({
        */
       update(credentialID, params, options) {
         const { vault_id, betas, workspace_id, ...body } = params;
-        return this._client.post(path8`/v1/vaults/${vault_id}/credentials/${credentialID}?beta=true`, {
+        return this._client.post(path11`/v1/vaults/${vault_id}/credentials/${credentialID}?beta=true`, {
           body,
           ...options,
           headers: buildHeaders2([
@@ -50605,7 +50605,7 @@ var init_credentials2 = __esm({
        */
       list(vaultID, params = {}, options) {
         const { betas, workspace_id, ...query } = params ?? {};
-        return this._client.getAPIList(path8`/v1/vaults/${vaultID}/credentials?beta=true`, PageCursor, {
+        return this._client.getAPIList(path11`/v1/vaults/${vaultID}/credentials?beta=true`, PageCursor, {
           query,
           ...options,
           headers: buildHeaders2([
@@ -50631,7 +50631,7 @@ var init_credentials2 = __esm({
        */
       delete(credentialID, params, options) {
         const { vault_id, betas, workspace_id } = params;
-        return this._client.delete(path8`/v1/vaults/${vault_id}/credentials/${credentialID}?beta=true`, {
+        return this._client.delete(path11`/v1/vaults/${vault_id}/credentials/${credentialID}?beta=true`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -50656,7 +50656,7 @@ var init_credentials2 = __esm({
        */
       archive(credentialID, params, options) {
         const { vault_id, betas, workspace_id } = params;
-        return this._client.post(path8`/v1/vaults/${vault_id}/credentials/${credentialID}/archive?beta=true`, {
+        return this._client.post(path11`/v1/vaults/${vault_id}/credentials/${credentialID}/archive?beta=true`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -50681,7 +50681,7 @@ var init_credentials2 = __esm({
        */
       mcpOAuthValidate(credentialID, params, options) {
         const { vault_id, betas, workspace_id } = params;
-        return this._client.post(path8`/v1/vaults/${vault_id}/credentials/${credentialID}/mcp_oauth_validate?beta=true`, {
+        return this._client.post(path11`/v1/vaults/${vault_id}/credentials/${credentialID}/mcp_oauth_validate?beta=true`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -50750,7 +50750,7 @@ var init_vaults = __esm({
          */
         retrieve(vaultID, params = {}, options) {
           const { betas, workspace_id } = params ?? {};
-          return this._client.get(path8`/v1/vaults/${vaultID}?beta=true`, {
+          return this._client.get(path11`/v1/vaults/${vaultID}?beta=true`, {
             ...options,
             headers: buildHeaders2([
               {
@@ -50774,7 +50774,7 @@ var init_vaults = __esm({
          */
         update(vaultID, params, options) {
           const { betas, workspace_id, ...body } = params;
-          return this._client.post(path8`/v1/vaults/${vaultID}?beta=true`, {
+          return this._client.post(path11`/v1/vaults/${vaultID}?beta=true`, {
             body,
             ...options,
             headers: buildHeaders2([
@@ -50824,7 +50824,7 @@ var init_vaults = __esm({
          */
         delete(vaultID, params = {}, options) {
           const { betas, workspace_id } = params ?? {};
-          return this._client.delete(path8`/v1/vaults/${vaultID}?beta=true`, {
+          return this._client.delete(path11`/v1/vaults/${vaultID}?beta=true`, {
             ...options,
             headers: buildHeaders2([
               {
@@ -50848,7 +50848,7 @@ var init_vaults = __esm({
          */
         archive(vaultID, params = {}, options) {
           const { betas, workspace_id } = params ?? {};
-          return this._client.post(path8`/v1/vaults/${vaultID}/archive?beta=true`, {
+          return this._client.post(path11`/v1/vaults/${vaultID}/archive?beta=true`, {
             ...options,
             headers: buildHeaders2([
               {
@@ -51016,7 +51016,7 @@ var init_files2 = __esm({
        */
       delete(fileID, params = {}, options) {
         const { workspace_id } = params ?? {};
-        return this._client.delete(path8`/v1/files/${fileID}`, {
+        return this._client.delete(path11`/v1/files/${fileID}`, {
           ...options,
           headers: buildHeaders2([
             { ...workspace_id != null ? { "anthropic-workspace-id": workspace_id } : void 0 },
@@ -51037,7 +51037,7 @@ var init_files2 = __esm({
        */
       download(fileID, params = {}, options) {
         const { workspace_id } = params ?? {};
-        return this._client.get(path8`/v1/files/${fileID}/content`, {
+        return this._client.get(path11`/v1/files/${fileID}/content`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -51061,7 +51061,7 @@ var init_files2 = __esm({
        */
       retrieveMetadata(fileID, params = {}, options) {
         const { workspace_id } = params ?? {};
-        return this._client.get(path8`/v1/files/${fileID}`, {
+        return this._client.get(path11`/v1/files/${fileID}`, {
           ...options,
           headers: buildHeaders2([
             { ...workspace_id != null ? { "anthropic-workspace-id": workspace_id } : void 0 },
@@ -51823,7 +51823,7 @@ var init_batches2 = __esm({
        */
       retrieve(messageBatchID, params = {}, options) {
         const { workspace_id } = params ?? {};
-        return this._client.get(path8`/v1/messages/batches/${messageBatchID}`, {
+        return this._client.get(path11`/v1/messages/batches/${messageBatchID}`, {
           ...options,
           headers: buildHeaders2([
             { ...workspace_id != null ? { "anthropic-workspace-id": workspace_id } : void 0 },
@@ -51874,7 +51874,7 @@ var init_batches2 = __esm({
        */
       delete(messageBatchID, params = {}, options) {
         const { workspace_id } = params ?? {};
-        return this._client.delete(path8`/v1/messages/batches/${messageBatchID}`, {
+        return this._client.delete(path11`/v1/messages/batches/${messageBatchID}`, {
           ...options,
           headers: buildHeaders2([
             { ...workspace_id != null ? { "anthropic-workspace-id": workspace_id } : void 0 },
@@ -51905,7 +51905,7 @@ var init_batches2 = __esm({
        */
       cancel(messageBatchID, params = {}, options) {
         const { workspace_id } = params ?? {};
-        return this._client.post(path8`/v1/messages/batches/${messageBatchID}/cancel`, {
+        return this._client.post(path11`/v1/messages/batches/${messageBatchID}/cancel`, {
           ...options,
           headers: buildHeaders2([
             { ...workspace_id != null ? { "anthropic-workspace-id": workspace_id } : void 0 },
@@ -52108,7 +52108,7 @@ var init_models2 = __esm({
        */
       retrieve(modelID, params = {}, options) {
         const { betas, workspace_id } = params ?? {};
-        return this._client.get(path8`/v1/models/${modelID}`, {
+        return this._client.get(path11`/v1/models/${modelID}`, {
           ...options,
           headers: buildHeaders2([
             {
@@ -52174,7 +52174,7 @@ var init_versions3 = __esm({
        */
       create(skillID, params, options) {
         const { workspace_id, ...body } = params;
-        return this._client.post(path8`/v1/skills/${skillID}/versions`, multipartFormRequestOptions({
+        return this._client.post(path11`/v1/skills/${skillID}/versions`, multipartFormRequestOptions({
           body,
           ...options,
           headers: buildHeaders2([
@@ -52196,7 +52196,7 @@ var init_versions3 = __esm({
        */
       retrieve(version5, params, options) {
         const { skill_id, workspace_id } = params;
-        return this._client.get(path8`/v1/skills/${skill_id}/versions/${version5}`, {
+        return this._client.get(path11`/v1/skills/${skill_id}/versions/${version5}`, {
           ...options,
           headers: buildHeaders2([
             { ...workspace_id != null ? { "anthropic-workspace-id": workspace_id } : void 0 },
@@ -52219,7 +52219,7 @@ var init_versions3 = __esm({
        */
       list(skillID, params = {}, options) {
         const { workspace_id, ...query } = params ?? {};
-        return this._client.getAPIList(path8`/v1/skills/${skillID}/versions`, PageCursor, {
+        return this._client.getAPIList(path11`/v1/skills/${skillID}/versions`, PageCursor, {
           query,
           ...options,
           headers: buildHeaders2([
@@ -52241,7 +52241,7 @@ var init_versions3 = __esm({
        */
       delete(version5, params, options) {
         const { skill_id, workspace_id } = params;
-        return this._client.delete(path8`/v1/skills/${skill_id}/versions/${version5}`, {
+        return this._client.delete(path11`/v1/skills/${skill_id}/versions/${version5}`, {
           ...options,
           headers: buildHeaders2([
             { ...workspace_id != null ? { "anthropic-workspace-id": workspace_id } : void 0 },
@@ -52301,7 +52301,7 @@ var init_skills3 = __esm({
          */
         retrieve(skillID, params = {}, options) {
           const { workspace_id } = params ?? {};
-          return this._client.get(path8`/v1/skills/${skillID}`, {
+          return this._client.get(path11`/v1/skills/${skillID}`, {
             ...options,
             headers: buildHeaders2([
               { ...workspace_id != null ? { "anthropic-workspace-id": workspace_id } : void 0 },
@@ -52341,7 +52341,7 @@ var init_skills3 = __esm({
          */
         delete(skillID, params = {}, options) {
           const { workspace_id } = params ?? {};
-          return this._client.delete(path8`/v1/skills/${skillID}`, {
+          return this._client.delete(path11`/v1/skills/${skillID}`, {
             ...options,
             headers: buildHeaders2([
               { ...workspace_id != null ? { "anthropic-workspace-id": workspace_id } : void 0 },
@@ -52716,9 +52716,9 @@ var init_client = __esm({
         makeStatusError(status2, error62, message, headers) {
           return APIError2.generate(status2, error62, message, headers);
         }
-        buildURL(path27, query, defaultBaseURL) {
+        buildURL(path28, query, defaultBaseURL) {
           const baseURL = !__classPrivateFieldGet2(this, _BaseAnthropic_instances, "m", _BaseAnthropic_baseURLOverridden).call(this) && defaultBaseURL || this.baseURL;
-          const url2 = isAbsoluteURL2(path27) ? new URL(path27) : new URL(baseURL + (baseURL.endsWith("/") && path27.startsWith("/") ? path27.slice(1) : path27));
+          const url2 = isAbsoluteURL2(path28) ? new URL(path28) : new URL(baseURL + (baseURL.endsWith("/") && path28.startsWith("/") ? path28.slice(1) : path28));
           const defaultQuery = this.defaultQuery();
           const pathQuery = Object.fromEntries(url2.searchParams);
           if (!isEmptyObj2(defaultQuery) || !isEmptyObj2(pathQuery)) {
@@ -52790,24 +52790,24 @@ var init_client = __esm({
         backendMiddleware() {
           return [];
         }
-        get(path27, opts) {
-          return this.methodRequest("get", path27, opts);
+        get(path28, opts) {
+          return this.methodRequest("get", path28, opts);
         }
-        post(path27, opts) {
-          return this.methodRequest("post", path27, opts);
+        post(path28, opts) {
+          return this.methodRequest("post", path28, opts);
         }
-        patch(path27, opts) {
-          return this.methodRequest("patch", path27, opts);
+        patch(path28, opts) {
+          return this.methodRequest("patch", path28, opts);
         }
-        put(path27, opts) {
-          return this.methodRequest("put", path27, opts);
+        put(path28, opts) {
+          return this.methodRequest("put", path28, opts);
         }
-        delete(path27, opts) {
-          return this.methodRequest("delete", path27, opts);
+        delete(path28, opts) {
+          return this.methodRequest("delete", path28, opts);
         }
-        methodRequest(method, path27, opts) {
+        methodRequest(method, path28, opts) {
           return this.request(Promise.resolve(opts).then((opts2) => {
-            return { method, path: path27, ...opts2 };
+            return { method, path: path28, ...opts2 };
           }));
         }
         request(options, remainingRetries = null) {
@@ -52928,8 +52928,8 @@ var init_client = __esm({
           armAbandonmentBackstop(response.body ?? response, controller);
           return { response, options, controller, requestLogID, retryOfRequestLogID, startTime };
         }
-        getAPIList(path27, Page3, opts) {
-          return this.requestAPIList(Page3, opts && "then" in opts ? opts.then((opts2) => ({ method: "get", path: path27, ...opts2 })) : { method: "get", path: path27, ...opts });
+        getAPIList(path28, Page3, opts) {
+          return this.requestAPIList(Page3, opts && "then" in opts ? opts.then((opts2) => ({ method: "get", path: path28, ...opts2 })) : { method: "get", path: path28, ...opts });
         }
         requestAPIList(Page3, options) {
           const request = this.makeRequest(options, null, void 0);
@@ -53047,14 +53047,14 @@ var init_client = __esm({
         }
         async buildRequest(inputOptions, { retryCount = 0 } = {}) {
           const options = { ...inputOptions };
-          const { method, path: path27, query, defaultBaseURL } = options;
+          const { method, path: path28, query, defaultBaseURL } = options;
           if (this._authState.resolution) {
             await this._authState.resolution;
           }
           if (!this._baseURLIsExplicit && this._authState.baseURL && this.baseURL !== this._authState.baseURL) {
             this.baseURL = this._authState.baseURL;
           }
-          const url2 = this.buildURL(path27, query, defaultBaseURL);
+          const url2 = this.buildURL(path28, query, defaultBaseURL);
           if ("timeout" in options)
             validatePositiveInteger2("timeout", options.timeout);
           options.timeout = options.timeout ?? this.timeout;
@@ -54445,14 +54445,14 @@ var require_util3 = __commonJS({
         }
         const port = url2.port != null ? url2.port : url2.protocol === "https:" ? 443 : 80;
         let origin = url2.origin != null ? url2.origin : `${url2.protocol || ""}//${url2.hostname || ""}:${port}`;
-        let path27 = url2.path != null ? url2.path : `${url2.pathname || ""}${url2.search || ""}`;
+        let path28 = url2.path != null ? url2.path : `${url2.pathname || ""}${url2.search || ""}`;
         if (origin[origin.length - 1] === "/") {
           origin = origin.slice(0, origin.length - 1);
         }
-        if (path27 && path27[0] !== "/") {
-          path27 = `/${path27}`;
+        if (path28 && path28[0] !== "/") {
+          path28 = `/${path28}`;
         }
-        return new URL(`${origin}${path27}`);
+        return new URL(`${origin}${path28}`);
       }
       if (!isHttpOrHttpsPrefixed(url2.origin || url2.protocol)) {
         throw new InvalidArgumentError("Invalid URL protocol: the URL must start with `http:` or `https:`.");
@@ -55273,9 +55273,9 @@ var require_diagnostics = __commonJS({
         "undici:client:sendHeaders",
         (evt) => {
           const {
-            request: { method, path: path27, origin }
+            request: { method, path: path28, origin }
           } = evt;
-          debugLog("sending request to %s %s%s", method, origin, path27);
+          debugLog("sending request to %s %s%s", method, origin, path28);
         }
       );
     }
@@ -55293,14 +55293,14 @@ var require_diagnostics = __commonJS({
         "undici:request:headers",
         (evt) => {
           const {
-            request: { method, path: path27, origin },
+            request: { method, path: path28, origin },
             response: { statusCode }
           } = evt;
           debugLog(
             "received response to %s %s%s - HTTP %d",
             method,
             origin,
-            path27,
+            path28,
             statusCode
           );
         }
@@ -55309,23 +55309,23 @@ var require_diagnostics = __commonJS({
         "undici:request:trailers",
         (evt) => {
           const {
-            request: { method, path: path27, origin }
+            request: { method, path: path28, origin }
           } = evt;
-          debugLog("trailers received from %s %s%s", method, origin, path27);
+          debugLog("trailers received from %s %s%s", method, origin, path28);
         }
       );
       diagnosticsChannel.subscribe(
         "undici:request:error",
         (evt) => {
           const {
-            request: { method, path: path27, origin },
+            request: { method, path: path28, origin },
             error: error62
           } = evt;
           debugLog(
             "request to %s %s%s errored - %s",
             method,
             origin,
-            path27,
+            path28,
             error62.message
           );
         }
@@ -55440,7 +55440,7 @@ var require_request = __commonJS({
     var kHandler = /* @__PURE__ */ Symbol("handler");
     var Request = class {
       constructor(origin, {
-        path: path27,
+        path: path28,
         method,
         body,
         headers,
@@ -55457,11 +55457,11 @@ var require_request = __commonJS({
         maxRedirections,
         typeOfService
       }, handler) {
-        if (typeof path27 !== "string") {
+        if (typeof path28 !== "string") {
           throw new InvalidArgumentError("path must be a string");
-        } else if (path27[0] !== "/" && !(path27.startsWith("http://") || path27.startsWith("https://")) && method !== "CONNECT") {
+        } else if (path28[0] !== "/" && !(path28.startsWith("http://") || path28.startsWith("https://")) && method !== "CONNECT") {
           throw new InvalidArgumentError("path must be an absolute URL or start with a slash");
-        } else if (invalidPathRegex.test(path27)) {
+        } else if (invalidPathRegex.test(path28)) {
           throw new InvalidArgumentError("invalid request path");
         }
         if (typeof method !== "string") {
@@ -55536,7 +55536,7 @@ var require_request = __commonJS({
         this.completed = false;
         this.aborted = false;
         this.upgrade = upgrade || null;
-        this.path = query ? serializePathWithQuery(path27, query) : path27;
+        this.path = query ? serializePathWithQuery(path28, query) : path28;
         this.origin = origin;
         this.protocol = getProtocolFromUrlString(origin);
         this.idempotent = idempotent == null ? method === "HEAD" || method === "GET" : idempotent;
@@ -60761,7 +60761,7 @@ var require_client_h1 = __commonJS({
       return method !== "GET" && method !== "HEAD" && method !== "OPTIONS" && method !== "TRACE" && method !== "CONNECT";
     }
     function writeH1(client2, request) {
-      const { method, path: path27, host, upgrade, blocking, reset } = request;
+      const { method, path: path28, host, upgrade, blocking, reset } = request;
       let { body, headers, contentLength } = request;
       const expectsPayload = method === "PUT" || method === "POST" || method === "PATCH" || method === "QUERY" || method === "PROPFIND" || method === "PROPPATCH";
       if (util3.isFormDataLike(body)) {
@@ -60839,7 +60839,7 @@ var require_client_h1 = __commonJS({
       if (socket.setTypeOfService) {
         socket.setTypeOfService(request.typeOfService);
       }
-      let header = `${method} ${path27} HTTP/1.1\r
+      let header = `${method} ${path28} HTTP/1.1\r
 `;
       if (typeof host === "string") {
         header += `host: ${host}\r
@@ -61516,7 +61516,7 @@ var require_client_h2 = __commonJS({
       const headersTimeout = request.headersTimeout ?? client2[kHeadersTimeout];
       const bodyTimeout = request.bodyTimeout ?? client2[kBodyTimeout];
       const session = client2[kHTTP2Session];
-      const { method, path: path27, host, upgrade, expectContinue, signal, protocol, headers: reqHeaders } = request;
+      const { method, path: path28, host, upgrade, expectContinue, signal, protocol, headers: reqHeaders } = request;
       let { body } = request;
       if (upgrade != null && upgrade !== "websocket") {
         util3.errorRequest(client2, request, new InvalidArgumentError(`Custom upgrade "${upgrade}" not supported over HTTP/2`));
@@ -61585,7 +61585,7 @@ var require_client_h2 = __commonJS({
           }
           headers[HTTP2_HEADER_METHOD] = "CONNECT";
           headers[HTTP2_HEADER_PROTOCOL] = "websocket";
-          headers[HTTP2_HEADER_PATH] = path27;
+          headers[HTTP2_HEADER_PATH] = path28;
           if (protocol === "ws:" || protocol === "wss:") {
             headers[HTTP2_HEADER_SCHEME] = protocol === "ws:" ? "http" : "https";
           } else {
@@ -61637,7 +61637,7 @@ var require_client_h2 = __commonJS({
         stream2.setTimeout(headersTimeout);
         return true;
       }
-      headers[HTTP2_HEADER_PATH] = path27;
+      headers[HTTP2_HEADER_PATH] = path28;
       headers[HTTP2_HEADER_SCHEME] = protocol === "http:" ? "http" : "https";
       const expectsPayload = method === "PUT" || method === "POST" || method === "PATCH";
       if (body && typeof body.read === "function") {
@@ -63993,10 +63993,10 @@ var require_proxy_agent = __commonJS({
         };
         const {
           origin,
-          path: path27 = "/",
+          path: path28 = "/",
           headers = {}
         } = opts;
-        opts.path = origin + path27;
+        opts.path = origin + path28;
         if (!("host" in headers) && !("Host" in headers)) {
           const { host } = new URL(origin);
           headers.host = host;
@@ -66156,20 +66156,20 @@ var require_mock_utils = __commonJS({
       }
       return normalizedQp;
     }
-    function safeUrl(path27) {
-      if (typeof path27 !== "string") {
-        return path27;
+    function safeUrl(path28) {
+      if (typeof path28 !== "string") {
+        return path28;
       }
-      const pathSegments = path27.split("?", 3);
+      const pathSegments = path28.split("?", 3);
       if (pathSegments.length !== 2) {
-        return path27;
+        return path28;
       }
       const qp = new URLSearchParams(pathSegments.pop());
       qp.sort();
       return [...pathSegments, qp.toString()].join("?");
     }
-    function matchKey(mockDispatch2, { path: path27, method, body, headers }) {
-      const pathMatch = matchValue(mockDispatch2.path, path27);
+    function matchKey(mockDispatch2, { path: path28, method, body, headers }) {
+      const pathMatch = matchValue(mockDispatch2.path, path28);
       const methodMatch = matchValue(mockDispatch2.method, method);
       const bodyMatch = typeof mockDispatch2.body !== "undefined" ? matchValue(mockDispatch2.body, body) : true;
       const headersMatch = matchHeaders(mockDispatch2, headers);
@@ -66194,8 +66194,8 @@ var require_mock_utils = __commonJS({
       const basePath = key.query ? serializePathWithQuery(key.path, key.query) : key.path;
       const resolvedPath = typeof basePath === "string" ? safeUrl(basePath) : basePath;
       const resolvedPathWithoutTrailingSlash = removeTrailingSlash(resolvedPath);
-      let matchedMockDispatches = mockDispatches.filter(({ consumed }) => !consumed).filter(({ path: path27, ignoreTrailingSlash }) => {
-        return ignoreTrailingSlash ? matchValue(removeTrailingSlash(safeUrl(path27)), resolvedPathWithoutTrailingSlash) : matchValue(safeUrl(path27), resolvedPath);
+      let matchedMockDispatches = mockDispatches.filter(({ consumed }) => !consumed).filter(({ path: path28, ignoreTrailingSlash }) => {
+        return ignoreTrailingSlash ? matchValue(removeTrailingSlash(safeUrl(path28)), resolvedPathWithoutTrailingSlash) : matchValue(safeUrl(path28), resolvedPath);
       });
       if (matchedMockDispatches.length === 0) {
         throw new MockNotMatchedError(`Mock dispatch not matched for path '${resolvedPath}'`);
@@ -66234,19 +66234,19 @@ var require_mock_utils = __commonJS({
         mockDispatches.splice(index2, 1);
       }
     }
-    function removeTrailingSlash(path27) {
-      while (path27.endsWith("/")) {
-        path27 = path27.slice(0, -1);
+    function removeTrailingSlash(path28) {
+      while (path28.endsWith("/")) {
+        path28 = path28.slice(0, -1);
       }
-      if (path27.length === 0) {
-        path27 = "/";
+      if (path28.length === 0) {
+        path28 = "/";
       }
-      return path27;
+      return path28;
     }
     function buildKey(opts) {
-      const { path: path27, method, body, headers, query } = opts;
+      const { path: path28, method, body, headers, query } = opts;
       return {
-        path: path27,
+        path: path28,
         method,
         body,
         headers,
@@ -66936,10 +66936,10 @@ var require_pending_interceptors_formatter = __commonJS({
       }
       format(pendingInterceptors) {
         const withPrettyHeaders = pendingInterceptors.map(
-          ({ method, path: path27, data: { statusCode }, persist, times, timesInvoked, origin }) => ({
+          ({ method, path: path28, data: { statusCode }, persist, times, timesInvoked, origin }) => ({
             Method: method,
             Origin: origin,
-            Path: path27,
+            Path: path28,
             "Status code": statusCode,
             Persistent: persist ? PERSISTENT : NOT_PERSISTENT,
             Invocations: timesInvoked,
@@ -67021,9 +67021,9 @@ var require_mock_agent = __commonJS({
         const acceptNonStandardSearchParameters = this[kMockAgentAcceptsNonStandardSearchParameters];
         const dispatchOpts = { ...opts };
         if (acceptNonStandardSearchParameters && dispatchOpts.path) {
-          const [path27, searchParams] = dispatchOpts.path.split("?");
+          const [path28, searchParams] = dispatchOpts.path.split("?");
           const normalizedSearchParams = normalizeSearchParams(searchParams, acceptNonStandardSearchParameters);
-          dispatchOpts.path = `${path27}?${normalizedSearchParams}`;
+          dispatchOpts.path = `${path28}?${normalizedSearchParams}`;
         }
         return this[kAgent].dispatch(dispatchOpts, handler);
       }
@@ -67424,12 +67424,12 @@ var require_snapshot_recorder = __commonJS({
        * @return {Promise<void>} - Resolves when snapshots are loaded
        */
       async loadSnapshots(filePath) {
-        const path27 = filePath || this.#snapshotPath;
-        if (!path27) {
+        const path28 = filePath || this.#snapshotPath;
+        if (!path28) {
           throw new InvalidArgumentError("Snapshot path is required");
         }
         try {
-          const data = await readFile2(resolve2(path27), "utf8");
+          const data = await readFile2(resolve2(path28), "utf8");
           const parsed = JSON.parse(data);
           if (Array.isArray(parsed)) {
             this.#snapshots.clear();
@@ -67443,7 +67443,7 @@ var require_snapshot_recorder = __commonJS({
           if (error62.code === "ENOENT") {
             this.#snapshots.clear();
           } else {
-            throw new UndiciError(`Failed to load snapshots from ${path27}`, { cause: error62 });
+            throw new UndiciError(`Failed to load snapshots from ${path28}`, { cause: error62 });
           }
         }
       }
@@ -67454,11 +67454,11 @@ var require_snapshot_recorder = __commonJS({
        * @returns {Promise<void>} - Resolves when snapshots are saved
        */
       async saveSnapshots(filePath) {
-        const path27 = filePath || this.#snapshotPath;
-        if (!path27) {
+        const path28 = filePath || this.#snapshotPath;
+        if (!path28) {
           throw new InvalidArgumentError("Snapshot path is required");
         }
-        const resolvedPath = resolve2(path27);
+        const resolvedPath = resolve2(path28);
         await mkdir4(dirname2(resolvedPath), { recursive: true });
         const data = Array.from(this.#snapshots.entries()).map(([hash2, snapshot]) => ({
           hash: hash2,
@@ -68095,15 +68095,15 @@ var require_redirect_handler = __commonJS({
         }
         this.history[kRedirectCacheControl].push(headers["cache-control"]);
         const { origin, pathname, search: search2 } = util3.parseURL(new URL(this.location, this.opts.origin && new URL(this.opts.path, this.opts.origin)));
-        const path27 = search2 ? `${pathname}${search2}` : pathname;
-        const redirectUrlString = `${origin}${path27}`;
+        const path28 = search2 ? `${pathname}${search2}` : pathname;
+        const redirectUrlString = `${origin}${path28}`;
         for (const historyUrl of this.history) {
           if (historyUrl.toString() === redirectUrlString) {
             throw new InvalidArgumentError(`Redirect loop detected. Cannot redirect to ${origin}. This typically happens when using a Client or Pool with cross-origin redirects. Use an Agent for cross-origin redirects.`);
           }
         }
         this.opts.headers = cleanRequestHeaders(this.opts.headers, statusCode === 303, this.opts.origin !== origin);
-        this.opts.path = path27;
+        this.opts.path = path28;
         this.opts.origin = origin;
         this.opts.query = null;
       }
@@ -69871,10 +69871,10 @@ var require_cache_handler = __commonJS({
       }
       return locationUrl.pathname + locationUrl.search;
     }
-    function deleteCachedUri(store2, cacheKey, path27) {
+    function deleteCachedUri(store2, cacheKey, path28) {
       deleteCachedValue(store2, {
         ...cacheKey,
-        path: path27
+        path: path28
       });
       for (let i = 0; i < util3.safeHTTPMethods.length; i++) {
         const method = util3.safeHTTPMethods[i];
@@ -69882,7 +69882,7 @@ var require_cache_handler = __commonJS({
           deleteCachedValue(store2, {
             ...cacheKey,
             method,
-            path: path27
+            path: path28
           });
         }
       }
@@ -69893,9 +69893,9 @@ var require_cache_handler = __commonJS({
       }
       const values = Array.isArray(headerValue2) ? headerValue2 : [headerValue2];
       for (let i = 0; i < values.length; i++) {
-        const path27 = getSameOriginPath(cacheKey, values[i]);
-        if (path27 !== void 0) {
-          deleteCachedUri(store2, cacheKey, path27);
+        const path28 = getSameOriginPath(cacheKey, values[i]);
+        if (path28 !== void 0) {
+          deleteCachedUri(store2, cacheKey, path28);
         }
       }
     }
@@ -75106,11 +75106,11 @@ var require_fetch = __commonJS({
       function dispatch2({ body }) {
         const url2 = requestCurrentURL(request);
         const agent = fetchParams.controller.dispatcher;
-        const path27 = url2.pathname + url2.search;
+        const path28 = url2.pathname + url2.search;
         const hasTrailingQuestionMark = url2.search.length === 0 && url2.href[url2.href.length - url2.hash.length - 1] === "?";
         return new Promise((resolve2, reject) => agent.dispatch(
           {
-            path: hasTrailingQuestionMark ? `${path27}?` : path27,
+            path: hasTrailingQuestionMark ? `${path28}?` : path28,
             origin: url2.origin,
             method: request.method,
             body: agent.isMockActive ? request.body && (request.body.source || request.body.stream) : body,
@@ -76057,9 +76057,9 @@ var require_util6 = __commonJS({
         }
       }
     }
-    function validateCookiePath(path27) {
-      for (let i = 0; i < path27.length; ++i) {
-        const code = path27.charCodeAt(i);
+    function validateCookiePath(path28) {
+      for (let i = 0; i < path28.length; ++i) {
+        const code = path28.charCodeAt(i);
         if (code < 32 || // exclude CTLs (0-31)
         code > 126 || // exclude DEL and non-ascii
         code === 59) {
@@ -79495,11 +79495,11 @@ var require_undici = __commonJS({
           if (typeof opts.path !== "string") {
             throw new InvalidArgumentError("invalid opts.path");
           }
-          let path27 = opts.path;
+          let path28 = opts.path;
           if (!opts.path.startsWith("/")) {
-            path27 = `/${path27}`;
+            path28 = `/${path28}`;
           }
-          url2 = new URL(util3.parseOrigin(url2).origin + path27);
+          url2 = new URL(util3.parseOrigin(url2).origin + path28);
         } else {
           if (!opts) {
             opts = typeof url2 === "object" ? url2 : {};
@@ -82837,8 +82837,8 @@ var require_utils3 = __commonJS({
       }
       return ind;
     }
-    function removeDotSegments(path27) {
-      let input2 = path27;
+    function removeDotSegments(path28) {
+      let input2 = path28;
       const output2 = [];
       let nextSlash = -1;
       let len = 0;
@@ -82912,11 +82912,11 @@ var require_utils3 = __commonJS({
       }
       return output2.join("");
     }
-    function removeDotSegmentsRelative(path27) {
-      if (path27 === "" || path27[0] === "/") {
-        return removeDotSegments(path27);
+    function removeDotSegmentsRelative(path28) {
+      if (path28 === "" || path28[0] === "/") {
+        return removeDotSegments(path28);
       }
-      const segments = path27.split("/");
+      const segments = path28.split("/");
       const last = segments.length - 1;
       const output2 = [];
       let trailingDirectory = false;
@@ -83279,8 +83279,8 @@ var require_schemes = __commonJS({
       }
       if (wsComponent.resourceName) {
         const queryIndex = wsComponent.resourceName.indexOf("?");
-        const path27 = queryIndex === -1 ? wsComponent.resourceName : wsComponent.resourceName.slice(0, queryIndex);
-        wsComponent.path = path27 && path27 !== "/" ? path27 : void 0;
+        const path28 = queryIndex === -1 ? wsComponent.resourceName : wsComponent.resourceName.slice(0, queryIndex);
+        wsComponent.path = path28 && path28 !== "/" ? path28 : void 0;
         wsComponent.query = queryIndex === -1 ? void 0 : wsComponent.resourceName.slice(queryIndex + 1);
         wsComponent.resourceName = void 0;
       }
@@ -86817,12 +86817,12 @@ var require_dist4 = __commonJS({
         throw new Error(`Unknown format "${name2}"`);
       return f3;
     };
-    function addFormats(ajv, list3, fs18, exportName) {
+    function addFormats(ajv, list3, fs19, exportName) {
       var _a9;
       var _b;
       (_a9 = (_b = ajv.opts.code).formats) !== null && _a9 !== void 0 ? _a9 : _b.formats = (0, codegen_1._)`require("ajv-formats/dist/formats").${exportName}`;
       for (const f3 of list3)
-        ajv.addFormat(f3, fs18[f3]);
+        ajv.addFormat(f3, fs19[f3]);
     }
     module.exports = exports = formatsPlugin;
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -86831,14 +86831,229 @@ var require_dist4 = __commonJS({
 });
 
 // src/mcp/main.ts
-import path26 from "node:path";
+import path27 from "node:path";
+
+// src/app/flow-library.ts
+import fs2 from "node:fs/promises";
+import path3 from "node:path";
+
+// src/runtime/run-store.ts
+import { randomUUID } from "node:crypto";
+import fs from "node:fs/promises";
+import path2 from "node:path";
+
+// src/domain/paths.ts
+import path from "node:path";
+function isInside(root, candidate) {
+  if (candidate === root) {
+    return true;
+  }
+  const relative = path.relative(root, candidate);
+  return relative.length > 0 && !relative.startsWith("..") && !path.isAbsolute(relative);
+}
+function childPath(root, name2) {
+  const base = path.resolve(root);
+  const resolved = path.resolve(base, name2);
+  return resolved !== base && isInside(base, resolved) ? resolved : void 0;
+}
+
+// src/runtime/run-store.ts
+var PRIVATE_DIR_MODE = 448;
+var PRIVATE_FILE_MODE = 384;
+var RunStore = class {
+  constructor(config2) {
+    this.config = config2;
+  }
+  config;
+  async ensureLayout() {
+    for (const dir of [this.config.dataDir, this.config.runsDir, this.config.workspacesDir]) {
+      await fs.mkdir(dir, { recursive: true, mode: PRIVATE_DIR_MODE });
+      await fs.chmod(dir, PRIVATE_DIR_MODE).catch(() => void 0);
+    }
+  }
+  createRun(graph, input2, source) {
+    return {
+      id: randomUUID(),
+      graphId: graph.id,
+      graphName: graph.name,
+      input: input2,
+      source,
+      status: "running",
+      outputs: {},
+      startedAt: (/* @__PURE__ */ new Date()).toISOString()
+    };
+  }
+  async createRunWorkspace(runId) {
+    const workspace = this.requireContained(this.config.workspacesDir, runId);
+    await fs.mkdir(workspace, { recursive: true, mode: PRIVATE_DIR_MODE });
+    return workspace;
+  }
+  async writeRun(run2) {
+    await this.writeJson(this.runFile(run2.id), run2);
+  }
+  async readRun(id2) {
+    const dir = childPath(this.config.runsDir, id2);
+    return dir ? this.readJson(path2.join(dir, "meta.json")) : null;
+  }
+  async requireRun(id2) {
+    const run2 = await this.readRun(id2);
+    if (!run2) {
+      throw new Error(`No run with id "${id2}".`);
+    }
+    return run2;
+  }
+  async listRuns() {
+    const entries = await this.readdir(this.config.runsDir);
+    const runs = [];
+    for (const entry of entries) {
+      const run2 = await this.readRun(entry);
+      if (run2) {
+        runs.push(run2);
+      }
+    }
+    return runs.sort((a, b) => b.startedAt.localeCompare(a.startedAt));
+  }
+  async readEvents(runId) {
+    const dir = childPath(this.config.runsDir, runId);
+    const raw = dir ? await this.readText(path2.join(dir, "events.jsonl")) : null;
+    if (!raw) {
+      return [];
+    }
+    return raw.split("\n").flatMap((line) => line.trim() ? [parseEvent(line)] : []).filter((event) => event !== null).sort((a, b) => a.seq - b.seq);
+  }
+  eventsFile(runId) {
+    return path2.join(this.requireContained(this.config.runsDir, runId), "events.jsonl");
+  }
+  runFile(id2) {
+    return path2.join(this.requireContained(this.config.runsDir, id2), "meta.json");
+  }
+  /** A run id names a directory below `root`; anything that resolves elsewhere is not a run. */
+  requireContained(root, id2) {
+    const resolved = childPath(root, id2);
+    if (!resolved) {
+      throw new Error(`Invalid run id "${id2}".`);
+    }
+    return resolved;
+  }
+  async readdir(dir) {
+    try {
+      return await fs.readdir(dir);
+    } catch {
+      return [];
+    }
+  }
+  async readText(file2) {
+    try {
+      return await fs.readFile(file2, "utf8");
+    } catch {
+      return null;
+    }
+  }
+  async readJson(file2) {
+    const raw = await this.readText(file2);
+    if (raw === null) {
+      return null;
+    }
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return null;
+    }
+  }
+  async writeJson(file2, value) {
+    await fs.mkdir(path2.dirname(file2), { recursive: true, mode: PRIVATE_DIR_MODE });
+    const temporary = `${file2}.${randomUUID()}.tmp`;
+    await fs.writeFile(temporary, `${JSON.stringify(value, null, 2)}
+`, { encoding: "utf8", mode: PRIVATE_FILE_MODE });
+    await fs.rename(temporary, file2);
+  }
+};
+function parseEvent(line) {
+  try {
+    return JSON.parse(line);
+  } catch {
+    return null;
+  }
+}
+
+// src/app/flow-library.ts
+var FlowLibrary = class {
+  constructor(config2) {
+    this.config = config2;
+  }
+  config;
+  get dir() {
+    return path3.join(this.config.dataDir, "flows");
+  }
+  /** The file a flow with this name is saved to. */
+  fileFor(name2) {
+    return path3.join(this.dir, `${flowSlug(name2)}.json`);
+  }
+  /** Saves the document as written, so loading it again gives the same flow. Returns the file. */
+  async save(name2, document) {
+    await fs2.mkdir(this.dir, { recursive: true, mode: PRIVATE_DIR_MODE });
+    const file2 = this.fileFor(name2);
+    const temp = `${file2}.${process.pid}.tmp`;
+    try {
+      await fs2.writeFile(temp, `${JSON.stringify(document, null, 2)}
+`, { encoding: "utf8", mode: PRIVATE_FILE_MODE });
+      await fs2.rename(temp, file2);
+    } finally {
+      await fs2.rm(temp, { force: true });
+    }
+    return file2;
+  }
+  /** Every saved flow, most recently saved first. A file that is not a flow document is left out. */
+  async list() {
+    let entries;
+    try {
+      entries = await fs2.readdir(this.dir);
+    } catch (error62) {
+      if (error62.code === "ENOENT") {
+        return [];
+      }
+      throw error62;
+    }
+    const flows = await Promise.all(
+      entries.filter((entry) => entry.endsWith(".json")).map((entry) => this.describe(path3.join(this.dir, entry)))
+    );
+    return flows.filter((flow) => flow !== void 0).sort((a, b) => b.savedAt.localeCompare(a.savedAt));
+  }
+  /** The saved document for a name, or undefined when there is none. */
+  async read(name2) {
+    const file2 = this.fileFor(name2);
+    try {
+      return { file: file2, document: JSON.parse(await fs2.readFile(file2, "utf8")) };
+    } catch {
+      return void 0;
+    }
+  }
+  async describe(file2) {
+    try {
+      const [text, stat4] = await Promise.all([fs2.readFile(file2, "utf8"), fs2.stat(file2)]);
+      const document = JSON.parse(text);
+      return {
+        name: typeof document.name === "string" ? document.name : path3.basename(file2, ".json"),
+        file: file2,
+        nodes: Array.isArray(document.nodes) ? document.nodes.length : 0,
+        savedAt: stat4.mtime.toISOString()
+      };
+    } catch {
+      return void 0;
+    }
+  }
+};
+function flowSlug(name2) {
+  const slug = name2.normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 80).replace(/^-+|-+$/g, "");
+  return slug || "flow";
+}
 
 // src/app/flow-service.ts
-import { randomUUID as randomUUID2 } from "node:crypto";
-import fs from "node:fs/promises";
+import { randomUUID as randomUUID3 } from "node:crypto";
+import fs3 from "node:fs/promises";
 
 // src/runtime/flow-payload.ts
-import { randomUUID } from "node:crypto";
+import { randomUUID as randomUUID2 } from "node:crypto";
 
 // src/domain/permissions.ts
 var PERMISSION_KEYS = [
@@ -86905,65 +87120,65 @@ function parseFlowPayload(body) {
   };
 }
 function parseNode(value, index2) {
-  const path27 = `nodes[${index2}]`;
-  const record2 = expectRecord(value, path27);
-  const provider = expectString(record2.provider, `${path27}.provider`);
+  const path28 = `nodes[${index2}]`;
+  const record2 = expectRecord(value, path28);
+  const provider = expectString(record2.provider, `${path28}.provider`);
   if (!PROVIDER_IDS.includes(provider)) {
-    throw new FlowFormatError(`${path27}.provider must be one of: ${PROVIDER_IDS.join(", ")}.`);
+    throw new FlowFormatError(`${path28}.provider must be one of: ${PROVIDER_IDS.join(", ")}.`);
   }
   return {
-    id: optionalString(record2.id) ?? randomUUID(),
+    id: optionalString(record2.id) ?? randomUUID2(),
     label: optionalString(record2.label) ?? "",
     provider,
     model: optionalString(record2.model) ?? "",
     prompt: optionalString(record2.prompt) ?? "",
-    permissions: readPermissions(expectRecord(record2.permissions ?? {}, `${path27}.permissions`)),
-    position: parsePosition(record2.position, `${path27}.position`),
-    outputSchema: parseOutputSchema(record2.outputSchema, `${path27}.outputSchema`),
-    lintIgnore: optionalStringArray(record2.lintIgnore, `${path27}.lintIgnore`),
-    inputs: optionalStringArray(record2.inputs, `${path27}.inputs`),
+    permissions: readPermissions(expectRecord(record2.permissions ?? {}, `${path28}.permissions`)),
+    position: parsePosition(record2.position, `${path28}.position`),
+    outputSchema: parseOutputSchema(record2.outputSchema, `${path28}.outputSchema`),
+    lintIgnore: optionalStringArray(record2.lintIgnore, `${path28}.lintIgnore`),
+    inputs: optionalStringArray(record2.inputs, `${path28}.inputs`),
     needs: optionalString(record2.needs),
     fanout: optionalFanout(record2.fanout),
-    audience: optionalAudience(record2.audience, `${path27}.audience`),
-    maxIterations: optionalPositiveInteger(record2.maxIterations, `${path27}.maxIterations`),
-    waitForJobs: optionalBoolean(record2.waitForJobs, `${path27}.waitForJobs`)
+    audience: optionalAudience(record2.audience, `${path28}.audience`),
+    maxIterations: optionalPositiveInteger(record2.maxIterations, `${path28}.maxIterations`),
+    waitForJobs: optionalBoolean(record2.waitForJobs, `${path28}.waitForJobs`)
   };
 }
-function optionalBoolean(value, path27) {
+function optionalBoolean(value, path28) {
   if (value === void 0 || value === null) {
     return void 0;
   }
   if (typeof value !== "boolean") {
-    throw new FlowFormatError(`${path27} must be true or false.`);
+    throw new FlowFormatError(`${path28} must be true or false.`);
   }
   return value;
 }
-function optionalPositiveInteger(value, path27) {
+function optionalPositiveInteger(value, path28) {
   if (value === void 0 || value === null) {
     return void 0;
   }
   if (typeof value !== "number" || !Number.isInteger(value) || value < 1) {
-    throw new FlowFormatError(`${path27} must be a whole number of model calls, 1 or more.`);
+    throw new FlowFormatError(`${path28} must be a whole number of model calls, 1 or more.`);
   }
   return value;
 }
-function optionalAudience(value, path27) {
+function optionalAudience(value, path28) {
   if (value === void 0 || value === null) {
     return void 0;
   }
   if (value === "person") {
     return "person";
   }
-  throw new FlowFormatError(`${path27} must be "person" when set.`);
+  throw new FlowFormatError(`${path28} must be "person" when set.`);
 }
 function optionalFanout(value) {
   return value === "branch" || value === "parallel" ? value : void 0;
 }
-function parseOutputSchema(value, path27) {
+function parseOutputSchema(value, path28) {
   if (value === void 0 || value === null) {
     return void 0;
   }
-  const record2 = expectRecord(value, path27);
+  const record2 = expectRecord(value, path28);
   const schema = {};
   if (typeof record2.minLines === "number") {
     schema.minLines = record2.minLines;
@@ -86979,42 +87194,42 @@ function parseOutputSchema(value, path27) {
   if (linePatternHint !== void 0) {
     schema.linePatternHint = linePatternHint;
   }
-  const mustContain = optionalStringArray(record2.mustContain, `${path27}.mustContain`);
+  const mustContain = optionalStringArray(record2.mustContain, `${path28}.mustContain`);
   if (mustContain !== void 0) {
     schema.mustContain = mustContain;
   }
-  const mustNotContain = optionalStringArray(record2.mustNotContain, `${path27}.mustNotContain`);
+  const mustNotContain = optionalStringArray(record2.mustNotContain, `${path28}.mustNotContain`);
   if (mustNotContain !== void 0) {
     schema.mustNotContain = mustNotContain;
   }
   return schema;
 }
-function optionalStringArray(value, path27) {
+function optionalStringArray(value, path28) {
   if (value === void 0 || value === null) {
     return void 0;
   }
   if (!Array.isArray(value)) {
-    throw new FlowFormatError(`${path27} must be an array of strings.`);
+    throw new FlowFormatError(`${path28} must be an array of strings.`);
   }
-  return value.map((entry, index2) => expectString(entry, `${path27}[${index2}]`));
+  return value.map((entry, index2) => expectString(entry, `${path28}[${index2}]`));
 }
 function parseEdge(value, index2) {
-  const path27 = `edges[${index2}]`;
-  const record2 = expectRecord(value, path27);
+  const path28 = `edges[${index2}]`;
+  const record2 = expectRecord(value, path28);
   return {
-    id: optionalString(record2.id) ?? randomUUID(),
-    source: expectString(record2.source, `${path27}.source`),
-    target: expectString(record2.target, `${path27}.target`),
+    id: optionalString(record2.id) ?? randomUUID2(),
+    source: expectString(record2.source, `${path28}.source`),
+    target: expectString(record2.target, `${path28}.target`),
     branch: optionalString(record2.branch),
     condition: optionalString(record2.condition) ?? ""
   };
 }
-function parsePosition(value, path27) {
+function parsePosition(value, path28) {
   if (value === void 0 || value === null) {
     return { x: 0, y: 0 };
   }
-  const record2 = expectRecord(value, path27);
-  return { x: expectNumber(record2.x, `${path27}.x`), y: expectNumber(record2.y, `${path27}.y`) };
+  const record2 = expectRecord(value, path28);
+  return { x: expectNumber(record2.x, `${path28}.x`), y: expectNumber(record2.y, `${path28}.y`) };
 }
 function parseViewport(value) {
   if (value === void 0 || value === null) {
@@ -87027,31 +87242,31 @@ function parseViewport(value) {
     zoom: expectNumber(record2.zoom, "viewport.zoom")
   };
 }
-function expectRecord(value, path27) {
+function expectRecord(value, path28) {
   if (typeof value !== "object" || value === null || Array.isArray(value)) {
-    throw new FlowFormatError(`"${path27}" must be an object.`);
+    throw new FlowFormatError(`"${path28}" must be an object.`);
   }
   return value;
 }
-function expectArray(value, path27) {
+function expectArray(value, path28) {
   if (!Array.isArray(value)) {
-    throw new FlowFormatError(`"${path27}" must be an array.`);
+    throw new FlowFormatError(`"${path28}" must be an array.`);
   }
   return value;
 }
-function expectString(value, path27) {
+function expectString(value, path28) {
   const parsed = optionalString(value);
   if (parsed === void 0) {
-    throw new FlowFormatError(`"${path27}" must be a string.`);
+    throw new FlowFormatError(`"${path28}" must be a string.`);
   }
   return parsed;
 }
 function optionalString(value) {
   return typeof value === "string" ? value : void 0;
 }
-function expectNumber(value, path27) {
+function expectNumber(value, path28) {
   if (typeof value !== "number" || !Number.isFinite(value)) {
-    throw new FlowFormatError(`"${path27}" must be a finite number.`);
+    throw new FlowFormatError(`"${path28}" must be a finite number.`);
   }
   return value;
 }
@@ -87079,7 +87294,7 @@ var FlowService = class {
    */
   toGraph(payload) {
     const now = (/* @__PURE__ */ new Date()).toISOString();
-    return { ...payload, id: randomUUID2(), createdAt: now, updatedAt: now };
+    return { ...payload, id: randomUUID3(), createdAt: now, updatedAt: now };
   }
 };
 function parseFlow(text) {
@@ -87096,7 +87311,7 @@ async function readFlowText(source) {
     return readStdin();
   }
   try {
-    return await fs.readFile(source, "utf8");
+    return await fs3.readFile(source, "utf8");
   } catch {
     throw new FlowError(`Could not read the flow file "${source}".`);
   }
@@ -87781,8 +87996,8 @@ function shallowCopy(obj) {
 }
 function replaceSecrets(root, secretsMap) {
   const result = shallowCopy(root);
-  for (const [path27, secretId] of Object.entries(secretsMap)) {
-    const [last, ...partsReverse] = path27.split(".").reverse();
+  for (const [path28, secretId] of Object.entries(secretsMap)) {
+    const [last, ...partsReverse] = path28.split(".").reverse();
     let current = result;
     for (const part of partsReverse.reverse()) {
       if (current[part] === void 0) break;
@@ -89168,11 +89383,11 @@ function isToolMessageChunk(x) {
 }
 
 // node_modules/.pnpm/@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_/node_modules/@langchain/core/dist/utils/namespace.js
-function createNamespace(path27) {
-  const symbol2 = Symbol.for(path27);
+function createNamespace(path28) {
+  const symbol2 = Symbol.for(path28);
   return {
     brand(Base, marker) {
-      const brandSymbol = marker ? /* @__PURE__ */ Symbol.for(`${path27}.${marker}`) : symbol2;
+      const brandSymbol = marker ? /* @__PURE__ */ Symbol.for(`${path28}.${marker}`) : symbol2;
       class _Branded extends Base {
         [brandSymbol] = true;
         constructor(...args) {
@@ -89189,7 +89404,7 @@ function createNamespace(path27) {
       return _Branded;
     },
     sub(childPath2) {
-      return createNamespace(`${path27}.${childPath2}`);
+      return createNamespace(`${path28}.${childPath2}`);
     },
     isInstance(obj) {
       return typeof obj === "object" && obj !== null && symbol2 in obj && obj[symbol2] === true;
@@ -93935,12 +94150,12 @@ function encodeURIPath(str) {
   return str.replace(/[^A-Za-z0-9\-._~!$&'()*+,;=:@]+/g, encodeURIComponent);
 }
 var EMPTY = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.create(null));
-var createPathTagFunction = (pathEncoder = encodeURIPath) => function path27(statics, ...params) {
+var createPathTagFunction = (pathEncoder = encodeURIPath) => function path28(statics, ...params) {
   if (statics.length === 1)
     return statics[0];
   let postPath = false;
   const invalidSegments = [];
-  const path28 = statics.reduce((previousValue, currentValue, index2) => {
+  const path29 = statics.reduce((previousValue, currentValue, index2) => {
     if (/[?#]/.test(currentValue)) {
       postPath = true;
     }
@@ -93957,7 +94172,7 @@ var createPathTagFunction = (pathEncoder = encodeURIPath) => function path27(sta
     }
     return previousValue + currentValue + (index2 === params.length ? "" : encoded);
   }, "");
-  const pathOnly = path28.split(/[?#]/, 1)[0];
+  const pathOnly = path29.split(/[?#]/, 1)[0];
   const invalidSegmentPattern = /(?<=^|\/)(?:\.|%2e){1,2}(?=\/|$)/gi;
   let match;
   while ((match = invalidSegmentPattern.exec(pathOnly)) !== null) {
@@ -93978,12 +94193,12 @@ var createPathTagFunction = (pathEncoder = encodeURIPath) => function path27(sta
     }, "");
     throw new LangsmithError(`Path parameters result in path with invalid segments:
 ${invalidSegments.map((e) => e.error).join("\n")}
-${path28}
+${path29}
 ${underline}`);
   }
-  return path28;
+  return path29;
 };
-var path = /* @__PURE__ */ createPathTagFunction(encodeURIPath);
+var path4 = /* @__PURE__ */ createPathTagFunction(encodeURIPath);
 
 // node_modules/.pnpm/langsmith@0.11.0_openai@7.42.0_undici@7.30.1_zod@4.6.7_/node_modules/langsmith/resources/annotation-queues/items.mjs
 var Items = class extends APIResource {
@@ -93994,7 +94209,7 @@ var Items = class extends APIResource {
    */
   create(queueID, params, options) {
     const { extend_trace_retention, ...body } = params;
-    return this._client.post(path`/api/v1/platform/annotation-queues/${queueID}/items`, {
+    return this._client.post(path4`/api/v1/platform/annotation-queues/${queueID}/items`, {
       query: { extend_trace_retention },
       body,
       ...options
@@ -94007,7 +94222,7 @@ var Items = class extends APIResource {
    */
   update(itemID, params, options) {
     const { queue_id, ...body } = params;
-    return this._client.patch(path`/api/v1/platform/annotation-queues/${queue_id}/items/${itemID}`, {
+    return this._client.patch(path4`/api/v1/platform/annotation-queues/${queue_id}/items/${itemID}`, {
       body,
       ...options
     });
@@ -94023,14 +94238,14 @@ var Items = class extends APIResource {
    * satisfied, not merely items the caller personally marked completed.
    */
   list(queueID, query, options) {
-    return this._client.getAPIList(path`/api/v1/platform/annotation-queues/${queueID}/items`, ItemsCursorGetPagination, { query, ...options });
+    return this._client.getAPIList(path4`/api/v1/platform/annotation-queues/${queueID}/items`, ItemsCursorGetPagination, { query, ...options });
   }
   /**
    * Log the caller's reviewer status for a RUN or THREAD annotation queue item. A
    * null status re-shows the item for this reviewer.
    */
   createStatus(queueItemID, body, options) {
-    return this._client.post(path`/api/v1/platform/annotation-queues/items/${queueItemID}/status`, {
+    return this._client.post(path4`/api/v1/platform/annotation-queues/items/${queueItemID}/status`, {
       body,
       ...options
     });
@@ -94040,7 +94255,7 @@ var Items = class extends APIResource {
    * active and completed items can be removed.
    */
   deleteAll(queueID, body, options) {
-    return this._client.post(path`/api/v1/platform/annotation-queues/${queueID}/items/delete`, {
+    return this._client.post(path4`/api/v1/platform/annotation-queues/${queueID}/items/delete`, {
       body,
       ...options
     });
@@ -94052,7 +94267,7 @@ var Items = class extends APIResource {
    * start time are excluded when either of the latter is set.
    */
   retrieveCount(queueID, query, options) {
-    return this._client.get(path`/api/v1/platform/annotation-queues/${queueID}/items/count`, {
+    return this._client.get(path4`/api/v1/platform/annotation-queues/${queueID}/items/count`, {
       query,
       ...options
     });
@@ -94065,7 +94280,7 @@ var Items = class extends APIResource {
    */
   retrievePlacement(itemID, params, options) {
     const { queue_id } = params;
-    return this._client.get(path`/api/v1/platform/annotation-queues/${queue_id}/items/${itemID}/placement`, options);
+    return this._client.get(path4`/api/v1/platform/annotation-queues/${queue_id}/items/${itemID}/placement`, options);
   }
 };
 
@@ -94078,7 +94293,7 @@ var Runs = class extends APIResource {
    */
   create(queueID, params, options) {
     const { body, extend_trace_retention } = params;
-    return this._client.post(path`/api/v1/annotation-queues/${queueID}/runs`, {
+    return this._client.post(path4`/api/v1/annotation-queues/${queueID}/runs`, {
       query: { extend_trace_retention },
       body,
       ...options
@@ -94091,7 +94306,7 @@ var Runs = class extends APIResource {
    */
   update(queueRunID, params, options) {
     const { queue_id, ...body } = params;
-    return this._client.patch(path`/api/v1/annotation-queues/${queue_id}/runs/${queueRunID}`, {
+    return this._client.patch(path4`/api/v1/annotation-queues/${queue_id}/runs/${queueRunID}`, {
       body,
       ...options
     });
@@ -94102,7 +94317,7 @@ var Runs = class extends APIResource {
    * @deprecated Deprecated: use the annotation queue items list method (GET /api/v1/platform/annotation-queues/{queue_id}/items) instead. Will be removed after Jan 31, 2027.
    */
   list(queueID, query = {}, options) {
-    return this._client.get(path`/api/v1/annotation-queues/${queueID}/runs`, { query, ...options });
+    return this._client.get(path4`/api/v1/annotation-queues/${queueID}/runs`, { query, ...options });
   }
   /**
    * Self-hosted deployments require LangSmith `v0.16` or later.
@@ -94111,7 +94326,7 @@ var Runs = class extends APIResource {
    */
   createByKey(queueID, params, options) {
     const { body, extend_trace_retention } = params;
-    return this._client.post(path`/api/v1/annotation-queues/${queueID}/runs/by-key`, {
+    return this._client.post(path4`/api/v1/annotation-queues/${queueID}/runs/by-key`, {
       query: { extend_trace_retention },
       body,
       ...options
@@ -94123,7 +94338,7 @@ var Runs = class extends APIResource {
    * @deprecated Deprecated: use the annotation queue items delete_all method (POST /api/v1/platform/annotation-queues/{queue_id}/items/delete) instead. Will be removed after Jan 31, 2027.
    */
   deleteAll(queueID, body, options) {
-    return this._client.post(path`/api/v1/annotation-queues/${queueID}/runs/delete`, { body, ...options });
+    return this._client.post(path4`/api/v1/annotation-queues/${queueID}/runs/delete`, { body, ...options });
   }
   /**
    * Delete Run From Annotation Queue
@@ -94132,7 +94347,7 @@ var Runs = class extends APIResource {
    */
   deleteQueue(queueRunID, params, options) {
     const { queue_id } = params;
-    return this._client.delete(path`/api/v1/annotation-queues/${queue_id}/runs/${queueRunID}`, options);
+    return this._client.delete(path4`/api/v1/annotation-queues/${queue_id}/runs/${queueRunID}`, options);
   }
 };
 
@@ -94157,19 +94372,19 @@ var AnnotationQueues = class extends APIResource {
    * Get Annotation Queue
    */
   retrieve(queueID, options) {
-    return this._client.get(path`/api/v1/annotation-queues/${queueID}`, options);
+    return this._client.get(path4`/api/v1/annotation-queues/${queueID}`, options);
   }
   /**
    * Update Annotation Queue
    */
   update(queueID, body, options) {
-    return this._client.patch(path`/api/v1/annotation-queues/${queueID}`, { body, ...options });
+    return this._client.patch(path4`/api/v1/annotation-queues/${queueID}`, { body, ...options });
   }
   /**
    * Delete Annotation Queue
    */
   delete(queueID, options) {
-    return this._client.delete(path`/api/v1/annotation-queues/${queueID}`, options);
+    return this._client.delete(path4`/api/v1/annotation-queues/${queueID}`, options);
   }
   /**
    * Create Annotation Queue
@@ -94183,7 +94398,7 @@ var AnnotationQueues = class extends APIResource {
    * @deprecated Deprecated: use the annotation queue items create_status method (POST /api/v1/platform/annotation-queues/items/{queue_item_id}/status) instead. Will be removed after Jan 31, 2027.
    */
   createRunStatus(annotationQueueRunID, body, options) {
-    return this._client.post(path`/api/v1/annotation-queues/status/${annotationQueueRunID}`, {
+    return this._client.post(path4`/api/v1/annotation-queues/status/${annotationQueueRunID}`, {
       body,
       ...options
     });
@@ -94192,7 +94407,7 @@ var AnnotationQueues = class extends APIResource {
    * Export Annotation Queue Archived Runs
    */
   export(queueID, body, options) {
-    return this._client.post(path`/api/v1/annotation-queues/${queueID}/export`, { body, ...options });
+    return this._client.post(path4`/api/v1/annotation-queues/${queueID}/export`, { body, ...options });
   }
   /**
    * Populate annotation queue with runs from an experiment.
@@ -94210,7 +94425,7 @@ var AnnotationQueues = class extends APIResource {
    * Get Annotation Queues For Run
    */
   retrieveQueues(runID, options) {
-    return this._client.get(path`/api/v1/annotation-queues/${runID}/queues`, options);
+    return this._client.get(path4`/api/v1/annotation-queues/${runID}/queues`, options);
   }
   /**
    * Get a run from an annotation queue
@@ -94219,7 +94434,7 @@ var AnnotationQueues = class extends APIResource {
    */
   retrieveRun(index2, params, options) {
     const { queue_id, ...query } = params;
-    return this._client.get(path`/api/v1/annotation-queues/${queue_id}/run/${index2}`, { query, ...options });
+    return this._client.get(path4`/api/v1/annotation-queues/${queue_id}/run/${index2}`, { query, ...options });
   }
   /**
    * Get Size From Annotation Queue
@@ -94227,7 +94442,7 @@ var AnnotationQueues = class extends APIResource {
    * @deprecated Deprecated: use the annotation queue items retrieve_count method (GET /api/v1/platform/annotation-queues/{queue_id}/items/count) with the desired status instead. Will be removed after Jan 31, 2027.
    */
   retrieveSize(queueID, query = {}, options) {
-    return this._client.get(path`/api/v1/annotation-queues/${queueID}/size`, { query, ...options });
+    return this._client.get(path4`/api/v1/annotation-queues/${queueID}/size`, { query, ...options });
   }
   /**
    * Get Total Archived From Annotation Queue
@@ -94235,7 +94450,7 @@ var AnnotationQueues = class extends APIResource {
    * @deprecated Deprecated: use the annotation queue items retrieve_count method (GET /api/v1/platform/annotation-queues/{queue_id}/items/count?status=archived) instead. Will be removed after Jan 31, 2027.
    */
   retrieveTotalArchived(queueID, query = {}, options) {
-    return this._client.get(path`/api/v1/annotation-queues/${queueID}/total_archived`, { query, ...options });
+    return this._client.get(path4`/api/v1/annotation-queues/${queueID}/total_archived`, { query, ...options });
   }
   /**
    * Get Total Size From Annotation Queue
@@ -94243,7 +94458,7 @@ var AnnotationQueues = class extends APIResource {
    * @deprecated Deprecated: use the annotation queue items retrieve_count method (GET /api/v1/platform/annotation-queues/{queue_id}/items/count?status=all) instead. Will be removed after Jan 31, 2027.
    */
   retrieveTotalSize(queueID, options) {
-    return this._client.get(path`/api/v1/annotation-queues/${queueID}/total_size`, options);
+    return this._client.get(path4`/api/v1/annotation-queues/${queueID}/total_size`, options);
   }
 };
 AnnotationQueues.Runs = Runs;
@@ -94324,7 +94539,7 @@ var Examples = class extends APIResource {
    */
   delete(exampleID, params, options) {
     const { dataset_id } = params;
-    return this._client.delete(path`/api/v1/platform/datasets/${dataset_id}/examples/${exampleID}`, {
+    return this._client.delete(path4`/api/v1/platform/datasets/${dataset_id}/examples/${exampleID}`, {
       ...options,
       headers: buildHeaders([{ Accept: "*/*" }, options?.headers])
     });
@@ -94340,7 +94555,7 @@ var ExperimentRuns = class extends APIResource {
    * Self-hosted deployments require LangSmith `v0.16` or later.
    */
   query(datasetID, body, options) {
-    return this._client.getAPIList(path`/api/v2/datasets/${datasetID}/experiment-runs`, ItemsCursorPostPagination, { body, method: "post", ...options });
+    return this._client.getAPIList(path4`/api/v2/datasets/${datasetID}/experiment-runs`, ItemsCursorPostPagination, { body, method: "post", ...options });
   }
 };
 
@@ -94373,7 +94588,7 @@ var Threads = class extends APIResource {
    * sandbox.sandbox_slug.
    */
   activateSandbox(threadID, options) {
-    return this._client.post(path`/v1/fleet/threads/${threadID}/sandbox-activation`, options);
+    return this._client.post(path4`/v1/fleet/threads/${threadID}/sandbox-activation`, options);
   }
 };
 
@@ -94411,7 +94626,7 @@ var Issues = class extends APIResource {
    * Returns one issue for the authenticated tenant.
    */
   retrieve(id2, query = {}, options) {
-    return this._client.get(path`/api/v1/platform/issues/${id2}`, { query, ...options });
+    return this._client.get(path4`/api/v1/platform/issues/${id2}`, { query, ...options });
   }
   /**
    * **Beta:** This endpoint is in active development and may change without notice.
@@ -94439,14 +94654,14 @@ var OnlineEvaluators = class extends APIResource {
    * Retrieve a single evaluator by its ID.
    */
   retrieve(evaluatorID, options) {
-    return this._client.get(path`/api/v1/platform/evaluators/${evaluatorID}`, options);
+    return this._client.get(path4`/api/v1/platform/evaluators/${evaluatorID}`, options);
   }
   /**
    * Update an existing evaluator's name, LLM configuration, or code configuration.
    * Returns 409 when a code evaluator build is ENQUEUED or BUILDING.
    */
   update(evaluatorID, body, options) {
-    return this._client.patch(path`/api/v1/platform/evaluators/${evaluatorID}`, { body, ...options });
+    return this._client.patch(path4`/api/v1/platform/evaluators/${evaluatorID}`, { body, ...options });
   }
   /**
    * List evaluators for the current workspace, with optional filtering by type,
@@ -94465,7 +94680,7 @@ var OnlineEvaluators = class extends APIResource {
    */
   delete(evaluatorID, params = {}, options) {
     const { delete_run_rules } = params ?? {};
-    return this._client.delete(path`/api/v1/platform/evaluators/${evaluatorID}`, {
+    return this._client.delete(path4`/api/v1/platform/evaluators/${evaluatorID}`, {
       query: { delete_run_rules },
       ...options,
       headers: buildHeaders([{ Accept: "*/*" }, options?.headers])
@@ -94515,7 +94730,7 @@ var ProductFeedback = class extends APIResource {
    * **Alpha:** This endpoint is in active development and may change without notice.
    */
   retrieve(id2, options) {
-    return this._client.get(path`/api/v1/platform/product-feedbacks/${id2}`, options);
+    return this._client.get(path4`/api/v1/platform/product-feedbacks/${id2}`, options);
   }
 };
 
@@ -94541,7 +94756,7 @@ var Runs2 = class extends APIResource {
    */
   retrieve(runID, params, options) {
     const { share_token, Accept, ...query } = params;
-    return this._client.get(path`/api/v2/public/${share_token}/run/${runID}`, {
+    return this._client.get(path4`/api/v2/public/${share_token}/run/${runID}`, {
       query,
       ...options,
       headers: buildHeaders([{ ...Accept != null ? { Accept } : void 0 }, options?.headers])
@@ -94562,7 +94777,7 @@ var Runs2 = class extends APIResource {
    */
   query(shareToken, params, options) {
     const { Accept, ...body } = params;
-    return this._client.post(path`/api/v2/public/${shareToken}/runs/query`, {
+    return this._client.post(path4`/api/v2/public/${shareToken}/runs/query`, {
       body,
       ...options,
       headers: buildHeaders([{ ...Accept != null ? { Accept } : void 0 }, options?.headers])
@@ -94599,7 +94814,7 @@ var Share = class extends APIResource {
    * ```
    */
   create(runID, body, options) {
-    return this._client.post(path`/api/v2/runs/${runID}/share`, { body, ...options });
+    return this._client.post(path4`/api/v2/runs/${runID}/share`, { body, ...options });
   }
   /**
    * Deletes the share token for the trace identified by trace_id and session_id.
@@ -94615,7 +94830,7 @@ var Share = class extends APIResource {
    * ```
    */
   delete(traceID, body, options) {
-    return this._client.delete(path`/api/v2/runs/${traceID}/share`, {
+    return this._client.delete(path4`/api/v2/runs/${traceID}/share`, {
       body,
       ...options,
       headers: buildHeaders([{ Accept: "*/*" }, options?.headers])
@@ -94662,7 +94877,7 @@ var Runs3 = class extends APIResource {
    * ```
    */
   getURL(runID, query, options) {
-    return this._client.get(path`/api/v2/runs/${runID}/url`, { query, ...options });
+    return this._client.get(path4`/api/v2/runs/${runID}/url`, { query, ...options });
   }
   /**
    * Returns a paginated list of runs for the given projects within min/max
@@ -94708,7 +94923,7 @@ var Runs3 = class extends APIResource {
    */
   retrieveV2(runID, params, options) {
     const { Accept, ...query } = params;
-    return this._client.get(path`/api/v2/runs/${runID}`, {
+    return this._client.get(path4`/api/v2/runs/${runID}`, {
       query,
       ...options,
       headers: buildHeaders([{ ...Accept != null ? { Accept } : void 0 }, options?.headers])
@@ -94732,7 +94947,7 @@ var Boxes = class extends APIResource {
    * Retrieve a sandbox by name. Stale provisioning sandboxes are auto-failed.
    */
   retrieve(name2, options) {
-    return this._client.get(path`/api/v2/sandboxes/boxes/${name2}`, options);
+    return this._client.get(path4`/api/v2/sandboxes/boxes/${name2}`, options);
   }
   /**
    * Update a sandbox's display name, retention, resources, tags, or proxy
@@ -94740,7 +94955,7 @@ var Boxes = class extends APIResource {
    * sent to a sandbox that is not running is stored and applied when it next starts.
    */
   update(name2, body, options) {
-    return this._client.patch(path`/api/v2/sandboxes/boxes/${name2}`, { body, ...options });
+    return this._client.patch(path4`/api/v2/sandboxes/boxes/${name2}`, { body, ...options });
   }
   /**
    * List sandboxes for the authenticated tenant, with optional filtering, sorting,
@@ -94757,7 +94972,7 @@ var Boxes = class extends APIResource {
    * DB record.
    */
   delete(name2, options) {
-    return this._client.delete(path`/api/v2/sandboxes/boxes/${name2}`, {
+    return this._client.delete(path4`/api/v2/sandboxes/boxes/${name2}`, {
       ...options,
       headers: buildHeaders([{ Accept: "*/*" }, options?.headers])
     });
@@ -94767,7 +94982,7 @@ var Boxes = class extends APIResource {
    * existing checkpoint.
    */
   createSnapshot(name2, body, options) {
-    return this._client.post(path`/api/v2/sandboxes/boxes/${name2}/snapshot`, { body, ...options });
+    return this._client.post(path4`/api/v2/sandboxes/boxes/${name2}/snapshot`, { body, ...options });
   }
   /**
    * Removes the sharing grant for one port, or for every port when port is omitted.
@@ -94777,7 +94992,7 @@ var Boxes = class extends APIResource {
    */
   deleteServiceURL(name2, params = {}, options) {
     const { port } = params ?? {};
-    return this._client.delete(path`/api/v2/sandboxes/boxes/${name2}/service-urls`, {
+    return this._client.delete(path4`/api/v2/sandboxes/boxes/${name2}/service-urls`, {
       query: { port },
       ...options,
       headers: buildHeaders([{ Accept: "*/*" }, options?.headers])
@@ -94806,7 +95021,7 @@ var Boxes = class extends APIResource {
    * domain, not the API host.
    */
   generateDownloadURL(name2, body, options) {
-    return this._client.post(path`/api/v2/sandboxes/boxes/${name2}/download-url`, { body, ...options });
+    return this._client.post(path4`/api/v2/sandboxes/boxes/${name2}/download-url`, { body, ...options });
   }
   /**
    * Create a short-lived JWT for accessing an HTTP service running on a specific
@@ -94818,13 +95033,13 @@ var Boxes = class extends APIResource {
    * mutually exclusive per service URL.
    */
   generateServiceURL(name2, body, options) {
-    return this._client.post(path`/api/v2/sandboxes/boxes/${name2}/service-url`, { body, ...options });
+    return this._client.post(path4`/api/v2/sandboxes/boxes/${name2}/service-url`, { body, ...options });
   }
   /**
    * Retrieve the lightweight status of a sandbox for polling.
    */
   getStatus(name2, options) {
-    return this._client.get(path`/api/v2/sandboxes/boxes/${name2}/status`, options);
+    return this._client.get(path4`/api/v2/sandboxes/boxes/${name2}/status`, options);
   }
   /**
    * Returns one entry per port the sandbox is currently reachable on, so a caller
@@ -94833,20 +95048,20 @@ var Boxes = class extends APIResource {
    * one.
    */
   listServiceURLs(name2, query = {}, options) {
-    return this._client.getAPIList(path`/api/v2/sandboxes/boxes/${name2}/service-urls`, ItemsCursorGetPagination, { query, ...options });
+    return this._client.getAPIList(path4`/api/v2/sandboxes/boxes/${name2}/service-urls`, ItemsCursorGetPagination, { query, ...options });
   }
   /**
    * Start a stopped or failed sandbox. This endpoint is not idempotent.
    */
   start(name2, options) {
-    return this._client.post(path`/api/v2/sandboxes/boxes/${name2}/start`, options);
+    return this._client.post(path4`/api/v2/sandboxes/boxes/${name2}/start`, options);
   }
   /**
    * Stop a ready sandbox. This endpoint is not idempotent; the filesystem is
    * preserved for later restart.
    */
   stop(name2, options) {
-    return this._client.post(path`/api/v2/sandboxes/boxes/${name2}/stop`, {
+    return this._client.post(path4`/api/v2/sandboxes/boxes/${name2}/stop`, {
       ...options,
       headers: buildHeaders([{ Accept: "*/*" }, options?.headers])
     });
@@ -94865,13 +95080,13 @@ var Registries = class extends APIResource {
    * Get a sandbox registry by name.
    */
   retrieve(name2, options) {
-    return this._client.get(path`/api/v2/sandboxes/registries/${name2}`, options);
+    return this._client.get(path4`/api/v2/sandboxes/registries/${name2}`, options);
   }
   /**
    * Update a sandbox registry's name and/or credentials.
    */
   update(name2, body, options) {
-    return this._client.patch(path`/api/v2/sandboxes/registries/${name2}`, { body, ...options });
+    return this._client.patch(path4`/api/v2/sandboxes/registries/${name2}`, { body, ...options });
   }
   /**
    * List sandbox registries for pulling private images.
@@ -94883,7 +95098,7 @@ var Registries = class extends APIResource {
    * Delete a sandbox registry by name.
    */
   delete(name2, options) {
-    return this._client.delete(path`/api/v2/sandboxes/registries/${name2}`, {
+    return this._client.delete(path4`/api/v2/sandboxes/registries/${name2}`, {
       ...options,
       headers: buildHeaders([{ Accept: "*/*" }, options?.headers])
     });
@@ -94908,7 +95123,7 @@ var Snapshots = class extends APIResource {
    * /api/v2/sandboxes/snapshots-by-name/{name}.
    */
   retrieve(snapshotID, options) {
-    return this._client.get(path`/api/v2/sandboxes/snapshots/${snapshotID}`, options);
+    return this._client.get(path4`/api/v2/sandboxes/snapshots/${snapshotID}`, options);
   }
   /**
    * List workspace and published system snapshots, with optional filtering, sorting,
@@ -94925,7 +95140,7 @@ var Snapshots = class extends APIResource {
    * underlying storage is reclaimed asynchronously.
    */
   delete(snapshotID, options) {
-    return this._client.delete(path`/api/v2/sandboxes/snapshots/${snapshotID}`, {
+    return this._client.delete(path4`/api/v2/sandboxes/snapshots/${snapshotID}`, {
       ...options,
       headers: buildHeaders([{ Accept: "*/*" }, options?.headers])
     });
@@ -94935,7 +95150,7 @@ var Snapshots = class extends APIResource {
    * to. To fetch one snapshot, use /api/v2/sandboxes/snapshots/{snapshot_id}.
    */
   retrieveByName(name2, options) {
-    return this._client.get(path`/api/v2/sandboxes/snapshots-by-name/${name2}`, options);
+    return this._client.get(path4`/api/v2/sandboxes/snapshots-by-name/${name2}`, options);
   }
 };
 
@@ -95012,7 +95227,7 @@ var Share2 = class extends APIResource {
    * ```
    */
   create(threadID, body, options) {
-    return this._client.post(path`/api/v2/threads/${threadID}/share`, { body, ...options });
+    return this._client.post(path4`/api/v2/threads/${threadID}/share`, { body, ...options });
   }
   /**
    * Returns the share token for a thread. The token is omitted when the thread is
@@ -95028,7 +95243,7 @@ var Share2 = class extends APIResource {
    * ```
    */
   retrieve(threadID, query, options) {
-    return this._client.get(path`/api/v2/threads/${threadID}/share`, { query, ...options });
+    return this._client.get(path4`/api/v2/threads/${threadID}/share`, { query, ...options });
   }
   /**
    * Deletes the share token for a thread. Idempotent: returns 204 whether or not a
@@ -95043,7 +95258,7 @@ var Share2 = class extends APIResource {
    */
   delete(threadID, params, options) {
     const { project_id } = params;
-    return this._client.delete(path`/api/v2/threads/${threadID}/share`, {
+    return this._client.delete(path4`/api/v2/threads/${threadID}/share`, {
       query: { project_id },
       ...options,
       headers: buildHeaders([{ Accept: "*/*" }, options?.headers])
@@ -95103,7 +95318,7 @@ var Threads2 = class extends APIResource {
    * ```
    */
   listTraces(threadID, query, options) {
-    return this._client.getAPIList(path`/api/v2/threads/${threadID}/traces`, ItemsCursorGetPagination, { query, ...options });
+    return this._client.getAPIList(path4`/api/v2/threads/${threadID}/traces`, ItemsCursorGetPagination, { query, ...options });
   }
   /**
    * Query threads within a project (session), with cursor-based pagination. Returns
@@ -95150,7 +95365,7 @@ var Threads2 = class extends APIResource {
    * ```
    */
   stats(threadID, query, options) {
-    return this._client.get(path`/api/v2/threads/${threadID}/stats`, { query, ...options });
+    return this._client.get(path4`/api/v2/threads/${threadID}/stats`, { query, ...options });
   }
 };
 Threads2.Share = Share2;
@@ -95173,7 +95388,7 @@ var Traces = class extends APIResource {
    */
   listRuns(traceID, params, options) {
     const { Accept, ...query } = params;
-    return this._client.get(path`/api/v2/traces/${traceID}/runs`, {
+    return this._client.get(path4`/api/v2/traces/${traceID}/runs`, {
       query,
       ...options,
       headers: buildHeaders([{ ...Accept != null ? { Accept } : void 0 }, options?.headers])
@@ -95489,9 +95704,9 @@ var Langsmith = class {
   makeStatusError(status2, error62, message, headers) {
     return APIError.generate(status2, error62, message, headers);
   }
-  buildURL(path27, query, defaultBaseURL) {
+  buildURL(path28, query, defaultBaseURL) {
     const baseURL = !__classPrivateFieldGet(this, _Langsmith_instances, "m", _Langsmith_baseURLOverridden).call(this) && defaultBaseURL || this.baseURL;
-    const url2 = isAbsoluteURL(path27) ? new URL(path27) : new URL(baseURL + (baseURL.endsWith("/") && path27.startsWith("/") ? path27.slice(1) : path27));
+    const url2 = isAbsoluteURL(path28) ? new URL(path28) : new URL(baseURL + (baseURL.endsWith("/") && path28.startsWith("/") ? path28.slice(1) : path28));
     const defaultQuery = this.defaultQuery();
     const pathQuery = Object.fromEntries(url2.searchParams);
     if (!isEmptyObj(defaultQuery) || !isEmptyObj(pathQuery)) {
@@ -95515,24 +95730,24 @@ var Langsmith = class {
    */
   async prepareRequest(request, { url: url2, options }) {
   }
-  get(path27, opts) {
-    return this.methodRequest("get", path27, opts);
+  get(path28, opts) {
+    return this.methodRequest("get", path28, opts);
   }
-  post(path27, opts) {
-    return this.methodRequest("post", path27, opts);
+  post(path28, opts) {
+    return this.methodRequest("post", path28, opts);
   }
-  patch(path27, opts) {
-    return this.methodRequest("patch", path27, opts);
+  patch(path28, opts) {
+    return this.methodRequest("patch", path28, opts);
   }
-  put(path27, opts) {
-    return this.methodRequest("put", path27, opts);
+  put(path28, opts) {
+    return this.methodRequest("put", path28, opts);
   }
-  delete(path27, opts) {
-    return this.methodRequest("delete", path27, opts);
+  delete(path28, opts) {
+    return this.methodRequest("delete", path28, opts);
   }
-  methodRequest(method, path27, opts) {
+  methodRequest(method, path28, opts) {
     return this.request(Promise.resolve(opts).then((opts2) => {
-      return { method, path: path27, ...opts2 };
+      return { method, path: path28, ...opts2 };
     }));
   }
   request(options, remainingRetries = null) {
@@ -95635,8 +95850,8 @@ var Langsmith = class {
     }));
     return { response, options, controller, requestLogID, retryOfRequestLogID, startTime };
   }
-  getAPIList(path27, Page3, opts) {
-    return this.requestAPIList(Page3, opts && "then" in opts ? opts.then((opts2) => ({ method: "get", path: path27, ...opts2 })) : { method: "get", path: path27, ...opts });
+  getAPIList(path28, Page3, opts) {
+    return this.requestAPIList(Page3, opts && "then" in opts ? opts.then((opts2) => ({ method: "get", path: path28, ...opts2 })) : { method: "get", path: path28, ...opts });
   }
   requestAPIList(Page3, options) {
     const request = this.makeRequest(options, null, void 0);
@@ -95715,8 +95930,8 @@ var Langsmith = class {
   }
   async buildRequest(inputOptions, { retryCount = 0 } = {}) {
     const options = { ...inputOptions };
-    const { method, path: path27, query, defaultBaseURL } = options;
-    const url2 = this.buildURL(path27, query, defaultBaseURL);
+    const { method, path: path28, query, defaultBaseURL } = options;
+    const url2 = this.buildURL(path28, query, defaultBaseURL);
     if ("timeout" in options)
       validatePositiveInteger("timeout", options.timeout);
     options.timeout = options.timeout ?? this.timeout;
@@ -96460,7 +96675,7 @@ function parseHubIdentifier(identifier) {
 import * as nodeFs from "node:fs";
 import * as nodeFsPromises from "node:fs/promises";
 import * as nodePath from "node:path";
-var path2 = nodePath;
+var path5 = nodePath;
 async function mkdir2(dir) {
   await nodeFsPromises.mkdir(dir, { recursive: true });
 }
@@ -96673,7 +96888,7 @@ var PromptCache = class {
     for (const [key, entry] of this.cache.entries()) {
       entries[key] = entry.value;
     }
-    const dir = path2.dirname(filePath);
+    const dir = path5.dirname(filePath);
     if (!existsSync2(dir)) {
       mkdirSync2(dir);
     }
@@ -96821,7 +97036,7 @@ function isEEXIST(err) {
 }
 function lockMetadataLines(lockDir) {
   try {
-    return readFileSync2(path2.join(lockDir, LOCK_METADATA_FILE)).split("\n");
+    return readFileSync2(path5.join(lockDir, LOCK_METADATA_FILE)).split("\n");
   } catch {
     return void 0;
   }
@@ -96853,7 +97068,7 @@ async function removeStaleLock(lockDir) {
 }
 async function acquireOAuthRefreshLock(configPath, deadline) {
   const lockDir = `${configPath}.oauth.lock.lock`;
-  const parent = path2.dirname(lockDir);
+  const parent = path5.dirname(lockDir);
   if (parent) {
     await mkdir2(parent);
   }
@@ -96874,7 +97089,7 @@ async function acquireOAuthRefreshLock(configPath, deadline) {
       continue;
     }
     try {
-      await writeFileAtomic(path2.join(lockDir, LOCK_METADATA_FILE), `${(/* @__PURE__ */ new Date()).toISOString()}
+      await writeFileAtomic(path5.join(lockDir, LOCK_METADATA_FILE), `${(/* @__PURE__ */ new Date()).toISOString()}
 ${owner}
 `);
     } catch (err) {
@@ -96912,7 +97127,7 @@ function getProfileConfigPath() {
   if (!home) {
     return void 0;
   }
-  return path2.join(home, ".langsmith", "config.json");
+  return path5.join(home, ".langsmith", "config.json");
 }
 function resolveProfileName(config2) {
   const envProfile = getEnvironmentVariable2("LANGSMITH_PROFILE");
@@ -98800,9 +99015,9 @@ var Client = class _Client {
       defaultHeaders: options.defaultHeaders
     });
   }
-  _getPlatformEndpointPath(path27) {
+  _getPlatformEndpointPath(path28) {
     const needsV1Prefix = this.apiUrl.slice(-3) !== "/v1" && this.apiUrl.slice(-4) !== "/v1/";
-    return needsV1Prefix ? `/v1/platform/${path27}` : `/platform/${path27}`;
+    return needsV1Prefix ? `/v1/platform/${path28}` : `/platform/${path28}`;
   }
   get evaluators() {
     this._checkStainlessVersion("0.16.0");
@@ -98944,9 +99159,9 @@ var Client = class _Client {
     }
     return runParams;
   }
-  async _getResponse(path27, queryParams) {
+  async _getResponse(path28, queryParams) {
     const paramsString = queryParams?.toString() ?? "";
-    const url2 = `${this.apiUrl}${path27}?${paramsString}`;
+    const url2 = `${this.apiUrl}${path28}?${paramsString}`;
     const response = await this.caller.call(async () => {
       const res = await this._fetch(url2, {
         method: "GET",
@@ -98954,22 +99169,22 @@ var Client = class _Client {
         signal: AbortSignal.timeout(this.timeout_ms),
         ...this.fetchOptions
       });
-      await raiseForStatus(res, `fetch ${path27}`);
+      await raiseForStatus(res, `fetch ${path28}`);
       return res;
     });
     return response;
   }
-  async _get(path27, queryParams) {
-    const response = await this._getResponse(path27, queryParams);
+  async _get(path28, queryParams) {
+    const response = await this._getResponse(path28, queryParams);
     return response.json();
   }
-  async *_getPaginated(path27, queryParams = new URLSearchParams(), transform2) {
+  async *_getPaginated(path28, queryParams = new URLSearchParams(), transform2) {
     let offset = Number(queryParams.get("offset")) || 0;
     const limit4 = Number(queryParams.get("limit")) || 100;
     while (true) {
       queryParams.set("offset", String(offset));
       queryParams.set("limit", String(limit4));
-      const url2 = `${this.apiUrl}${path27}?${queryParams}`;
+      const url2 = `${this.apiUrl}${path28}?${queryParams}`;
       const response = await this.caller.call(async () => {
         const res = await this._fetch(url2, {
           method: "GET",
@@ -98977,7 +99192,7 @@ var Client = class _Client {
           signal: AbortSignal.timeout(this.timeout_ms),
           ...this.fetchOptions
         });
-        await raiseForStatus(res, `fetch ${path27}`);
+        await raiseForStatus(res, `fetch ${path28}`);
         return res;
       });
       const items = transform2 ? transform2(await response.json()) : await response.json();
@@ -98991,12 +99206,12 @@ var Client = class _Client {
       offset += items.length;
     }
   }
-  async *_getCursorPaginatedList(path27, body = null, requestMethod = "POST", dataKey = "runs") {
+  async *_getCursorPaginatedList(path28, body = null, requestMethod = "POST", dataKey = "runs") {
     const bodyParams = body ? { ...body } : {};
     while (true) {
       const body2 = JSON.stringify(bodyParams);
       const response = await this.caller.call(async () => {
-        const res = await this._fetch(`${this.apiUrl}${path27}`, {
+        const res = await this._fetch(`${this.apiUrl}${path28}`, {
           method: requestMethod,
           headers: {
             ...this._mergedHeaders,
@@ -99006,7 +99221,7 @@ var Client = class _Client {
           ...this.fetchOptions,
           body: body2
         });
-        await raiseForStatus(res, `fetch ${path27}`);
+        await raiseForStatus(res, `fetch ${path28}`);
         return res;
       });
       const responseBody = await response.json();
@@ -99111,7 +99326,7 @@ var Client = class _Client {
         body_base64: bodyBuffer.toString("base64")
       });
       const filename = `trace_${Date.now()}_${v4_default().slice(0, 8)}.json`;
-      const filepath = path2.join(directory, filename);
+      const filepath = path5.join(directory, filename);
       if (!_Client._fallbackDirsCreated.has(directory)) {
         await mkdir2(directory);
         _Client._fallbackDirsCreated.add(directory);
@@ -99122,7 +99337,7 @@ var Client = class _Client {
           const traceFiles = entries.filter((f3) => f3.startsWith("trace_") && f3.endsWith(".json"));
           let total = 0;
           for (const name2 of traceFiles) {
-            const { size } = await stat2(path2.join(directory, name2));
+            const { size } = await stat2(path5.join(directory, name2));
             total += size;
           }
           if (total >= maxBytes) {
@@ -100074,8 +100289,8 @@ Context: ${context2}`);
       limit: Number(limit4) || 100
     };
     let currentOffset = Number(offset) || 0;
-    const path27 = "/runs/group";
-    const url2 = `${this.apiUrl}${path27}`;
+    const path28 = "/runs/group";
+    const url2 = `${this.apiUrl}${path28}`;
     while (true) {
       const currentBody = {
         ...baseBody,
@@ -100094,7 +100309,7 @@ Context: ${context2}`);
           ...this.fetchOptions,
           body
         });
-        await raiseForStatus(res, `Failed to fetch ${path27}`);
+        await raiseForStatus(res, `Failed to fetch ${path28}`);
         return res;
       });
       const items = await response.json();
@@ -100561,20 +100776,20 @@ Message: ${Array.isArray(result.detail) ? result.detail.join("\n") : "Unspecifie
     return result;
   }
   async hasProject({ projectId, projectName }) {
-    let path27 = "/sessions";
+    let path28 = "/sessions";
     const params = new URLSearchParams();
     if (projectId !== void 0 && projectName !== void 0) {
       throw new Error("Must provide either projectName or projectId, not both");
     } else if (projectId !== void 0) {
       assertUuid(projectId);
-      path27 += `/${projectId}`;
+      path28 += `/${projectId}`;
     } else if (projectName !== void 0) {
       params.append("name", projectName);
     } else {
       throw new Error("Must provide projectName or projectId");
     }
     const response = await this.caller.call(async () => {
-      const res = await this._fetch(`${this.apiUrl}${path27}?${params}`, {
+      const res = await this._fetch(`${this.apiUrl}${path28}?${params}`, {
         method: "GET",
         headers: this._mergedHeaders,
         signal: AbortSignal.timeout(this.timeout_ms),
@@ -100597,13 +100812,13 @@ Message: ${Array.isArray(result.detail) ? result.detail.join("\n") : "Unspecifie
     }
   }
   async readProject({ projectId, projectName, includeStats }) {
-    let path27 = "/sessions";
+    let path28 = "/sessions";
     const params = new URLSearchParams();
     if (projectId !== void 0 && projectName !== void 0) {
       throw new Error("Must provide either projectName or projectId, not both");
     } else if (projectId !== void 0) {
       assertUuid(projectId);
-      path27 += `/${projectId}`;
+      path28 += `/${projectId}`;
     } else if (projectName !== void 0) {
       params.append("name", projectName);
     } else {
@@ -100612,7 +100827,7 @@ Message: ${Array.isArray(result.detail) ? result.detail.join("\n") : "Unspecifie
     if (includeStats !== void 0) {
       params.append("include_stats", includeStats.toString());
     }
-    const response = await this._get(path27, params);
+    const response = await this._get(path28, params);
     let result;
     if (Array.isArray(response)) {
       if (response.length === 0) {
@@ -100779,19 +100994,19 @@ Message: ${Array.isArray(result.detail) ? result.detail.join("\n") : "Unspecifie
     return result;
   }
   async readDataset({ datasetId, datasetName }) {
-    let path27 = "/datasets";
+    let path28 = "/datasets";
     const params = new URLSearchParams({ limit: "1" });
     if (datasetId && datasetName) {
       throw new Error("Must provide either datasetName or datasetId, not both");
     } else if (datasetId) {
       assertUuid(datasetId);
-      path27 += `/${datasetId}`;
+      path28 += `/${datasetId}`;
     } else if (datasetName) {
       params.append("name", datasetName);
     } else {
       throw new Error("Must provide datasetName or datasetId");
     }
-    const response = await this._get(path27, params);
+    const response = await this._get(path28, params);
     let result;
     if (Array.isArray(response)) {
       if (response.length === 0) {
@@ -100832,20 +101047,20 @@ Message: ${Array.isArray(result.detail) ? result.detail.join("\n") : "Unspecifie
     return response;
   }
   async readDatasetOpenaiFinetuning({ datasetId, datasetName }) {
-    const path27 = "/datasets";
+    const path28 = "/datasets";
     if (datasetId !== void 0) {
     } else if (datasetName !== void 0) {
       datasetId = (await this.readDataset({ datasetName })).id;
     } else {
       throw new Error("Must provide either datasetName or datasetId");
     }
-    const response = await this._getResponse(`${path27}/${datasetId}/openai_ft`);
+    const response = await this._getResponse(`${path28}/${datasetId}/openai_ft`);
     const datasetText = await response.text();
     const dataset = datasetText.trim().split("\n").map((line) => JSON.parse(line));
     return dataset;
   }
   async *listDatasets({ limit: limit4 = 100, offset = 0, datasetIds, datasetName, datasetNameContains, metadata } = {}) {
-    const path27 = "/datasets";
+    const path28 = "/datasets";
     const params = new URLSearchParams({
       limit: limit4.toString(),
       offset: offset.toString()
@@ -100864,7 +101079,7 @@ Message: ${Array.isArray(result.detail) ? result.detail.join("\n") : "Unspecifie
     if (metadata !== void 0) {
       params.append("metadata", JSON.stringify(metadata));
     }
-    for await (const datasets of this._getPaginated(path27, params)) {
+    for await (const datasets of this._getPaginated(path28, params)) {
       yield* datasets;
     }
   }
@@ -100936,7 +101151,7 @@ Message: ${Array.isArray(result.detail) ? result.detail.join("\n") : "Unspecifie
     });
   }
   async deleteDataset({ datasetId, datasetName }) {
-    let path27 = "/datasets";
+    let path28 = "/datasets";
     let datasetId_ = datasetId;
     if (datasetId !== void 0 && datasetName !== void 0) {
       throw new Error("Must provide either datasetName or datasetId, not both");
@@ -100946,18 +101161,18 @@ Message: ${Array.isArray(result.detail) ? result.detail.join("\n") : "Unspecifie
     }
     if (datasetId_ !== void 0) {
       assertUuid(datasetId_);
-      path27 += `/${datasetId_}`;
+      path28 += `/${datasetId_}`;
     } else {
       throw new Error("Must provide datasetName or datasetId");
     }
     await this.caller.call(async () => {
-      const res = await this._fetch(this.apiUrl + path27, {
+      const res = await this._fetch(this.apiUrl + path28, {
         method: "DELETE",
         headers: this._mergedHeaders,
         signal: AbortSignal.timeout(this.timeout_ms),
         ...this.fetchOptions
       });
-      await raiseForStatus(res, `delete ${path27}`, true);
+      await raiseForStatus(res, `delete ${path28}`, true);
       return res;
     });
   }
@@ -101066,8 +101281,8 @@ Message: ${Array.isArray(result.detail) ? result.detail.join("\n") : "Unspecifie
   }
   async readExample(exampleId) {
     assertUuid(exampleId);
-    const path27 = `/examples/${exampleId}`;
-    const rawExample = await this._get(path27);
+    const path28 = `/examples/${exampleId}`;
+    const rawExample = await this._get(path28);
     const { attachment_urls, ...rest } = rawExample;
     const example = rest;
     if (attachment_urls) {
@@ -101150,15 +101365,15 @@ Message: ${Array.isArray(result.detail) ? result.detail.join("\n") : "Unspecifie
   }
   async deleteExample(exampleId) {
     assertUuid(exampleId);
-    const path27 = `/examples/${exampleId}`;
+    const path28 = `/examples/${exampleId}`;
     await this.caller.call(async () => {
-      const res = await this._fetch(this.apiUrl + path27, {
+      const res = await this._fetch(this.apiUrl + path28, {
         method: "DELETE",
         headers: this._mergedHeaders,
         signal: AbortSignal.timeout(this.timeout_ms),
         ...this.fetchOptions
       });
-      await raiseForStatus(res, `delete ${path27}`, true);
+      await raiseForStatus(res, `delete ${path28}`, true);
       return res;
     });
   }
@@ -101171,9 +101386,9 @@ Message: ${Array.isArray(result.detail) ? result.detail.join("\n") : "Unspecifie
   async deleteExamples(exampleIds, options) {
     exampleIds.forEach((id2) => assertUuid(id2));
     if (options?.hardDelete) {
-      const path27 = this._getPlatformEndpointPath("datasets/examples/delete");
+      const path28 = this._getPlatformEndpointPath("datasets/examples/delete");
       await this.caller.call(async () => {
-        const res = await this._fetch(`${this.apiUrl}${path27}`, {
+        const res = await this._fetch(`${this.apiUrl}${path28}`, {
           method: "POST",
           headers: {
             ...this._mergedHeaders,
@@ -101426,21 +101641,21 @@ Message: ${Array.isArray(result.detail) ? result.detail.join("\n") : "Unspecifie
   }
   async readFeedback(feedbackId) {
     assertUuid(feedbackId);
-    const path27 = `/feedback/${feedbackId}`;
-    const response = await this._get(path27);
+    const path28 = `/feedback/${feedbackId}`;
+    const response = await this._get(path28);
     return response;
   }
   async deleteFeedback(feedbackId) {
     assertUuid(feedbackId);
-    const path27 = `/feedback/${feedbackId}`;
+    const path28 = `/feedback/${feedbackId}`;
     await this.caller.call(async () => {
-      const res = await this._fetch(this.apiUrl + path27, {
+      const res = await this._fetch(this.apiUrl + path28, {
         method: "DELETE",
         headers: this._mergedHeaders,
         signal: AbortSignal.timeout(this.timeout_ms),
         ...this.fetchOptions
       });
-      await raiseForStatus(res, `delete ${path27}`, true);
+      await raiseForStatus(res, `delete ${path28}`, true);
       return res;
     });
   }
@@ -101951,8 +102166,8 @@ Message: ${Array.isArray(result.detail) ? result.detail.join("\n") : "Unspecifie
       params.append("status", status2);
     params.append("limit", limit4.toString());
     let count = 0;
-    const path27 = `/annotation-queues/${assertUuid(queueId, "queueId")}/runs`;
-    for await (const runs of this._getPaginated(path27, params)) {
+    const path28 = `/annotation-queues/${assertUuid(queueId, "queueId")}/runs`;
+    for await (const runs of this._getPaginated(path28, params)) {
       for (const run2 of runs) {
         yield _normalizeRunTimestamps(run2);
         count++;
@@ -106692,10 +106907,10 @@ function mergeDefs(...defs) {
 function cloneDef(schema) {
   return mergeDefs(schema._zod.def);
 }
-function getElementAtPath(obj, path27) {
-  if (!path27)
+function getElementAtPath(obj, path28) {
+  if (!path28)
     return obj;
-  return path27.reduce((acc, key) => acc?.[key], obj);
+  return path28.reduce((acc, key) => acc?.[key], obj);
 }
 function promiseAllObject(promisesObj) {
   const keys = Object.keys(promisesObj);
@@ -107035,11 +107250,11 @@ function explicitlyAborted(x, startIndex = 0) {
   }
   return false;
 }
-function prefixIssues(path27, issues) {
+function prefixIssues(path28, issues) {
   return issues.map((iss) => {
     var _a9;
     (_a9 = iss).path ?? (_a9.path = []);
-    iss.path.unshift(path27);
+    iss.path.unshift(path28);
     return iss;
   });
 }
@@ -107501,16 +107716,16 @@ function flattenError(error62, mapper = (issue2) => issue2.message) {
 }
 function formatError(error62, mapper = (issue2) => issue2.message) {
   const fieldErrors = { _errors: [] };
-  const processError = (error63, path27 = []) => {
+  const processError = (error63, path28 = []) => {
     for (const issue2 of error63.issues) {
       if (issue2.code === "invalid_union" && issue2.errors.length) {
-        issue2.errors.map((issues) => processError({ issues }, [...path27, ...issue2.path]));
+        issue2.errors.map((issues) => processError({ issues }, [...path28, ...issue2.path]));
       } else if (issue2.code === "invalid_key") {
-        processError({ issues: issue2.issues }, [...path27, ...issue2.path]);
+        processError({ issues: issue2.issues }, [...path28, ...issue2.path]);
       } else if (issue2.code === "invalid_element") {
-        processError({ issues: issue2.issues }, [...path27, ...issue2.path]);
+        processError({ issues: issue2.issues }, [...path28, ...issue2.path]);
       } else {
-        const fullpath = [...path27, ...issue2.path];
+        const fullpath = [...path28, ...issue2.path];
         if (fullpath.length === 0) {
           fieldErrors._errors.push(mapper(issue2));
         } else {
@@ -107549,17 +107764,17 @@ function formatError(error62, mapper = (issue2) => issue2.message) {
 }
 function treeifyError(error62, mapper = (issue2) => issue2.message) {
   const result = { errors: [] };
-  const processError = (error63, path27 = []) => {
+  const processError = (error63, path28 = []) => {
     var _a9;
     for (const issue2 of error63.issues) {
       if (issue2.code === "invalid_union" && issue2.errors.length) {
-        issue2.errors.map((issues) => processError({ issues }, [...path27, ...issue2.path]));
+        issue2.errors.map((issues) => processError({ issues }, [...path28, ...issue2.path]));
       } else if (issue2.code === "invalid_key") {
-        processError({ issues: issue2.issues }, [...path27, ...issue2.path]);
+        processError({ issues: issue2.issues }, [...path28, ...issue2.path]);
       } else if (issue2.code === "invalid_element") {
-        processError({ issues: issue2.issues }, [...path27, ...issue2.path]);
+        processError({ issues: issue2.issues }, [...path28, ...issue2.path]);
       } else {
-        const fullpath = [...path27, ...issue2.path];
+        const fullpath = [...path28, ...issue2.path];
         if (fullpath.length === 0) {
           result.errors.push(mapper(issue2));
           continue;
@@ -107598,8 +107813,8 @@ function treeifyError(error62, mapper = (issue2) => issue2.message) {
 }
 function toDotPath(_path) {
   const segs = [];
-  const path27 = _path.map((seg) => typeof seg === "object" ? seg.key : seg);
-  for (const seg of path27) {
+  const path28 = _path.map((seg) => typeof seg === "object" ? seg.key : seg);
+  for (const seg of path28) {
     if (typeof seg === "number")
       segs.push(`[${seg}]`);
     else if (typeof seg === "symbol")
@@ -123738,8 +123953,8 @@ function getErrorMap() {
 
 // node_modules/.pnpm/zod@4.6.7/node_modules/zod/v3/helpers/parseUtil.js
 var makeIssue = (params) => {
-  const { data, path: path27, errorMaps, issueData } = params;
-  const fullPath = [...path27, ...issueData.path || []];
+  const { data, path: path28, errorMaps, issueData } = params;
+  const fullPath = [...path28, ...issueData.path || []];
   const fullIssue = {
     ...issueData,
     path: fullPath
@@ -123855,11 +124070,11 @@ var errorUtil;
 
 // node_modules/.pnpm/zod@4.6.7/node_modules/zod/v3/types.js
 var ParseInputLazyPath = class {
-  constructor(parent, value, path27, key) {
+  constructor(parent, value, path28, key) {
     this._cachedPath = [];
     this.parent = parent;
     this.data = value;
-    this._path = path27;
+    this._path = path28;
     this._key = key;
   }
   get path() {
@@ -129446,9 +129661,9 @@ function toJsonSchema(schema, params) {
   let result;
   if (isStandardJsonSchema(schema) && !isZodSchemaV4(schema)) result = schema["~standard"].jsonSchema.input({ target: "draft-07" });
   else if (isZodSchemaV4(schema)) {
-    const inputSchema11 = interopZodTransformInputSchema(schema, true);
-    if (isZodObjectV4(inputSchema11)) {
-      const strictSchema = interopZodObjectStrict(inputSchema11, true);
+    const inputSchema13 = interopZodTransformInputSchema(schema, true);
+    if (isZodObjectV4(inputSchema13)) {
+      const strictSchema = interopZodObjectStrict(inputSchema13, true);
       result = toJSONSchema(strictSchema, params);
     } else result = toJSONSchema(schema, params);
   } else if (isZodSchemaV3(schema)) result = zodToJsonSchema(schema);
@@ -130495,12 +130710,12 @@ function isInteger(str) {
   }
   return true;
 }
-function escapePathComponent(path27) {
-  if (path27.indexOf("/") === -1 && path27.indexOf("~") === -1) return path27;
-  return path27.replace(/~/g, "~0").replace(/\//g, "~1");
+function escapePathComponent(path28) {
+  if (path28.indexOf("/") === -1 && path28.indexOf("~") === -1) return path28;
+  return path28.replace(/~/g, "~0").replace(/\//g, "~1");
 }
-function unescapePathComponent(path27) {
-  return path27.replace(/~1/g, "/").replace(/~0/g, "~");
+function unescapePathComponent(path28) {
+  return path28.replace(/~1/g, "/").replace(/~0/g, "~");
 }
 function hasUndefined(obj) {
   if (obj === void 0) return true;
@@ -130817,7 +131032,7 @@ function _areEquals(a, b) {
 }
 
 // node_modules/.pnpm/@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_/node_modules/@langchain/core/dist/utils/fast-json-patch/src/duplex.js
-function _generate(mirror, obj, patches, path27, invertible) {
+function _generate(mirror, obj, patches, path28, invertible) {
   if (obj === mirror) return;
   if (typeof obj.toJSON === "function") obj = obj.toJSON();
   var newKeys = _objectKeys(obj);
@@ -130828,39 +131043,39 @@ function _generate(mirror, obj, patches, path27, invertible) {
     var oldVal = mirror[key];
     if (hasOwnProperty(obj, key) && !(obj[key] === void 0 && oldVal !== void 0 && Array.isArray(obj) === false)) {
       var newVal = obj[key];
-      if (typeof oldVal == "object" && oldVal != null && typeof newVal == "object" && newVal != null && Array.isArray(oldVal) === Array.isArray(newVal)) _generate(oldVal, newVal, patches, path27 + "/" + escapePathComponent(key), invertible);
+      if (typeof oldVal == "object" && oldVal != null && typeof newVal == "object" && newVal != null && Array.isArray(oldVal) === Array.isArray(newVal)) _generate(oldVal, newVal, patches, path28 + "/" + escapePathComponent(key), invertible);
       else if (oldVal !== newVal) {
         if (invertible) patches.push({
           op: "test",
-          path: path27 + "/" + escapePathComponent(key),
+          path: path28 + "/" + escapePathComponent(key),
           value: _deepClone(oldVal)
         });
         patches.push({
           op: "replace",
-          path: path27 + "/" + escapePathComponent(key),
+          path: path28 + "/" + escapePathComponent(key),
           value: _deepClone(newVal)
         });
       }
     } else if (Array.isArray(mirror) === Array.isArray(obj)) {
       if (invertible) patches.push({
         op: "test",
-        path: path27 + "/" + escapePathComponent(key),
+        path: path28 + "/" + escapePathComponent(key),
         value: _deepClone(oldVal)
       });
       patches.push({
         op: "remove",
-        path: path27 + "/" + escapePathComponent(key)
+        path: path28 + "/" + escapePathComponent(key)
       });
       deleted = true;
     } else {
       if (invertible) patches.push({
         op: "test",
-        path: path27,
+        path: path28,
         value: mirror
       });
       patches.push({
         op: "replace",
-        path: path27,
+        path: path28,
         value: obj
       });
     }
@@ -130870,7 +131085,7 @@ function _generate(mirror, obj, patches, path27, invertible) {
     var key = newKeys[t];
     if (!hasOwnProperty(mirror, key) && obj[key] !== void 0) patches.push({
       op: "add",
-      path: path27 + "/" + escapePathComponent(key),
+      path: path28 + "/" + escapePathComponent(key),
       value: _deepClone(obj[key])
     });
   }
@@ -132345,10 +132560,10 @@ var Runnable = class extends Serializable {
       }
       const paths = log.ops.filter((op) => op.path.startsWith("/logs/")).map((op) => op.path.split("/")[2]);
       const dedupedPaths = [...new Set(paths)];
-      for (const path27 of dedupedPaths) {
+      for (const path28 of dedupedPaths) {
         let eventType;
         let data = {};
-        const logEntry = runLog.state.logs[path27];
+        const logEntry = runLog.state.logs[path28];
         if (logEntry.end_time === void 0) {
           if (logEntry.streamed_output.length > 0) eventType = "stream";
           else eventType = "start";
@@ -136131,13 +136346,13 @@ function resolveRef(ref, ctx) {
   if (!ref.startsWith("#")) {
     throw new Error("External $ref is not supported, only local refs (#/...) are allowed");
   }
-  const path27 = ref.slice(1).split("/").filter(Boolean);
-  if (path27.length === 0) {
+  const path28 = ref.slice(1).split("/").filter(Boolean);
+  if (path28.length === 0) {
     return ctx.rootSchema;
   }
   const defsKey = ctx.version === "draft-2020-12" ? "$defs" : "definitions";
-  if (path27[0] === defsKey) {
-    const key = path27[1] === void 0 ? void 0 : decodeJSONPointerSegment(path27[1]);
+  if (path28[0] === defsKey) {
+    const key = path28[1] === void 0 ? void 0 : decodeJSONPointerSegment(path28[1]);
     if (!key || !ctx.defs[key]) {
       throw new Error(`Reference not found: ${ref}`);
     }
@@ -137309,11 +137524,11 @@ function _stringify(content) {
 
 // src/tools/mcp/mcp-client.ts
 import { spawn } from "node:child_process";
-import fs2 from "node:fs/promises";
-import path4 from "node:path";
+import fs4 from "node:fs/promises";
+import path7 from "node:path";
 
 // src/tools/environment.ts
-import path3 from "node:path";
+import path6 from "node:path";
 var PORTABLE_ENV = ["PATH", "LANG", "LANGUAGE", "LC_ALL", "LC_CTYPE", "TERM", "TZ", "DISPLAY"];
 var WINDOWS_ENV = [
   "SystemRoot",
@@ -137346,7 +137561,7 @@ function childEnvironment({ home, passthrough = [] } = {}) {
     }
   }
   if (home) {
-    const tmp = path3.join(home, "tmp");
+    const tmp = path6.join(home, "tmp");
     env.HOME = home;
     env.USERPROFILE = home;
     env.TMPDIR = tmp;
@@ -137388,13 +137603,13 @@ async function connectMcpClient(options) {
   return client2;
 }
 async function serverEnvironment(dataDir) {
-  const home = await privateHome(path4.join(dataDir, "mcp-home"));
+  const home = await privateHome(path7.join(dataDir, "mcp-home"));
   return childEnvironment({ home });
 }
 async function privateHome(home) {
-  await fs2.mkdir(home, { recursive: true, mode: 448 });
+  await fs4.mkdir(home, { recursive: true, mode: 448 });
   if (process.platform !== "win32") {
-    const stats = await fs2.lstat(home);
+    const stats = await fs4.lstat(home);
     const uid = process.getuid?.();
     if (!stats.isDirectory() || uid !== void 0 && stats.uid !== uid) {
       throw new Error(`Refusing to use ${home} as the MCP server's home: it is not a directory owned by this user.`);
@@ -137405,7 +137620,7 @@ async function privateHome(home) {
       );
     }
   }
-  await fs2.mkdir(path4.join(home, "tmp"), { recursive: true, mode: 448 });
+  await fs4.mkdir(path7.join(home, "tmp"), { recursive: true, mode: 448 });
   return home;
 }
 var StdioMcpClient = class {
@@ -137811,11 +138026,11 @@ var RunService = class {
 
 // src/config/env.ts
 var import_dotenv = __toESM(require_dist2());
-import path6 from "node:path";
+import path9 from "node:path";
 
 // src/config/runtime-config.ts
 import os from "node:os";
-import path5 from "node:path";
+import path8 from "node:path";
 
 // src/providers/provider-catalog.ts
 var PROVIDER_CATALOG = [
@@ -137938,10 +138153,10 @@ var RuntimeConfig = class {
     this.isRoot = typeof process.getuid === "function" && process.getuid() === 0;
   }
   get runsDir() {
-    return path5.join(this.dataDir, "runs");
+    return path8.join(this.dataDir, "runs");
   }
   get workspacesDir() {
-    return path5.join(this.dataDir, "workspaces");
+    return path8.join(this.dataDir, "workspaces");
   }
   /**
    * The mailbox login, or undefined when it is incomplete. An app password has
@@ -137961,7 +138176,7 @@ var RuntimeConfig = class {
     };
   }
   workspaceFor(runId) {
-    return path5.join(this.workspacesDir, runId);
+    return path8.join(this.workspacesDir, runId);
   }
   apiKeyFor(provider) {
     const definition = PROVIDER_CATALOG.find((entry) => entry.id === provider);
@@ -137978,9 +138193,9 @@ function readEnv2(name2) {
 function resolveDataDir(override) {
   const configured = override ?? readEnv2("DATA_DIR") ?? readEnv2("AGENTS_AUTOMATIONS_HOME");
   if (!configured) {
-    return path5.join(os.homedir(), ".agents-automations");
+    return path8.join(os.homedir(), ".agents-automations");
   }
-  return path5.isAbsolute(configured) ? configured : path5.resolve(process.cwd(), configured);
+  return path8.isAbsolute(configured) ? configured : path8.resolve(process.cwd(), configured);
 }
 function readInt(name2, fallback) {
   const raw = readEnv2(name2);
@@ -138011,7 +138226,7 @@ function readList(name2, fallback) {
 
 // src/config/env.ts
 function loadEnvironment(options = {}) {
-  const file2 = options.envFile ? path6.resolve(process.cwd(), options.envFile) : path6.join(resolveDataDir(options.dataDir), ".env");
+  const file2 = options.envFile ? path9.resolve(process.cwd(), options.envFile) : path9.join(resolveDataDir(options.dataDir), ".env");
   (0, import_dotenv.config)({ path: file2, quiet: true });
   return file2;
 }
@@ -143888,37 +144103,37 @@ function buildStatusQueryAttributes(connection, statusQuery) {
   });
   return attributes;
 }
-function encodePath(connection, path27) {
-  path27 = (path27 || "").toString();
-  if (!connection.enabled.has("UTF8=ACCEPT") && !isRev2Active(connection) && /[&\x00-\x08\x0b-\x0c\x0e-\x1f\u0080-\uffff]/.test(path27)) {
+function encodePath(connection, path28) {
+  path28 = (path28 || "").toString();
+  if (!connection.enabled.has("UTF8=ACCEPT") && !isRev2Active(connection) && /[&\x00-\x08\x0b-\x0c\x0e-\x1f\u0080-\uffff]/.test(path28)) {
     try {
-      path27 = import_iconv_lite2.default.encode(path27, "utf-7-imap").toString();
+      path28 = import_iconv_lite2.default.encode(path28, "utf-7-imap").toString();
     } catch {
     }
   }
-  return path27;
+  return path28;
 }
-function decodePath(connection, path27) {
-  path27 = (path27 || "").toString();
-  if (!connection.enabled.has("UTF8=ACCEPT") && !isRev2Active(connection) && /[&]/.test(path27)) {
+function decodePath(connection, path28) {
+  path28 = (path28 || "").toString();
+  if (!connection.enabled.has("UTF8=ACCEPT") && !isRev2Active(connection) && /[&]/.test(path28)) {
     try {
-      path27 = import_iconv_lite2.default.decode(Buffer.from(path27), "utf-7-imap").toString();
+      path28 = import_iconv_lite2.default.decode(Buffer.from(path28), "utf-7-imap").toString();
     } catch {
     }
   }
-  return path27;
+  return path28;
 }
-function normalizePath(connection, path27, skipNamespace) {
-  if (Array.isArray(path27)) {
-    path27 = path27.join(connection.namespace && connection.namespace.delimiter || "");
+function normalizePath(connection, path28, skipNamespace) {
+  if (Array.isArray(path28)) {
+    path28 = path28.join(connection.namespace && connection.namespace.delimiter || "");
   }
-  if (path27.toUpperCase() === "INBOX") {
+  if (path28.toUpperCase() === "INBOX") {
     return "INBOX";
   }
-  if (!skipNamespace && connection.namespace && connection.namespace.prefix && !path27.startsWith(connection.namespace.prefix)) {
-    path27 = connection.namespace.prefix + path27;
+  if (!skipNamespace && connection.namespace && connection.namespace.prefix && !path28.startsWith(connection.namespace.prefix)) {
+    path28 = connection.namespace.prefix + path28;
   }
-  return path27;
+  return path28;
 }
 function comparePaths(connection, a, b) {
   if (!a || !b) {
@@ -144269,14 +144484,14 @@ async function formatMessageResponse(untagged, mailbox, idHashAlgorithm, connect
     }
   }
   if (map2.emailId || map2.uid) {
-    let path27 = mailbox.path;
-    if (/[\u0080-\uffff]/.test(path27)) {
+    let path28 = mailbox.path;
+    if (/[\u0080-\uffff]/.test(path28)) {
       try {
-        path27 = import_iconv_lite2.default.encode(path27, "utf-7-imap").toString();
+        path28 = import_iconv_lite2.default.encode(path28, "utf-7-imap").toString();
       } catch {
       }
     }
-    map2.id = map2.emailId || createHash(idHashAlgorithm || "md5").update([path27, mailbox.uidValidity?.toString() || "", map2.uid.toString()].join(":")).digest("hex");
+    map2.id = map2.emailId || createHash(idHashAlgorithm || "md5").update([path28, mailbox.uidValidity?.toString() || "", map2.uid.toString()].join(":")).digest("hex");
   }
   if (partialOrigins) {
     Object.defineProperty(map2, "partialOrigins", { value: partialOrigins, writable: true, configurable: true });
@@ -144430,16 +144645,16 @@ function getStructuredParams(arr3) {
   return params;
 }
 function parseBodystructure(entry) {
-  let walk3 = (node2, path27) => {
-    path27 = path27 || [];
+  let walk3 = (node2, path28) => {
+    path28 = path28 || [];
     let curNode = {}, i = 0, part = 0;
-    if (path27.length) {
-      curNode.part = path27.join(".");
+    if (path28.length) {
+      curNode.part = path28.join(".");
     }
     if (Array.isArray(node2[0])) {
       curNode.childNodes = [];
       while (Array.isArray(node2[i])) {
-        curNode.childNodes.push(walk3(node2[i], path27.concat(++part)));
+        curNode.childNodes.push(walk3(node2[i], path28.concat(++part)));
         i++;
       }
       curNode.type = "multipart/" + ((node2[i++] || {}).value || "").toString().toLowerCase();
@@ -144485,7 +144700,7 @@ function parseBodystructure(entry) {
             // the encapsulated message shares the part number with its wrapper.
             // Distinction is via suffixes: path.MIME = wrapper headers,
             // path.HEADER = encapsulated message headers.
-            walk3(node2[i], path27)
+            walk3(node2[i], path28)
           ];
         }
         i++;
@@ -147165,9 +147380,9 @@ async function select(connection, pathInput, options) {
     return;
   }
   options = options || {};
-  let path27 = normalizePath(connection, pathInput);
-  if (!connection.folders.has(path27)) {
-    let folders = await connection.run("LIST", "", path27);
+  let path28 = normalizePath(connection, pathInput);
+  if (!connection.folders.has(path28)) {
+    let folders = await connection.run("LIST", "", path28);
     if (!folders) {
       throw new Error("Failed to fetch folders");
     }
@@ -147175,10 +147390,10 @@ async function select(connection, pathInput, options) {
       connection.folders.set(folder.path, folder);
     });
   }
-  let folderListData = connection.folders.has(path27) ? connection.folders.get(path27) : false;
+  let folderListData = connection.folders.has(path28) ? connection.folders.get(path28) : false;
   let response;
   try {
-    let map2 = { path: path27 };
+    let map2 = { path: path28 };
     if (folderListData) {
       ["delimiter", "specialUse", "subscribed", "listed"].forEach((key) => {
         if (folderListData[key]) {
@@ -147198,7 +147413,7 @@ async function select(connection, pathInput, options) {
       ]);
       map2.qresync = true;
     }
-    let encodedPath = encodePath(connection, path27);
+    let encodedPath = encodePath(connection, path28);
     let selectCommand = {
       command: !options.readOnly ? "SELECT" : "EXAMINE",
       /* c8 ignore next */
@@ -147258,12 +147473,12 @@ async function select(connection, pathInput, options) {
         // since the client's last known state. Only received when QRESYNC was requested.
         // A dummy mailbox object is passed because the mailbox isn't officially open yet.
         VANISHED: async (untagged) => {
-          await connection.untaggedVanished(untagged, { path: path27, uidNext: false, uidValidity: false });
+          await connection.untaggedVanished(untagged, { path: path28, uidNext: false, uidValidity: false });
         },
         // Untagged FETCH during SELECT/EXAMINE: only occurs with QRESYNC, delivering
         // updated flags for messages that changed since the client's last modseq.
         FETCH: async (untagged) => {
-          await connection.untaggedFetch(untagged, { path: path27, uidNext: false, uidValidity: false });
+          await connection.untaggedFetch(untagged, { path: path28, uidNext: false, uidValidity: false });
         }
       }
     });
@@ -147277,7 +147492,7 @@ async function select(connection, pathInput, options) {
     }
     let currentMailbox = connection.mailbox;
     connection.mailbox = false;
-    let reopened = !currentMailbox || currentMailbox.path !== path27 || !!currentMailbox.uidValidity && !!map2.uidValidity && currentMailbox.uidValidity !== map2.uidValidity;
+    let reopened = !currentMailbox || currentMailbox.path !== path28 || !!currentMailbox.uidValidity && !!map2.uidValidity && currentMailbox.uidValidity !== map2.uidValidity;
     if (currentMailbox && reopened) {
       emitSafe(connection, "mailboxClose", currentMailbox);
     }
@@ -147288,10 +147503,10 @@ async function select(connection, pathInput, options) {
       emitSafe(connection, "mailboxOpen", connection.mailbox);
     } else {
       if (typeof map2.exists === "number" && map2.exists !== currentMailbox.exists) {
-        emitSafe(connection, "exists", { path: path27, count: map2.exists, prevCount: currentMailbox.exists });
+        emitSafe(connection, "exists", { path: path28, count: map2.exists, prevCount: currentMailbox.exists });
       }
       if (map2.highestModseq && map2.highestModseq !== currentMailbox.highestModseq) {
-        emitSafe(connection, "highestModseq", { path: path27, highestModseq: map2.highestModseq, prevHighestModseq: currentMailbox.highestModseq });
+        emitSafe(connection, "highestModseq", { path: path28, highestModseq: map2.highestModseq, prevHighestModseq: currentMailbox.highestModseq });
       }
     }
     response.next();
@@ -147528,17 +147743,17 @@ async function fetch2(connection, range, query, options) {
 }
 
 // node_modules/.pnpm/imapflow@2.9.0/node_modules/imapflow/dist/esm/commands/create.js
-async function create(connection, path27) {
+async function create(connection, path28) {
   if (!isAuthenticatedState(connection)) {
     return;
   }
-  path27 = normalizePath(connection, path27);
+  path28 = normalizePath(connection, path28);
   let response;
   try {
     let map2 = {
-      path: path27
+      path: path28
     };
-    response = await connection.exec("CREATE", [{ type: "ATOM", value: encodePath(connection, path27) }]);
+    response = await connection.exec("CREATE", [{ type: "ATOM", value: encodePath(connection, path28) }]);
     let section = response.response.attributes && response.response.attributes[0] && response.response.attributes[0].section && response.response.attributes[0].section.length ? response.response.attributes[0].section : false;
     if (section) {
       let key;
@@ -147564,13 +147779,13 @@ async function create(connection, path27) {
     }
     map2.created = true;
     response.next();
-    await connection.run("SUBSCRIBE", path27);
+    await connection.run("SUBSCRIBE", path28);
     return map2;
   } catch (err) {
     let errorCode = getStatusCode(err.response);
     if (errorCode === "ALREADYEXISTS") {
       return {
-        path: path27,
+        path: path28,
         created: false
       };
     }
@@ -147580,21 +147795,21 @@ async function create(connection, path27) {
 }
 
 // node_modules/.pnpm/imapflow@2.9.0/node_modules/imapflow/dist/esm/commands/delete.js
-async function deleteMailbox(connection, path27) {
+async function deleteMailbox(connection, path28) {
   if (!isAuthenticatedState(connection)) {
     return;
   }
-  path27 = normalizePath(connection, path27);
+  path28 = normalizePath(connection, path28);
   let selected = getSelectedMailbox(connection);
-  if (selected && selected.path === path27) {
+  if (selected && selected.path === path28) {
     await connection.run("CLOSE", { unselect: true });
   }
   let response;
   try {
     let map2 = {
-      path: path27
+      path: path28
     };
-    response = await connection.exec("DELETE", [{ type: "ATOM", value: encodePath(connection, path27) }]);
+    response = await connection.exec("DELETE", [{ type: "ATOM", value: encodePath(connection, path28) }]);
     response.next();
     return map2;
   } catch (err) {
@@ -147604,24 +147819,24 @@ async function deleteMailbox(connection, path27) {
 }
 
 // node_modules/.pnpm/imapflow@2.9.0/node_modules/imapflow/dist/esm/commands/rename.js
-async function rename2(connection, path27, newPath) {
+async function rename2(connection, path28, newPath) {
   if (!isAuthenticatedState(connection)) {
     return;
   }
-  path27 = normalizePath(connection, path27);
+  path28 = normalizePath(connection, path28);
   newPath = normalizePath(connection, newPath);
   let selected = getSelectedMailbox(connection);
-  if (selected && selected.path === path27) {
+  if (selected && selected.path === path28) {
     await connection.run("CLOSE", { unselect: true });
   }
   let response;
   try {
     let map2 = {
-      path: path27,
+      path: path28,
       newPath
     };
     response = await connection.exec("RENAME", [
-      { type: "ATOM", value: encodePath(connection, path27) },
+      { type: "ATOM", value: encodePath(connection, path28) },
       { type: "ATOM", value: encodePath(connection, newPath) }
     ]);
     response.next();
@@ -147656,14 +147871,14 @@ async function close(connection, options) {
 }
 
 // node_modules/.pnpm/imapflow@2.9.0/node_modules/imapflow/dist/esm/commands/subscription.js
-async function setSubscription(connection, command2, path27) {
+async function setSubscription(connection, command2, path28) {
   if (!isAuthenticatedState(connection)) {
     return;
   }
-  path27 = normalizePath(connection, path27);
+  path28 = normalizePath(connection, path28);
   let response;
   try {
-    response = await connection.exec(command2, [{ type: "ATOM", value: encodePath(connection, path27) }]);
+    response = await connection.exec(command2, [{ type: "ATOM", value: encodePath(connection, path28) }]);
     response.next();
     return true;
   } catch (err) {
@@ -147673,13 +147888,13 @@ async function setSubscription(connection, command2, path27) {
 }
 
 // node_modules/.pnpm/imapflow@2.9.0/node_modules/imapflow/dist/esm/commands/subscribe.js
-async function subscribe(connection, path27) {
-  return await setSubscription(connection, "SUBSCRIBE", path27);
+async function subscribe(connection, path28) {
+  return await setSubscription(connection, "SUBSCRIBE", path28);
 }
 
 // node_modules/.pnpm/imapflow@2.9.0/node_modules/imapflow/dist/esm/commands/unsubscribe.js
-async function unsubscribe(connection, path27) {
-  return await setSubscription(connection, "UNSUBSCRIBE", path27);
+async function unsubscribe(connection, path28) {
+  return await setSubscription(connection, "UNSUBSCRIBE", path28);
 }
 
 // node_modules/.pnpm/imapflow@2.9.0/node_modules/imapflow/dist/esm/commands/store.js
@@ -148500,47 +148715,47 @@ async function append(connection, destination, content, flags2, idate) {
 
 // node_modules/.pnpm/imapflow@2.9.0/node_modules/imapflow/dist/esm/commands/status.js
 var MAILBOX_UPDATERS = {
-  messages: (value, mailbox, connection, path27) => {
+  messages: (value, mailbox, connection, path28) => {
     let prevCount = mailbox.exists;
     if (prevCount !== value) {
       mailbox.exists = value;
-      emitSafe(connection, "exists", { path: path27, count: value, prevCount });
+      emitSafe(connection, "exists", { path: path28, count: value, prevCount });
     }
   },
   uidNext: (value, mailbox) => {
     mailbox.uidNext = value;
   },
-  highestModseq: (value, mailbox, connection, path27) => {
+  highestModseq: (value, mailbox, connection, path28) => {
     let prevHighestModseq = mailbox.highestModseq;
     if (prevHighestModseq !== value) {
       mailbox.highestModseq = value;
-      emitSafe(connection, "highestModseq", { path: path27, highestModseq: value, prevHighestModseq });
+      emitSafe(connection, "highestModseq", { path: path28, highestModseq: value, prevHighestModseq });
     }
   }
 };
-async function status(connection, path27, query) {
-  if (!isAuthenticatedState(connection) || !path27) {
+async function status(connection, path28, query) {
+  if (!isAuthenticatedState(connection) || !path28) {
     return false;
   }
-  path27 = normalizePath(connection, path27);
-  let encodedPath = encodePath(connection, path27);
+  path28 = normalizePath(connection, path28);
+  let encodedPath = encodePath(connection, path28);
   let attributes = [{ type: encodedPath.indexOf("&") >= 0 ? "STRING" : "ATOM", value: encodedPath }];
   let queryAttributes = buildStatusQueryAttributes(connection, query);
   let syntheticRecent = query && query.recent && isRev2Active(connection);
   if (!queryAttributes.length) {
-    return syntheticRecent ? { path: path27, recent: 0 } : false;
+    return syntheticRecent ? { path: path28, recent: 0 } : false;
   }
   attributes.push(queryAttributes);
   let response;
   try {
-    let map2 = { path: path27 };
+    let map2 = { path: path28 };
     response = await connection.exec("STATUS", attributes, {
       untagged: {
         // STATUS response: * STATUS <mailbox> (<key> <value> <key> <value> ...)
         // Parsed as alternating key-value pairs (i % 2 pattern).
         STATUS: async (untagged) => {
           let selected = getSelectedMailbox(connection);
-          let currentMailbox = selected && selected.path === path27 ? selected : false;
+          let currentMailbox = selected && selected.path === path28 ? selected : false;
           let list3 = untagged.attributes && Array.isArray(untagged.attributes[1]) ? untagged.attributes[1] : false;
           if (!list3) {
             return;
@@ -148556,7 +148771,7 @@ async function status(connection, path27, query) {
             return;
           }
           for (let [key, value] of updates) {
-            MAILBOX_UPDATERS[key](value, currentMailbox, connection, path27);
+            MAILBOX_UPDATERS[key](value, currentMailbox, connection, path28);
           }
         }
       }
@@ -148568,12 +148783,12 @@ async function status(connection, path27, query) {
     return map2;
   } catch (err) {
     if (err.responseStatus === "NO") {
-      let folders = await connection.run("LIST", "", path27, { listOnly: true }).catch((listErr) => {
+      let folders = await connection.run("LIST", "", path28, { listOnly: true }).catch((listErr) => {
         logConnectionError(connection, "Failed to check if the mailbox exists", listErr);
         return false;
       });
       if (folders && !folders.length) {
-        throw createImapError(`Mailbox doesn't exist: ${path27}`, "NotFound", { response: err });
+        throw createImapError(`Mailbox doesn't exist: ${path28}`, "NotFound", { response: err });
       }
     }
     connection.log.warn({ err, cid: connection.id });
@@ -148694,15 +148909,15 @@ async function compress(connection) {
 }
 
 // node_modules/.pnpm/imapflow@2.9.0/node_modules/imapflow/dist/esm/commands/quota.js
-async function quota(connection, path27) {
-  if (!isAuthenticatedState(connection) || !path27) {
+async function quota(connection, path28) {
+  if (!isAuthenticatedState(connection) || !path28) {
     return;
   }
   if (!connection.capabilities.has("QUOTA") && ![...connection.capabilities.keys()].some((capability2) => capability2.startsWith("QUOTA=RES-"))) {
     return false;
   }
-  path27 = normalizePath(connection, path27);
-  let map2 = { path: path27 };
+  path28 = normalizePath(connection, path28);
+  let map2 = { path: path28 };
   let processQuotaResponse = (untagged) => {
     let attributes = untagged.attributes && untagged.attributes[1];
     if (!attributes || !Array.isArray(attributes) || !attributes.length) {
@@ -148744,7 +148959,7 @@ async function quota(connection, path27) {
   let quotaFound = false;
   let response;
   try {
-    response = await connection.exec("GETQUOTAROOT", [{ type: "ATOM", value: encodePath(connection, path27) }], {
+    response = await connection.exec("GETQUOTAROOT", [{ type: "ATOM", value: encodePath(connection, path28) }], {
       untagged: {
         // QUOTAROOT response tells us which quota root applies to this mailbox.
         // A mailbox may have zero or one quota root.
@@ -148922,16 +149137,16 @@ async function runIdle(connection) {
   }
 }
 async function pollOnce(connection, session) {
-  let path27 = connection.mailbox && connection.mailbox.path;
+  let path28 = connection.mailbox && connection.mailbox.path;
   switch (connection.missingIdleCommand) {
     case "SELECT":
       connection.log.debug({ msg: `Running SELECT to detect changes in folder`, cid: connection.id });
-      await connection.runInternal("SELECT", path27, { readOnly: session.selectCommand.command === "EXAMINE" });
+      await connection.runInternal("SELECT", path28, { readOnly: session.selectCommand.command === "EXAMINE" });
       break;
     case "STATUS": {
       connection.log.debug({ msg: `Running STATUS to detect changes in folder`, cid: connection.id });
       let polled = connection.mailbox;
-      let status2 = await connection.runInternal("STATUS", path27, {
+      let status2 = await connection.runInternal("STATUS", path28, {
         messages: true,
         uidNext: true,
         uidValidity: true,
@@ -148942,8 +149157,8 @@ async function pollOnce(connection, session) {
         throw createImapError("STATUS poll failed", "PollFailed");
       }
       if (polled && connection.mailbox === polled && status2.uidValidity && polled.uidValidity && status2.uidValidity !== polled.uidValidity) {
-        connection.log.info({ msg: "UIDVALIDITY changed, selecting the mailbox again", path: path27, cid: connection.id });
-        await connection.runInternal("SELECT", path27, { readOnly: session.selectCommand.command === "EXAMINE" });
+        connection.log.info({ msg: "UIDVALIDITY changed, selecting the mailbox again", path: path28, cid: connection.id });
+        await connection.runInternal("SELECT", path28, { readOnly: session.selectCommand.command === "EXAMINE" });
       }
       break;
     }
@@ -149148,17 +149363,17 @@ async function authLogin(connection, username, password) {
     let usernameSent = false;
     let response = await connection.exec("AUTHENTICATE", [{ type: "ATOM", value: "LOGIN" }], {
       onPlusTag: async (resp) => {
-        let question = resp.attributes && resp.attributes[0] && resp.attributes[0].type === "TEXT" ? Buffer.from(resp.attributes[0].value, "base64").toString().toLowerCase().replace(/[:\x00]*$/, "") : "";
-        if (question === "username" || question === "user name" || !question && !usernameSent) {
+        let question2 = resp.attributes && resp.attributes[0] && resp.attributes[0].type === "TEXT" ? Buffer.from(resp.attributes[0].value, "base64").toString().toLowerCase().replace(/[:\x00]*$/, "") : "";
+        if (question2 === "username" || question2 === "user name" || !question2 && !usernameSent) {
           let encodedUsername = Buffer.from(username).toString("base64");
           connection.log.debug({ src: "c", msg: encodedUsername, comment: `Encoded username for AUTH=LOGIN`, cid: connection.id });
           connection.write(encodedUsername);
           usernameSent = true;
-        } else if (question === "password") {
+        } else if (question2 === "password") {
           connection.log.debug({ src: "c", msg: "(* value hidden *)", comment: `Encoded password for AUTH=LOGIN`, cid: connection.id });
           connection.write(Buffer.from(password).toString("base64"));
         } else {
-          connection.log.warn({ msg: "Unknown AUTH=LOGIN challenge, cancelling", question, cid: connection.id });
+          connection.log.warn({ msg: "Unknown AUTH=LOGIN challenge, cancelling", question: question2, cid: connection.id });
           connection.write("*");
         }
       }
@@ -150795,12 +151010,12 @@ var ImapFlow = class extends EventEmitter {
     }
   }
   /** @internal */
-  async ensureSelectedMailbox(path27) {
-    if (!path27) {
+  async ensureSelectedMailbox(path28) {
+    if (!path28) {
       return false;
     }
-    if (!this.mailbox || !comparePaths(this, this.mailbox.path, Array.isArray(path27) ? normalizePath(this, path27) : path27)) {
-      return await this.mailboxOpen(path27);
+    if (!this.mailbox || !comparePaths(this, this.mailbox.path, Array.isArray(path28) ? normalizePath(this, path28) : path28)) {
+      return await this.mailboxOpen(path28);
     }
     return true;
   }
@@ -151361,9 +151576,9 @@ var ImapFlow = class extends EventEmitter {
    * let quota = await client.getQuota();
    * console.log(quota.storage.used, quota.storage.limit)
    */
-  async getQuota(path27) {
-    path27 = path27 || "INBOX";
-    return await this.run("QUOTA", path27);
+  async getQuota(path28) {
+    path28 = path28 || "INBOX";
+    return await this.run("QUOTA", path28);
   }
   /**
    * Lists available mailboxes as an Array
@@ -151415,8 +151630,8 @@ var ImapFlow = class extends EventEmitter {
    * console.log(info.path);
    * // "INBOX.parent.child" // assumes "INBOX." as namespace prefix and "." as delimiter
    */
-  async mailboxCreate(path27) {
-    return await this.run("CREATE", path27);
+  async mailboxCreate(path28) {
+    return await this.run("CREATE", path28);
   }
   /**
    * Renames a mailbox. Throws on error.
@@ -151431,8 +151646,8 @@ var ImapFlow = class extends EventEmitter {
    * console.log(info.newPath);
    * // "INBOX.Important stuff" // assumes "INBOX." as namespace prefix
    */
-  async mailboxRename(path27, newPath) {
-    return await this.run("RENAME", path27, newPath);
+  async mailboxRename(path28, newPath) {
+    return await this.run("RENAME", path28, newPath);
   }
   /**
    * Deletes a mailbox. Throws on error.
@@ -151446,8 +151661,8 @@ var ImapFlow = class extends EventEmitter {
    * console.log(info.path);
    * // "INBOX.Important stuff" // assumes "INBOX." as namespace prefix
    */
-  async mailboxDelete(path27) {
-    return await this.run("DELETE", path27);
+  async mailboxDelete(path28) {
+    return await this.run("DELETE", path28);
   }
   /**
    * Subscribes to a mailbox
@@ -151458,8 +151673,8 @@ var ImapFlow = class extends EventEmitter {
    * @example
    * await client.mailboxSubscribe('Important stuff');
    */
-  async mailboxSubscribe(path27) {
-    return await this.run("SUBSCRIBE", path27);
+  async mailboxSubscribe(path28) {
+    return await this.run("SUBSCRIBE", path28);
   }
   /**
    * Unsubscribes from a mailbox
@@ -151470,8 +151685,8 @@ var ImapFlow = class extends EventEmitter {
    * @example
    * await client.mailboxUnsubscribe('Important stuff');
    */
-  async mailboxUnsubscribe(path27) {
-    return await this.run("UNSUBSCRIBE", path27);
+  async mailboxUnsubscribe(path28) {
+    return await this.run("UNSUBSCRIBE", path28);
   }
   /**
    * Opens a mailbox to access messages. You can perform message operations only against an opened mailbox.
@@ -151488,20 +151703,20 @@ var ImapFlow = class extends EventEmitter {
    * console.log(mailbox.exists);
    * // 125
    */
-  async mailboxOpen(path27, options) {
+  async mailboxOpen(path28, options) {
     try {
-      return await this.run("SELECT", path27, options);
+      return await this.run("SELECT", path28, options);
     } catch (err) {
       if (err.responseStatus === "NO") {
         try {
-          let normalized = normalizePath(this, path27);
+          let normalized = normalizePath(this, path28);
           let folders = await this.run("LIST", "", normalized, { listOnly: true });
           let exists = Array.isArray(folders) && folders.some((entry) => comparePaths(this, entry.path, normalized) && ![...entry.flags || []].some((flag) => typeof flag === "string" && flag.toUpperCase() === "\\NONEXISTENT"));
           if (!exists) {
             err.mailboxMissing = true;
           }
         } catch (E) {
-          this.log.trace({ msg: "Failed to verify failed mailbox", path: path27, err: E });
+          this.log.trace({ msg: "Failed to verify failed mailbox", path: path28, err: E });
         }
       }
       throw err;
@@ -151531,8 +151746,8 @@ var ImapFlow = class extends EventEmitter {
    * console.log(status.unseen);
    * // 123
    */
-  async status(path27, query) {
-    return await this.run("STATUS", path27, query);
+  async status(path28, query) {
+    return await this.run("STATUS", path28, query);
   }
   /**
    * Starts listening for new or deleted messages from the currently opened mailbox. Only required if `disableAutoIdle` is set to `true`
@@ -151715,8 +151930,8 @@ var ImapFlow = class extends EventEmitter {
    * @example
    * await client.append('INBOX', rawMessageBuffer, ['\\Seen'], new Date(2000, 1, 1));
    */
-  async append(path27, content, flags2, idate) {
-    return await this.run("APPEND", path27, content, flags2, idate) || false;
+  async append(path28, content, flags2, idate) {
+    return await this.run("APPEND", path28, content, flags2, idate) || false;
   }
   /**
    * Copies messages from current mailbox to destination mailbox
@@ -152109,7 +152324,7 @@ var ImapFlow = class extends EventEmitter {
         }
         const lock = this.locks.shift();
         unsettled = lock;
-        const { resolve: resolve2, reject, path: path27, options, lockId } = lock;
+        const { resolve: resolve2, reject, path: path28, options, lockId } = lock;
         if (lock.acquireTimer) {
           clearTimer(lock.acquireTimer);
           lock.acquireTimer = null;
@@ -152125,7 +152340,7 @@ var ImapFlow = class extends EventEmitter {
             this.log.warn({
               msg: "Mailbox lock held for a long time",
               lockId: lock.lockId,
-              path: path27,
+              path: path28,
               heldFor: Date.now() - lock.heldAt,
               /* c8 ignore next */
               // the held-lock-warning diagnostic with a description set is a timing-dependent log detail
@@ -152162,9 +152377,9 @@ var ImapFlow = class extends EventEmitter {
           }
         };
         if (!this.usable || !this.socket || this.socket.destroyed) {
-          this.log.trace({ msg: "Failed to acquire mailbox lock", path: path27, lockId, idling: this.idling });
+          this.log.trace({ msg: "Failed to acquire mailbox lock", path: path28, lockId, idling: this.idling });
           unsettled = null;
-          reject(this.createNoConnectionError(false, { rejectedFrom: "mailboxLock", path: path27 }));
+          reject(this.createNoConnectionError(false, { rejectedFrom: "mailboxLock", path: path28 }));
           continue;
         }
         const grantLock = () => {
@@ -152172,12 +152387,12 @@ var ImapFlow = class extends EventEmitter {
           armHeldTimer();
           this.autoidle();
           unsettled = null;
-          resolve2({ path: path27, release });
+          resolve2({ path: path28, release });
         };
-        if (this.mailbox && this.mailbox.path === path27 && !!this.mailbox.readOnly === !!options.readOnly) {
+        if (this.mailbox && this.mailbox.path === path28 && !!this.mailbox.readOnly === !!options.readOnly) {
           this.log.trace({
             msg: "Mailbox lock acquired [existing]",
-            path: path27,
+            path: path28,
             lockId,
             idling: this.idling,
             ...options.description && { description: options.description }
@@ -152186,13 +152401,13 @@ var ImapFlow = class extends EventEmitter {
           break;
         }
         try {
-          await this.mailboxOpen(path27, options);
+          await this.mailboxOpen(path28, options);
           if (!this.mailbox) {
-            throw this.createNoConnectionError(false, { rejectedFrom: "mailboxLock", path: path27 });
+            throw this.createNoConnectionError(false, { rejectedFrom: "mailboxLock", path: path28 });
           }
           this.log.trace({
             msg: "Mailbox lock acquired [selected]",
-            path: path27,
+            path: path28,
             lockId,
             idling: this.idling,
             ...options.description && { description: options.description }
@@ -152202,7 +152417,7 @@ var ImapFlow = class extends EventEmitter {
         } catch (err) {
           this.log.trace({
             msg: "Failed to acquire mailbox lock",
-            path: path27,
+            path: path28,
             lockId,
             idling: this.idling,
             ...options.description && { description: options.description },
@@ -152253,9 +152468,9 @@ var ImapFlow = class extends EventEmitter {
    *   lock.release();
    * }
    */
-  getMailboxLock(path27, options) {
+  getMailboxLock(path28, options) {
     options = options || {};
-    let lockPath = normalizePath(this, path27);
+    let lockPath = normalizePath(this, path28);
     let lockId = ++this.lockCounter;
     this.log.trace({
       msg: "Requesting lock",
@@ -153832,9 +154047,9 @@ ${" ".repeat(indent2 - 2)}`);
 };
 var AsymmetricStructuredOutputParser = class extends BaseOutputParser {
   structuredInputParser;
-  constructor({ inputSchema: inputSchema11 }) {
+  constructor({ inputSchema: inputSchema13 }) {
     super(...arguments);
-    this.structuredInputParser = new JsonMarkdownStructuredOutputParser(inputSchema11);
+    this.structuredInputParser = new JsonMarkdownStructuredOutputParser(inputSchema13);
   }
   async parse(text) {
     let parsedInput;
@@ -159377,27 +159592,27 @@ function jsonSchemaToGeminiParameters(schema) {
 }
 
 // node_modules/.pnpm/@langchain+google-genai@2.3.4_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7__/node_modules/@langchain/google-genai/dist/utils/validate_schema.js
-function assertNoEmptyStringEnums(schema, toolName2, path27 = []) {
+function assertNoEmptyStringEnums(schema, toolName2, path28 = []) {
   if (schema == null || typeof schema !== "object") return;
   const obj = schema;
   if (Array.isArray(obj.enum)) {
     if (obj.enum.some((v) => v === "")) {
-      const pathStr = path27.length ? ` at path "${path27.join(".")}"` : "";
+      const pathStr = path28.length ? ` at path "${path28.join(".")}"` : "";
       const toolStr = toolName2 ? ` in tool "${toolName2}"` : "";
       throw new Error(`Invalid enum: empty string not allowed${toolStr}${pathStr}. Gemini API rejects empty strings in enums.`);
     }
   }
-  if (obj.type === "object" && obj.properties && typeof obj.properties === "object") for (const [prop, child] of Object.entries(obj.properties)) assertNoEmptyStringEnums(child, toolName2, [...path27, prop]);
-  if (obj.items) assertNoEmptyStringEnums(obj.items, toolName2, [...path27, "[]"]);
+  if (obj.type === "object" && obj.properties && typeof obj.properties === "object") for (const [prop, child] of Object.entries(obj.properties)) assertNoEmptyStringEnums(child, toolName2, [...path28, prop]);
+  if (obj.items) assertNoEmptyStringEnums(obj.items, toolName2, [...path28, "[]"]);
   for (const k of [
     "anyOf",
     "oneOf",
     "allOf"
   ]) {
     const arr3 = obj[k];
-    if (Array.isArray(arr3)) arr3.forEach((child, i) => assertNoEmptyStringEnums(child, toolName2, [...path27, `${k}[${i}]`]));
+    if (Array.isArray(arr3)) arr3.forEach((child, i) => assertNoEmptyStringEnums(child, toolName2, [...path28, `${k}[${i}]`]));
   }
-  if (obj.additionalProperties && typeof obj.additionalProperties === "object") assertNoEmptyStringEnums(obj.additionalProperties, toolName2, [...path27, "additionalProperties"]);
+  if (obj.additionalProperties && typeof obj.additionalProperties === "object") assertNoEmptyStringEnums(obj.additionalProperties, toolName2, [...path28, "additionalProperties"]);
 }
 
 // node_modules/.pnpm/@langchain+google-genai@2.3.4_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7__/node_modules/@langchain/google-genai/dist/utils/common.js
@@ -162581,9 +162796,9 @@ var formatRequestDetails3 = (details) => {
     details.options = { ...details.options };
     delete details.options["headers"];
     if (details.options.path) {
-      const path27 = details.options.path;
-      const redacted = new URL(redactURL(new URL(path27, "https://redacted.invalid").href));
-      details.options.path = redacted.origin === "https://redacted.invalid" ? `${path27.startsWith("/") ? "/" : ""}${redacted.pathname.slice(1)}${redacted.search}` : redacted.href;
+      const path28 = details.options.path;
+      const redacted = new URL(redactURL(new URL(path28, "https://redacted.invalid").href));
+      details.options.path = redacted.origin === "https://redacted.invalid" ? `${path28.startsWith("/") ? "/" : ""}${redacted.pathname.slice(1)}${redacted.search}` : redacted.href;
     }
     if (details.options.query) {
       details.options.query = Object.fromEntries(Object.entries(details.options.query).map(([name2, value]) => [
@@ -165341,8 +165556,8 @@ function getName3(value, options) {
       return basename(url2);
     }
   }
-  const path27 = "path" in value && value.path && String(value.path);
-  return path27 ? basename(path27) : void 0;
+  const path28 = "path" in value && value.path && String(value.path);
+  return path28 ? basename(path28) : void 0;
 }
 function basename(value) {
   return value.split(/[\\/]/).pop() || void 0;
@@ -165750,13 +165965,13 @@ function encodeURIPath3(str) {
   return str.replace(/[^A-Za-z0-9\-._~!$&'()*+,;=:@]+/g, encodeURIComponent);
 }
 var EMPTY3 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.create(null));
-var createPathTagFunction3 = (pathEncoder = encodeURIPath3) => function path27(statics, ...params) {
+var createPathTagFunction3 = (pathEncoder = encodeURIPath3) => function path28(statics, ...params) {
   if (statics.length === 1) {
     return statics[0];
   }
   let postPath = false;
   const invalidSegments = [];
-  let path28 = "";
+  let path29 = "";
   for (let index2 = 0; index2 < statics.length; index2 += 1) {
     if (index2 in statics) {
       const currentValue = statics[index2];
@@ -165770,15 +165985,15 @@ var createPathTagFunction3 = (pathEncoder = encodeURIPath3) => function path27(s
       value.toString === Object.getPrototypeOf(Object.getPrototypeOf(value.hasOwnProperty ?? EMPTY3) ?? EMPTY3)?.toString)) {
         encoded = value + "";
         invalidSegments.push({
-          start: path28.length + currentValue.length,
+          start: path29.length + currentValue.length,
           length: encoded.length,
           error: `Value of type ${Object.prototype.toString.call(value).slice(8, -1)} is not a valid path parameter`
         });
       }
-      path28 += currentValue + (index2 === params.length ? "" : encoded);
+      path29 += currentValue + (index2 === params.length ? "" : encoded);
     }
   }
-  const pathOnly = path28.split(/[?#]/, 1)[0];
+  const pathOnly = path29.split(/[?#]/, 1)[0];
   const invalidSegmentPattern = /(?<=^|\/)(?:\.|%2e){1,2}(?=\/|$)/gi;
   let match;
   while ((match = invalidSegmentPattern.exec(pathOnly)) !== null) {
@@ -165800,12 +166015,12 @@ var createPathTagFunction3 = (pathEncoder = encodeURIPath3) => function path27(s
     }
     throw new OpenAIError(`Path parameters result in path with invalid segments:
 ${invalidSegments.map((e) => e.error).join("\n")}
-${path28}
+${path29}
 ${underline}`);
   }
-  return path28;
+  return path29;
 };
-var path10 = /* @__PURE__ */ createPathTagFunction3(encodeURIPath3);
+var path13 = /* @__PURE__ */ createPathTagFunction3(encodeURIPath3);
 
 // node_modules/.pnpm/openai@7.42.0_undici@7.30.1_zod@4.6.7/node_modules/openai/resources/chat/completions/messages.mjs
 function resolveResourceRequestOptions(options, buildOptions) {
@@ -165860,7 +166075,7 @@ var Messages3 = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.getAPIList(path10`/chat/completions/${completionID}/messages`, CursorPage, resolveResourceRequestOptions(options, (options2) => ({
+    return this._client.getAPIList(path13`/chat/completions/${completionID}/messages`, CursorPage, resolveResourceRequestOptions(options, (options2) => ({
       query,
       ...options2,
       __security: { bearerAuth: true }
@@ -169898,7 +170113,7 @@ var Completions2 = class extends APIResource3 {
    * ```
    */
   retrieve(completionID, options) {
-    return this._client.get(path10`/chat/completions/${completionID}`, resolveResourceRequestOptions2(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.get(path13`/chat/completions/${completionID}`, resolveResourceRequestOptions2(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
   /**
    * Modify a stored chat completion. Only Chat Completions that have been created
@@ -169914,7 +170129,7 @@ var Completions2 = class extends APIResource3 {
    * ```
    */
   update(completionID, body, options) {
-    return this._client.post(path10`/chat/completions/${completionID}`, resolveResourceRequestOptions2(options, (options2) => ({
+    return this._client.post(path13`/chat/completions/${completionID}`, resolveResourceRequestOptions2(options, (options2) => ({
       body,
       ...options2,
       __security: { bearerAuth: true }
@@ -169944,7 +170159,7 @@ var Completions2 = class extends APIResource3 {
    * ```
    */
   delete(completionID, options) {
-    return this._client.delete(path10`/chat/completions/${completionID}`, resolveResourceRequestOptions2(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.delete(path13`/chat/completions/${completionID}`, resolveResourceRequestOptions2(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
   parse(body, options) {
     validateInputTools(body.tools);
@@ -170053,7 +170268,7 @@ var AdminAPIKeys = class extends APIResource3 {
    * ```
    */
   retrieve(keyID, options) {
-    return this._client.get(path10`/organization/admin_api_keys/${keyID}`, resolveResourceRequestOptions3(options, (options2) => ({
+    return this._client.get(path13`/organization/admin_api_keys/${keyID}`, resolveResourceRequestOptions3(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -170083,7 +170298,7 @@ var AdminAPIKeys = class extends APIResource3 {
    * ```
    */
   delete(keyID, options) {
-    return this._client.delete(path10`/organization/admin_api_keys/${keyID}`, resolveResourceRequestOptions3(options, (options2) => ({
+    return this._client.delete(path13`/organization/admin_api_keys/${keyID}`, resolveResourceRequestOptions3(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -170236,7 +170451,7 @@ var Certificates2 = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.get(path10`/organization/certificates/${certificateID}`, resolveResourceRequestOptions5(options, (options2) => ({
+    return this._client.get(path13`/organization/certificates/${certificateID}`, resolveResourceRequestOptions5(options, (options2) => ({
       query,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -170254,7 +170469,7 @@ var Certificates2 = class extends APIResource3 {
    * ```
    */
   update(certificateID, body, options) {
-    return this._client.post(path10`/organization/certificates/${certificateID}`, resolveResourceRequestOptions5(options, (options2) => ({
+    return this._client.post(path13`/organization/certificates/${certificateID}`, resolveResourceRequestOptions5(options, (options2) => ({
       body,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -170287,7 +170502,7 @@ var Certificates2 = class extends APIResource3 {
    * ```
    */
   delete(certificateID, options) {
-    return this._client.delete(path10`/organization/certificates/${certificateID}`, resolveResourceRequestOptions5(options, (options2) => ({
+    return this._client.delete(path13`/organization/certificates/${certificateID}`, resolveResourceRequestOptions5(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -170461,7 +170676,7 @@ var ExternalStorage = class extends APIResource3 {
    * ```
    */
   retrieve(externalStorageID, options) {
-    return this._client.get(path10`/organization/external_storage/${externalStorageID}`, resolveResourceRequestOptions7(options, (options2) => ({
+    return this._client.get(path13`/organization/external_storage/${externalStorageID}`, resolveResourceRequestOptions7(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -170494,7 +170709,7 @@ var ExternalStorage = class extends APIResource3 {
    * ```
    */
   delete(externalStorageID, options) {
-    return this._client.delete(path10`/organization/external_storage/${externalStorageID}`, resolveResourceRequestOptions7(options, (options2) => ({
+    return this._client.delete(path13`/organization/external_storage/${externalStorageID}`, resolveResourceRequestOptions7(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -170511,7 +170726,7 @@ var ExternalStorage = class extends APIResource3 {
    * ```
    */
   validate(externalStorageID, options) {
-    return this._client.post(path10`/organization/external_storage/${externalStorageID}/validate`, resolveResourceRequestOptions7(options, (options2) => ({
+    return this._client.post(path13`/organization/external_storage/${externalStorageID}/validate`, resolveResourceRequestOptions7(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -170596,7 +170811,7 @@ var Invites2 = class extends APIResource3 {
    * ```
    */
   retrieve(inviteID, options) {
-    return this._client.get(path10`/organization/invites/${inviteID}`, resolveResourceRequestOptions8(options, (options2) => ({
+    return this._client.get(path13`/organization/invites/${inviteID}`, resolveResourceRequestOptions8(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -170626,7 +170841,7 @@ var Invites2 = class extends APIResource3 {
    * ```
    */
   delete(inviteID, options) {
-    return this._client.delete(path10`/organization/invites/${inviteID}`, resolveResourceRequestOptions8(options, (options2) => ({
+    return this._client.delete(path13`/organization/invites/${inviteID}`, resolveResourceRequestOptions8(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -170708,7 +170923,7 @@ var Roles = class extends APIResource3 {
    * ```
    */
   retrieve(roleID, options) {
-    return this._client.get(path10`/organization/roles/${roleID}`, resolveResourceRequestOptions9(options, (options2) => ({
+    return this._client.get(path13`/organization/roles/${roleID}`, resolveResourceRequestOptions9(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -170724,7 +170939,7 @@ var Roles = class extends APIResource3 {
    * ```
    */
   update(roleID, body, options) {
-    return this._client.post(path10`/organization/roles/${roleID}`, resolveResourceRequestOptions9(options, (options2) => ({
+    return this._client.post(path13`/organization/roles/${roleID}`, resolveResourceRequestOptions9(options, (options2) => ({
       body,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -170754,7 +170969,7 @@ var Roles = class extends APIResource3 {
    * ```
    */
   delete(roleID, options) {
-    return this._client.delete(path10`/organization/roles/${roleID}`, resolveResourceRequestOptions9(options, (options2) => ({
+    return this._client.delete(path13`/organization/roles/${roleID}`, resolveResourceRequestOptions9(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -170843,7 +171058,7 @@ var SpendAlerts = class extends APIResource3 {
    * ```
    */
   retrieve(alertID, options) {
-    return this._client.get(path10`/organization/spend_alerts/${alertID}`, resolveResourceRequestOptions10(options, (options2) => ({
+    return this._client.get(path13`/organization/spend_alerts/${alertID}`, resolveResourceRequestOptions10(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -170869,7 +171084,7 @@ var SpendAlerts = class extends APIResource3 {
    * ```
    */
   update(alertID, body, options) {
-    return this._client.post(path10`/organization/spend_alerts/${alertID}`, resolveResourceRequestOptions10(options, (options2) => ({
+    return this._client.post(path13`/organization/spend_alerts/${alertID}`, resolveResourceRequestOptions10(options, (options2) => ({
       body,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -170900,7 +171115,7 @@ var SpendAlerts = class extends APIResource3 {
    * ```
    */
   delete(alertID, options) {
-    return this._client.delete(path10`/organization/spend_alerts/${alertID}`, resolveResourceRequestOptions10(options, (options2) => ({
+    return this._client.delete(path13`/organization/spend_alerts/${alertID}`, resolveResourceRequestOptions10(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -171247,7 +171462,7 @@ var Roles2 = class extends APIResource3 {
    * ```
    */
   create(groupID, body, options) {
-    return this._client.post(path10`/organization/groups/${groupID}/roles`, resolveResourceRequestOptions13(options, (options2) => ({
+    return this._client.post(path13`/organization/groups/${groupID}/roles`, resolveResourceRequestOptions13(options, (options2) => ({
       body,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -171267,7 +171482,7 @@ var Roles2 = class extends APIResource3 {
    */
   retrieve(roleID, params, options) {
     const { group_id } = params;
-    return this._client.get(path10`/organization/groups/${group_id}/roles/${roleID}`, resolveResourceRequestOptions13(options, (options2) => ({
+    return this._client.get(path13`/organization/groups/${group_id}/roles/${roleID}`, resolveResourceRequestOptions13(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -171279,7 +171494,7 @@ var Roles2 = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.getAPIList(path10`/organization/groups/${groupID}/roles`, NextCursorPage, resolveResourceRequestOptions13(options, (options2) => ({
+    return this._client.getAPIList(path13`/organization/groups/${groupID}/roles`, NextCursorPage, resolveResourceRequestOptions13(options, (options2) => ({
       query,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -171299,7 +171514,7 @@ var Roles2 = class extends APIResource3 {
    */
   delete(roleID, params, options) {
     const { group_id } = params;
-    return this._client.delete(path10`/organization/groups/${group_id}/roles/${roleID}`, resolveResourceRequestOptions13(options, (options2) => ({
+    return this._client.delete(path13`/organization/groups/${group_id}/roles/${roleID}`, resolveResourceRequestOptions13(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -171365,7 +171580,7 @@ var Users2 = class extends APIResource3 {
    * ```
    */
   create(groupID, body, options) {
-    return this._client.post(path10`/organization/groups/${groupID}/users`, resolveResourceRequestOptions14(options, (options2) => ({
+    return this._client.post(path13`/organization/groups/${groupID}/users`, resolveResourceRequestOptions14(options, (options2) => ({
       body,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -171385,7 +171600,7 @@ var Users2 = class extends APIResource3 {
    */
   retrieve(userID, params, options) {
     const { group_id } = params;
-    return this._client.get(path10`/organization/groups/${group_id}/users/${userID}`, resolveResourceRequestOptions14(options, (options2) => ({
+    return this._client.get(path13`/organization/groups/${group_id}/users/${userID}`, resolveResourceRequestOptions14(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -171397,7 +171612,7 @@ var Users2 = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.getAPIList(path10`/organization/groups/${groupID}/users`, NextCursorPage, resolveResourceRequestOptions14(options, (options2) => ({
+    return this._client.getAPIList(path13`/organization/groups/${groupID}/users`, NextCursorPage, resolveResourceRequestOptions14(options, (options2) => ({
       query,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -171417,7 +171632,7 @@ var Users2 = class extends APIResource3 {
    */
   delete(userID, params, options) {
     const { group_id } = params;
-    return this._client.delete(path10`/organization/groups/${group_id}/users/${userID}`, resolveResourceRequestOptions14(options, (options2) => ({
+    return this._client.delete(path13`/organization/groups/${group_id}/users/${userID}`, resolveResourceRequestOptions14(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -171504,7 +171719,7 @@ var Groups = class extends APIResource3 {
    * ```
    */
   retrieve(groupID, options) {
-    return this._client.get(path10`/organization/groups/${groupID}`, resolveResourceRequestOptions15(options, (options2) => ({
+    return this._client.get(path13`/organization/groups/${groupID}`, resolveResourceRequestOptions15(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -171521,7 +171736,7 @@ var Groups = class extends APIResource3 {
    * ```
    */
   update(groupID, body, options) {
-    return this._client.post(path10`/organization/groups/${groupID}`, resolveResourceRequestOptions15(options, (options2) => ({
+    return this._client.post(path13`/organization/groups/${groupID}`, resolveResourceRequestOptions15(options, (options2) => ({
       body,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -171551,7 +171766,7 @@ var Groups = class extends APIResource3 {
    * ```
    */
   delete(groupID, options) {
-    return this._client.delete(path10`/organization/groups/${groupID}`, resolveResourceRequestOptions15(options, (options2) => ({
+    return this._client.delete(path13`/organization/groups/${groupID}`, resolveResourceRequestOptions15(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -171620,7 +171835,7 @@ var APIKeys2 = class extends APIResource3 {
    */
   retrieve(apiKeyID, params, options) {
     const { project_id } = params;
-    return this._client.get(path10`/organization/projects/${project_id}/api_keys/${apiKeyID}`, resolveResourceRequestOptions16(options, (options2) => ({
+    return this._client.get(path13`/organization/projects/${project_id}/api_keys/${apiKeyID}`, resolveResourceRequestOptions16(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -171660,7 +171875,7 @@ var APIKeys2 = class extends APIResource3 {
    */
   update(apiKeyID, params, options) {
     const { project_id, ...body } = params;
-    return this._client.post(path10`/organization/projects/${project_id}/api_keys/${apiKeyID}`, resolveResourceRequestOptions16(options, (options2) => ({
+    return this._client.post(path13`/organization/projects/${project_id}/api_keys/${apiKeyID}`, resolveResourceRequestOptions16(options, (options2) => ({
       body,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -171673,7 +171888,7 @@ var APIKeys2 = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.getAPIList(path10`/organization/projects/${projectID}/api_keys`, ConversationCursorPage, resolveResourceRequestOptions16(options, (options2) => ({
+    return this._client.getAPIList(path13`/organization/projects/${projectID}/api_keys`, ConversationCursorPage, resolveResourceRequestOptions16(options, (options2) => ({
       query,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -171698,7 +171913,7 @@ var APIKeys2 = class extends APIResource3 {
    */
   delete(apiKeyID, params, options) {
     const { project_id } = params;
-    return this._client.delete(path10`/organization/projects/${project_id}/api_keys/${apiKeyID}`, resolveResourceRequestOptions16(options, (options2) => ({
+    return this._client.delete(path13`/organization/projects/${project_id}/api_keys/${apiKeyID}`, resolveResourceRequestOptions16(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -171758,7 +171973,7 @@ var Certificates3 = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.getAPIList(path10`/organization/projects/${projectID}/certificates`, ConversationCursorPage, resolveResourceRequestOptions17(options, (options2) => ({
+    return this._client.getAPIList(path13`/organization/projects/${projectID}/certificates`, ConversationCursorPage, resolveResourceRequestOptions17(options, (options2) => ({
       query,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -171781,7 +171996,7 @@ var Certificates3 = class extends APIResource3 {
    * ```
    */
   activate(projectID, body, options) {
-    return this._client.getAPIList(path10`/organization/projects/${projectID}/certificates/activate`, Page2, resolveResourceRequestOptions17(options, (options2) => ({
+    return this._client.getAPIList(path13`/organization/projects/${projectID}/certificates/activate`, Page2, resolveResourceRequestOptions17(options, (options2) => ({
       body,
       method: "post",
       ...options2,
@@ -171804,7 +172019,7 @@ var Certificates3 = class extends APIResource3 {
    * ```
    */
   deactivate(projectID, body, options) {
-    return this._client.getAPIList(path10`/organization/projects/${projectID}/certificates/deactivate`, Page2, resolveResourceRequestOptions17(options, (options2) => ({
+    return this._client.getAPIList(path13`/organization/projects/${projectID}/certificates/deactivate`, Page2, resolveResourceRequestOptions17(options, (options2) => ({
       body,
       method: "post",
       ...options2,
@@ -171830,7 +172045,7 @@ var DataRetention2 = class extends APIResource3 {
    * ```
    */
   retrieve(projectID, options) {
-    return this._client.get(path10`/organization/projects/${projectID}/data_retention`, resolveResourceRequestOptions18(options, (options2) => ({
+    return this._client.get(path13`/organization/projects/${projectID}/data_retention`, resolveResourceRequestOptions18(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -171848,7 +172063,7 @@ var DataRetention2 = class extends APIResource3 {
    * ```
    */
   update(projectID, body, options) {
-    return this._client.post(path10`/organization/projects/${projectID}/data_retention`, resolveResourceRequestOptions18(options, (options2) => ({
+    return this._client.post(path13`/organization/projects/${projectID}/data_retention`, resolveResourceRequestOptions18(options, (options2) => ({
       body,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -171873,7 +172088,7 @@ var HostedToolPermissions = class extends APIResource3 {
    * ```
    */
   retrieve(projectID, options) {
-    return this._client.get(path10`/organization/projects/${projectID}/hosted_tool_permissions`, resolveResourceRequestOptions19(options, (options2) => ({
+    return this._client.get(path13`/organization/projects/${projectID}/hosted_tool_permissions`, resolveResourceRequestOptions19(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -171890,7 +172105,7 @@ var HostedToolPermissions = class extends APIResource3 {
    * ```
    */
   update(projectID, body, options) {
-    return this._client.post(path10`/organization/projects/${projectID}/hosted_tool_permissions`, resolveResourceRequestOptions19(options, (options2) => ({
+    return this._client.post(path13`/organization/projects/${projectID}/hosted_tool_permissions`, resolveResourceRequestOptions19(options, (options2) => ({
       body,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -171915,7 +172130,7 @@ var ModelPermissions = class extends APIResource3 {
    * ```
    */
   retrieve(projectID, options) {
-    return this._client.get(path10`/organization/projects/${projectID}/model_permissions`, resolveResourceRequestOptions20(options, (options2) => ({
+    return this._client.get(path13`/organization/projects/${projectID}/model_permissions`, resolveResourceRequestOptions20(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -171933,7 +172148,7 @@ var ModelPermissions = class extends APIResource3 {
    * ```
    */
   update(projectID, body, options) {
-    return this._client.post(path10`/organization/projects/${projectID}/model_permissions`, resolveResourceRequestOptions20(options, (options2) => ({
+    return this._client.post(path13`/organization/projects/${projectID}/model_permissions`, resolveResourceRequestOptions20(options, (options2) => ({
       body,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -171951,7 +172166,7 @@ var ModelPermissions = class extends APIResource3 {
    * ```
    */
   delete(projectID, options) {
-    return this._client.delete(path10`/organization/projects/${projectID}/model_permissions`, resolveResourceRequestOptions20(options, (options2) => ({
+    return this._client.delete(path13`/organization/projects/${projectID}/model_permissions`, resolveResourceRequestOptions20(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -172011,7 +172226,7 @@ var RateLimits3 = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.getAPIList(path10`/organization/projects/${projectID}/rate_limits`, ConversationCursorPage, resolveResourceRequestOptions21(options, (options2) => ({
+    return this._client.getAPIList(path13`/organization/projects/${projectID}/rate_limits`, ConversationCursorPage, resolveResourceRequestOptions21(options, (options2) => ({
       query,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -172031,7 +172246,7 @@ var RateLimits3 = class extends APIResource3 {
    */
   updateRateLimit(rateLimitID, params, options) {
     const { project_id, ...body } = params;
-    return this._client.post(path10`/organization/projects/${project_id}/rate_limits/${rateLimitID}`, resolveResourceRequestOptions21(options, (options2) => ({
+    return this._client.post(path13`/organization/projects/${project_id}/rate_limits/${rateLimitID}`, resolveResourceRequestOptions21(options, (options2) => ({
       body,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -172098,7 +172313,7 @@ var Roles3 = class extends APIResource3 {
    * ```
    */
   create(projectID, body, options) {
-    return this._client.post(path10`/projects/${projectID}/roles`, resolveResourceRequestOptions22(options, (options2) => ({
+    return this._client.post(path13`/projects/${projectID}/roles`, resolveResourceRequestOptions22(options, (options2) => ({
       body,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -172118,7 +172333,7 @@ var Roles3 = class extends APIResource3 {
    */
   retrieve(roleID, params, options) {
     const { project_id } = params;
-    return this._client.get(path10`/projects/${project_id}/roles/${roleID}`, resolveResourceRequestOptions22(options, (options2) => ({
+    return this._client.get(path13`/projects/${project_id}/roles/${roleID}`, resolveResourceRequestOptions22(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -172137,7 +172352,7 @@ var Roles3 = class extends APIResource3 {
    */
   update(roleID, params, options) {
     const { project_id, ...body } = params;
-    return this._client.post(path10`/projects/${project_id}/roles/${roleID}`, resolveResourceRequestOptions22(options, (options2) => ({
+    return this._client.post(path13`/projects/${project_id}/roles/${roleID}`, resolveResourceRequestOptions22(options, (options2) => ({
       body,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -172150,7 +172365,7 @@ var Roles3 = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.getAPIList(path10`/projects/${projectID}/roles`, NextCursorPage, resolveResourceRequestOptions22(options, (options2) => ({
+    return this._client.getAPIList(path13`/projects/${projectID}/roles`, NextCursorPage, resolveResourceRequestOptions22(options, (options2) => ({
       query,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -172170,7 +172385,7 @@ var Roles3 = class extends APIResource3 {
    */
   delete(roleID, params, options) {
     const { project_id } = params;
-    return this._client.delete(path10`/projects/${project_id}/roles/${roleID}`, resolveResourceRequestOptions22(options, (options2) => ({
+    return this._client.delete(path13`/projects/${project_id}/roles/${roleID}`, resolveResourceRequestOptions22(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -172244,7 +172459,7 @@ var SpendAlerts2 = class extends APIResource3 {
    * ```
    */
   create(projectID, body, options) {
-    return this._client.post(path10`/organization/projects/${projectID}/spend_alerts`, resolveResourceRequestOptions23(options, (options2) => ({
+    return this._client.post(path13`/organization/projects/${projectID}/spend_alerts`, resolveResourceRequestOptions23(options, (options2) => ({
       body,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -172264,7 +172479,7 @@ var SpendAlerts2 = class extends APIResource3 {
    */
   retrieve(alertID, params, options) {
     const { project_id } = params;
-    return this._client.get(path10`/organization/projects/${project_id}/spend_alerts/${alertID}`, resolveResourceRequestOptions23(options, (options2) => ({
+    return this._client.get(path13`/organization/projects/${project_id}/spend_alerts/${alertID}`, resolveResourceRequestOptions23(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -172292,7 +172507,7 @@ var SpendAlerts2 = class extends APIResource3 {
    */
   update(alertID, params, options) {
     const { project_id, ...body } = params;
-    return this._client.post(path10`/organization/projects/${project_id}/spend_alerts/${alertID}`, resolveResourceRequestOptions23(options, (options2) => ({
+    return this._client.post(path13`/organization/projects/${project_id}/spend_alerts/${alertID}`, resolveResourceRequestOptions23(options, (options2) => ({
       body,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -172305,7 +172520,7 @@ var SpendAlerts2 = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.getAPIList(path10`/organization/projects/${projectID}/spend_alerts`, ConversationCursorPage, resolveResourceRequestOptions23(options, (options2) => ({
+    return this._client.getAPIList(path13`/organization/projects/${projectID}/spend_alerts`, ConversationCursorPage, resolveResourceRequestOptions23(options, (options2) => ({
       query,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -172325,7 +172540,7 @@ var SpendAlerts2 = class extends APIResource3 {
    */
   delete(alertID, params, options) {
     const { project_id } = params;
-    return this._client.delete(path10`/organization/projects/${project_id}/spend_alerts/${alertID}`, resolveResourceRequestOptions23(options, (options2) => ({
+    return this._client.delete(path13`/organization/projects/${project_id}/spend_alerts/${alertID}`, resolveResourceRequestOptions23(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -172349,7 +172564,7 @@ var SpendLimit2 = class extends APIResource3 {
    * ```
    */
   retrieve(projectID, options) {
-    return this._client.get(path10`/organization/projects/${projectID}/spend_limit`, resolveResourceRequestOptions24(options, (options2) => ({
+    return this._client.get(path13`/organization/projects/${projectID}/spend_limit`, resolveResourceRequestOptions24(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -172371,7 +172586,7 @@ var SpendLimit2 = class extends APIResource3 {
    * ```
    */
   update(projectID, body, options) {
-    return this._client.post(path10`/organization/projects/${projectID}/spend_limit`, resolveResourceRequestOptions24(options, (options2) => ({
+    return this._client.post(path13`/organization/projects/${projectID}/spend_limit`, resolveResourceRequestOptions24(options, (options2) => ({
       body,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -172389,7 +172604,7 @@ var SpendLimit2 = class extends APIResource3 {
    * ```
    */
   delete(projectID, options) {
-    return this._client.delete(path10`/organization/projects/${projectID}/spend_limit`, resolveResourceRequestOptions24(options, (options2) => ({
+    return this._client.delete(path13`/organization/projects/${projectID}/spend_limit`, resolveResourceRequestOptions24(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -172415,7 +172630,7 @@ var Roles4 = class extends APIResource3 {
    */
   create(groupID, params, options) {
     const { project_id, ...body } = params;
-    return this._client.post(path10`/projects/${project_id}/groups/${groupID}/roles`, resolveResourceRequestOptions25(options, (options2) => ({
+    return this._client.post(path13`/projects/${project_id}/groups/${groupID}/roles`, resolveResourceRequestOptions25(options, (options2) => ({
       body,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -172435,7 +172650,7 @@ var Roles4 = class extends APIResource3 {
    */
   retrieve(roleID, params, options) {
     const { project_id, group_id } = params;
-    return this._client.get(path10`/projects/${project_id}/groups/${group_id}/roles/${roleID}`, resolveResourceRequestOptions25(options, (options2) => ({
+    return this._client.get(path13`/projects/${project_id}/groups/${group_id}/roles/${roleID}`, resolveResourceRequestOptions25(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -172456,7 +172671,7 @@ var Roles4 = class extends APIResource3 {
    */
   list(groupID, params, options) {
     const { project_id, ...query } = params;
-    return this._client.getAPIList(path10`/projects/${project_id}/groups/${groupID}/roles`, NextCursorPage, resolveResourceRequestOptions25(options, (options2) => ({
+    return this._client.getAPIList(path13`/projects/${project_id}/groups/${groupID}/roles`, NextCursorPage, resolveResourceRequestOptions25(options, (options2) => ({
       query,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -172476,7 +172691,7 @@ var Roles4 = class extends APIResource3 {
    */
   delete(roleID, params, options) {
     const { project_id, group_id } = params;
-    return this._client.delete(path10`/projects/${project_id}/groups/${group_id}/roles/${roleID}`, resolveResourceRequestOptions25(options, (options2) => ({
+    return this._client.delete(path13`/projects/${project_id}/groups/${group_id}/roles/${roleID}`, resolveResourceRequestOptions25(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -172546,7 +172761,7 @@ var Groups2 = class extends APIResource3 {
    * ```
    */
   create(projectID, body, options) {
-    return this._client.post(path10`/organization/projects/${projectID}/groups`, resolveResourceRequestOptions26(options, (options2) => ({
+    return this._client.post(path13`/organization/projects/${projectID}/groups`, resolveResourceRequestOptions26(options, (options2) => ({
       body,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -172566,7 +172781,7 @@ var Groups2 = class extends APIResource3 {
    */
   retrieve(groupID, params, options) {
     const { project_id, ...query } = params;
-    return this._client.get(path10`/organization/projects/${project_id}/groups/${groupID}`, resolveResourceRequestOptions26(options, (options2) => ({
+    return this._client.get(path13`/organization/projects/${project_id}/groups/${groupID}`, resolveResourceRequestOptions26(options, (options2) => ({
       query,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -172579,7 +172794,7 @@ var Groups2 = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.getAPIList(path10`/organization/projects/${projectID}/groups`, NextCursorPage, resolveResourceRequestOptions26(options, (options2) => ({
+    return this._client.getAPIList(path13`/organization/projects/${projectID}/groups`, NextCursorPage, resolveResourceRequestOptions26(options, (options2) => ({
       query,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -172599,7 +172814,7 @@ var Groups2 = class extends APIResource3 {
    */
   delete(groupID, params, options) {
     const { project_id } = params;
-    return this._client.delete(path10`/organization/projects/${project_id}/groups/${groupID}`, resolveResourceRequestOptions26(options, (options2) => ({
+    return this._client.delete(path13`/organization/projects/${project_id}/groups/${groupID}`, resolveResourceRequestOptions26(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -172626,7 +172841,7 @@ var APIKeys3 = class extends APIResource3 {
    */
   create(serviceAccountID, params, options) {
     const { project_id, ...body } = params;
-    return this._client.post(path10`/organization/projects/${project_id}/service_accounts/${serviceAccountID}/api_keys`, resolveResourceRequestOptions27(options, (options2) => ({
+    return this._client.post(path13`/organization/projects/${project_id}/service_accounts/${serviceAccountID}/api_keys`, resolveResourceRequestOptions27(options, (options2) => ({
       body,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -172698,7 +172913,7 @@ var ServiceAccounts3 = class extends APIResource3 {
    * ```
    */
   create(projectID, body, options) {
-    return this._client.post(path10`/organization/projects/${projectID}/service_accounts`, resolveResourceRequestOptions28(options, (options2) => ({
+    return this._client.post(path13`/organization/projects/${projectID}/service_accounts`, resolveResourceRequestOptions28(options, (options2) => ({
       body,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -172718,7 +172933,7 @@ var ServiceAccounts3 = class extends APIResource3 {
    */
   retrieve(serviceAccountID, params, options) {
     const { project_id } = params;
-    return this._client.get(path10`/organization/projects/${project_id}/service_accounts/${serviceAccountID}`, resolveResourceRequestOptions28(options, (options2) => ({
+    return this._client.get(path13`/organization/projects/${project_id}/service_accounts/${serviceAccountID}`, resolveResourceRequestOptions28(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -172737,7 +172952,7 @@ var ServiceAccounts3 = class extends APIResource3 {
    */
   update(serviceAccountID, params, options) {
     const { project_id, ...body } = params;
-    return this._client.post(path10`/organization/projects/${project_id}/service_accounts/${serviceAccountID}`, resolveResourceRequestOptions28(options, (options2) => ({
+    return this._client.post(path13`/organization/projects/${project_id}/service_accounts/${serviceAccountID}`, resolveResourceRequestOptions28(options, (options2) => ({
       body,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -172750,7 +172965,7 @@ var ServiceAccounts3 = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.getAPIList(path10`/organization/projects/${projectID}/service_accounts`, ConversationCursorPage, resolveResourceRequestOptions28(options, (options2) => ({
+    return this._client.getAPIList(path13`/organization/projects/${projectID}/service_accounts`, ConversationCursorPage, resolveResourceRequestOptions28(options, (options2) => ({
       query,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -172773,7 +172988,7 @@ var ServiceAccounts3 = class extends APIResource3 {
    */
   delete(serviceAccountID, params, options) {
     const { project_id } = params;
-    return this._client.delete(path10`/organization/projects/${project_id}/service_accounts/${serviceAccountID}`, resolveResourceRequestOptions28(options, (options2) => ({
+    return this._client.delete(path13`/organization/projects/${project_id}/service_accounts/${serviceAccountID}`, resolveResourceRequestOptions28(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -172800,7 +173015,7 @@ var Roles5 = class extends APIResource3 {
    */
   create(userID, params, options) {
     const { project_id, ...body } = params;
-    return this._client.post(path10`/projects/${project_id}/users/${userID}/roles`, resolveResourceRequestOptions29(options, (options2) => ({
+    return this._client.post(path13`/projects/${project_id}/users/${userID}/roles`, resolveResourceRequestOptions29(options, (options2) => ({
       body,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -172820,7 +173035,7 @@ var Roles5 = class extends APIResource3 {
    */
   retrieve(roleID, params, options) {
     const { project_id, user_id } = params;
-    return this._client.get(path10`/projects/${project_id}/users/${user_id}/roles/${roleID}`, resolveResourceRequestOptions29(options, (options2) => ({
+    return this._client.get(path13`/projects/${project_id}/users/${user_id}/roles/${roleID}`, resolveResourceRequestOptions29(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -172841,7 +173056,7 @@ var Roles5 = class extends APIResource3 {
    */
   list(userID, params, options) {
     const { project_id, ...query } = params;
-    return this._client.getAPIList(path10`/projects/${project_id}/users/${userID}/roles`, NextCursorPage, resolveResourceRequestOptions29(options, (options2) => ({
+    return this._client.getAPIList(path13`/projects/${project_id}/users/${userID}/roles`, NextCursorPage, resolveResourceRequestOptions29(options, (options2) => ({
       query,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -172861,7 +173076,7 @@ var Roles5 = class extends APIResource3 {
    */
   delete(roleID, params, options) {
     const { project_id, user_id } = params;
-    return this._client.delete(path10`/projects/${project_id}/users/${user_id}/roles/${roleID}`, resolveResourceRequestOptions29(options, (options2) => ({
+    return this._client.delete(path13`/projects/${project_id}/users/${user_id}/roles/${roleID}`, resolveResourceRequestOptions29(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -172932,7 +173147,7 @@ var Users3 = class extends APIResource3 {
    * ```
    */
   create(projectID, body, options) {
-    return this._client.post(path10`/organization/projects/${projectID}/users`, resolveResourceRequestOptions30(options, (options2) => ({
+    return this._client.post(path13`/organization/projects/${projectID}/users`, resolveResourceRequestOptions30(options, (options2) => ({
       body,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -172952,7 +173167,7 @@ var Users3 = class extends APIResource3 {
    */
   retrieve(userID, params, options) {
     const { project_id } = params;
-    return this._client.get(path10`/organization/projects/${project_id}/users/${userID}`, resolveResourceRequestOptions30(options, (options2) => ({
+    return this._client.get(path13`/organization/projects/${project_id}/users/${userID}`, resolveResourceRequestOptions30(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -172971,7 +173186,7 @@ var Users3 = class extends APIResource3 {
    */
   update(userID, params, options) {
     const { project_id, ...body } = params;
-    return this._client.post(path10`/organization/projects/${project_id}/users/${userID}`, resolveResourceRequestOptions30(options, (options2) => ({
+    return this._client.post(path13`/organization/projects/${project_id}/users/${userID}`, resolveResourceRequestOptions30(options, (options2) => ({
       body,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -172984,7 +173199,7 @@ var Users3 = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.getAPIList(path10`/organization/projects/${projectID}/users`, ConversationCursorPage, resolveResourceRequestOptions30(options, (options2) => ({
+    return this._client.getAPIList(path13`/organization/projects/${projectID}/users`, ConversationCursorPage, resolveResourceRequestOptions30(options, (options2) => ({
       query,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -173007,7 +173222,7 @@ var Users3 = class extends APIResource3 {
    */
   delete(userID, params, options) {
     const { project_id } = params;
-    return this._client.delete(path10`/organization/projects/${project_id}/users/${userID}`, resolveResourceRequestOptions30(options, (options2) => ({
+    return this._client.delete(path13`/organization/projects/${project_id}/users/${userID}`, resolveResourceRequestOptions30(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -173107,7 +173322,7 @@ var Projects = class extends APIResource3 {
    * ```
    */
   retrieve(projectID, options) {
-    return this._client.get(path10`/organization/projects/${projectID}`, resolveResourceRequestOptions31(options, (options2) => ({
+    return this._client.get(path13`/organization/projects/${projectID}`, resolveResourceRequestOptions31(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -173124,7 +173339,7 @@ var Projects = class extends APIResource3 {
    * ```
    */
   update(projectID, body, options) {
-    return this._client.post(path10`/organization/projects/${projectID}`, resolveResourceRequestOptions31(options, (options2) => ({
+    return this._client.post(path13`/organization/projects/${projectID}`, resolveResourceRequestOptions31(options, (options2) => ({
       body,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -173156,7 +173371,7 @@ var Projects = class extends APIResource3 {
    * ```
    */
   archive(projectID, options) {
-    return this._client.post(path10`/organization/projects/${projectID}/archive`, resolveResourceRequestOptions31(options, (options2) => ({
+    return this._client.post(path13`/organization/projects/${projectID}/archive`, resolveResourceRequestOptions31(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -173234,7 +173449,7 @@ var Roles6 = class extends APIResource3 {
    * ```
    */
   create(userID, body, options) {
-    return this._client.post(path10`/organization/users/${userID}/roles`, resolveResourceRequestOptions32(options, (options2) => ({
+    return this._client.post(path13`/organization/users/${userID}/roles`, resolveResourceRequestOptions32(options, (options2) => ({
       body,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -173254,7 +173469,7 @@ var Roles6 = class extends APIResource3 {
    */
   retrieve(roleID, params, options) {
     const { user_id } = params;
-    return this._client.get(path10`/organization/users/${user_id}/roles/${roleID}`, resolveResourceRequestOptions32(options, (options2) => ({
+    return this._client.get(path13`/organization/users/${user_id}/roles/${roleID}`, resolveResourceRequestOptions32(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -173266,7 +173481,7 @@ var Roles6 = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.getAPIList(path10`/organization/users/${userID}/roles`, NextCursorPage, resolveResourceRequestOptions32(options, (options2) => ({
+    return this._client.getAPIList(path13`/organization/users/${userID}/roles`, NextCursorPage, resolveResourceRequestOptions32(options, (options2) => ({
       query,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -173286,7 +173501,7 @@ var Roles6 = class extends APIResource3 {
    */
   delete(roleID, params, options) {
     const { user_id } = params;
-    return this._client.delete(path10`/organization/users/${user_id}/roles/${roleID}`, resolveResourceRequestOptions32(options, (options2) => ({
+    return this._client.delete(path13`/organization/users/${user_id}/roles/${roleID}`, resolveResourceRequestOptions32(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -173353,7 +173568,7 @@ var Users4 = class extends APIResource3 {
    * ```
    */
   retrieve(userID, options) {
-    return this._client.get(path10`/organization/users/${userID}`, resolveResourceRequestOptions33(options, (options2) => ({
+    return this._client.get(path13`/organization/users/${userID}`, resolveResourceRequestOptions33(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -173368,7 +173583,7 @@ var Users4 = class extends APIResource3 {
    * ```
    */
   update(userID, body, options) {
-    return this._client.post(path10`/organization/users/${userID}`, resolveResourceRequestOptions33(options, (options2) => ({
+    return this._client.post(path13`/organization/users/${userID}`, resolveResourceRequestOptions33(options, (options2) => ({
       body,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -173398,7 +173613,7 @@ var Users4 = class extends APIResource3 {
    * ```
    */
   delete(userID, options) {
-    return this._client.delete(path10`/organization/users/${userID}`, resolveResourceRequestOptions33(options, (options2) => ({
+    return this._client.delete(path13`/organization/users/${userID}`, resolveResourceRequestOptions33(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -173582,7 +173797,7 @@ var VoiceConsents = class extends APIResource3 {
    * ```
    */
   retrieve(consentID, options) {
-    return this._client.get(path10`/audio/voice_consents/${consentID}`, resolveResourceRequestOptions37(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.get(path13`/audio/voice_consents/${consentID}`, resolveResourceRequestOptions37(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
   /**
    * Updates a voice consent recording (metadata only).
@@ -173597,7 +173812,7 @@ var VoiceConsents = class extends APIResource3 {
    * ```
    */
   update(consentID, body, options) {
-    return this._client.post(path10`/audio/voice_consents/${consentID}`, resolveResourceRequestOptions37(options, (options2) => ({
+    return this._client.post(path13`/audio/voice_consents/${consentID}`, resolveResourceRequestOptions37(options, (options2) => ({
       body,
       ...options2,
       __security: { bearerAuth: true }
@@ -173626,7 +173841,7 @@ var VoiceConsents = class extends APIResource3 {
    * ```
    */
   delete(consentID, options) {
-    return this._client.delete(path10`/audio/voice_consents/${consentID}`, resolveResourceRequestOptions37(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.delete(path13`/audio/voice_consents/${consentID}`, resolveResourceRequestOptions37(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
 };
 
@@ -173678,7 +173893,7 @@ var Voices = class extends APIResource3 {
    * ```
    */
   delete(voiceID, options) {
-    return this._client.delete(path10`/audio/voices/${voiceID}`, resolveResourceRequestOptions38(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.delete(path13`/audio/voices/${voiceID}`, resolveResourceRequestOptions38(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
 };
 
@@ -173759,7 +173974,7 @@ var Batches3 = class extends APIResource3 {
    * Retrieves a batch.
    */
   retrieve(batchID, options) {
-    return this._client.get(path10`/batches/${batchID}`, resolveResourceRequestOptions39(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.get(path13`/batches/${batchID}`, resolveResourceRequestOptions39(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
   list(query = {}, options) {
     const normalizeRequestOptionsForQueryOptions = normalizeRequestOptionsForQuery25(query, ["after", "limit"], options);
@@ -173780,7 +173995,7 @@ var Batches3 = class extends APIResource3 {
    * (if any) available in the output file.
    */
   cancel(batchID, options) {
-    return this._client.post(path10`/batches/${batchID}/cancel`, resolveResourceRequestOptions39(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.post(path13`/batches/${batchID}/cancel`, resolveResourceRequestOptions39(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
 };
 
@@ -173849,7 +174064,7 @@ var Assistants = class extends APIResource3 {
    * @deprecated
    */
   retrieve(assistantID, options) {
-    return this._client.get(path10`/assistants/${assistantID}`, resolveResourceRequestOptions40(options, (options2) => ({
+    return this._client.get(path13`/assistants/${assistantID}`, resolveResourceRequestOptions40(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "assistants=v2" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -173861,7 +174076,7 @@ var Assistants = class extends APIResource3 {
    * @deprecated
    */
   update(assistantID, body, options) {
-    return this._client.post(path10`/assistants/${assistantID}`, resolveResourceRequestOptions40(options, (options2) => ({
+    return this._client.post(path13`/assistants/${assistantID}`, resolveResourceRequestOptions40(options, (options2) => ({
       body,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "assistants=v2" }, options2?.headers]),
@@ -173888,7 +174103,7 @@ var Assistants = class extends APIResource3 {
    * @deprecated
    */
   delete(assistantID, options) {
-    return this._client.delete(path10`/assistants/${assistantID}`, resolveResourceRequestOptions40(options, (options2) => ({
+    return this._client.delete(path13`/assistants/${assistantID}`, resolveResourceRequestOptions40(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "assistants=v2" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -173970,10 +174185,10 @@ var AgentFileUploadError = class extends OpenAIError {
     Object.defineProperty(this, "cause", { value: cause, configurable: true });
   }
 };
-function validateAgentFilePath(path27) {
-  const parts = path27.split("/");
+function validateAgentFilePath(path28) {
+  const parts = path28.split("/");
   const root = parts[2] ?? "";
-  if (!path27.startsWith("/workspace/") || path27.includes("\\") || path27.includes("\0") || parts.slice(1).some((part) => part === "" || part === "." || part === "..") || root === ".codex" || root === ".managed-agents" || root.startsWith(".managed-agents-") || path27 === "/workspace/outputs") {
+  if (!path28.startsWith("/workspace/") || path28.includes("\\") || path28.includes("\0") || parts.slice(1).some((part) => part === "" || part === "." || part === "..") || root === ".codex" || root === ".managed-agents" || root.startsWith(".managed-agents-") || path28 === "/workspace/outputs") {
     throw new OpenAIError("Agent files require a non-reserved absolute file path inside /workspace");
   }
 }
@@ -173984,10 +174199,10 @@ function preflight(files, options) {
     throw new OpenAIError("Do not reuse an Idempotency-Key across multiple file uploads");
   }
   const paths = { children: /* @__PURE__ */ new Map() };
-  for (const [path27] of entries) {
-    validateAgentFilePath(path27);
+  for (const [path28] of entries) {
+    validateAgentFilePath(path28);
     let node2 = paths;
-    for (const part of path27.split("/")) {
+    for (const part of path28.split("/")) {
       if (node2.file) {
         throw new OpenAIError("Agent file destinations conflict");
       }
@@ -174015,10 +174230,10 @@ async function prepareAgentFiles(client2, files, options) {
   }
   const prepared = { files: [], uploadedFiles: [] };
   try {
-    for (const [path27, file2] of entries) {
+    for (const [path28, file2] of entries) {
       const uploaded = await client2.files.create({ file: file2, purpose: "user_data" }, requestOptions);
       prepared.uploadedFiles.push(uploaded);
-      prepared.files.push({ type: "file_id", file_id: uploaded.id, path: path27 });
+      prepared.files.push({ type: "file_id", file_id: uploaded.id, path: path28 });
     }
     return prepared;
   } catch (error62) {
@@ -174072,7 +174287,7 @@ var Files3 = class extends APIResource3 {
    * ```
    */
   create(environmentID, body, options) {
-    return this._client.post(path10`/agents/environments/${environmentID}/files`, resolveResourceRequestOptions41(options, (options2) => ({
+    return this._client.post(path13`/agents/environments/${environmentID}/files`, resolveResourceRequestOptions41(options, (options2) => ({
       body,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
@@ -174095,7 +174310,7 @@ var Files3 = class extends APIResource3 {
    * ```
    */
   list(environmentID, query = {}, options) {
-    return this._client.getAPIList(path10`/agents/environments/${environmentID}/files`, TokenPage, resolveResourceRequestOptions41(options, (options2) => ({
+    return this._client.getAPIList(path13`/agents/environments/${environmentID}/files`, TokenPage, resolveResourceRequestOptions41(options, (options2) => ({
       query,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
@@ -174183,7 +174398,7 @@ var Templates = class extends APIResource3 {
    * ```
    */
   retrieve(environmentTemplateID, options) {
-    return this._client.get(path10`/agents/environments/templates/${environmentTemplateID}`, resolveResourceRequestOptions42(options, (options2) => ({
+    return this._client.get(path13`/agents/environments/templates/${environmentTemplateID}`, resolveResourceRequestOptions42(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -174203,7 +174418,7 @@ var Templates = class extends APIResource3 {
    * ```
    */
   update(environmentTemplateID, body = {}, options) {
-    return this._client.post(path10`/agents/environments/templates/${environmentTemplateID}`, resolveResourceRequestOptions42(options, (options2) => ({
+    return this._client.post(path13`/agents/environments/templates/${environmentTemplateID}`, resolveResourceRequestOptions42(options, (options2) => ({
       body,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
@@ -174238,7 +174453,7 @@ var Templates = class extends APIResource3 {
    * ```
    */
   delete(environmentTemplateID, options) {
-    return this._client.delete(path10`/agents/environments/templates/${environmentTemplateID}`, resolveResourceRequestOptions42(options, (options2) => ({
+    return this._client.delete(path13`/agents/environments/templates/${environmentTemplateID}`, resolveResourceRequestOptions42(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -174338,7 +174553,7 @@ var Environments2 = class extends APIResource3 {
    * ```
    */
   retrieve(environmentID, options) {
-    return this._client.get(path10`/agents/environments/${environmentID}`, resolveResourceRequestOptions43(options, (options2) => ({
+    return this._client.get(path13`/agents/environments/${environmentID}`, resolveResourceRequestOptions43(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -175222,10 +175437,10 @@ var AgentResultArtifacts = class {
     __classPrivateFieldSet3(this, _AgentResultArtifacts_turnID, result.turn_id, "f");
   }
   /** Find one immutable artifact by its exact hosted path, across all pages. */
-  async retrieve(path27, options) {
+  async retrieve(path28, options) {
     let selected;
     for await (const artifact of agentItems((after) => __classPrivateFieldGet3(this, _AgentResultArtifacts_resource, "f").list(__classPrivateFieldGet3(this, _AgentResultArtifacts_sessionID, "f"), {}, { ...options, query: { ...options?.query, after, environment_id: void 0 } }))) {
-      if (artifact.session_id === __classPrivateFieldGet3(this, _AgentResultArtifacts_sessionID, "f") && artifact.turn_id === __classPrivateFieldGet3(this, _AgentResultArtifacts_turnID, "f") && artifact.path === path27) {
+      if (artifact.session_id === __classPrivateFieldGet3(this, _AgentResultArtifacts_sessionID, "f") && artifact.turn_id === __classPrivateFieldGet3(this, _AgentResultArtifacts_turnID, "f") && artifact.path === path28) {
         if (selected) {
           throw new OpenAIError("Multiple artifacts match this result and path");
         }
@@ -175238,14 +175453,14 @@ var AgentResultArtifacts = class {
     return selected;
   }
   /** Return the native binary response for this result's exact artifact path. */
-  async content(path27, options) {
-    const artifact = await this.retrieve(path27, options);
+  async content(path28, options) {
+    const artifact = await this.retrieve(path28, options);
     return __classPrivateFieldGet3(this, _AgentResultArtifacts_resource, "f").content(artifact.id, { session_id: __classPrivateFieldGet3(this, _AgentResultArtifacts_sessionID, "f") }, options);
   }
   /** Stream bytes to a caller-chosen destination; the hosted path never selects a local path. */
   async download(params, options) {
-    const { path: path27, to } = params;
-    const artifact = await this.retrieve(path27, options);
+    const { path: path28, to } = params;
+    const artifact = await this.retrieve(path28, options);
     const response = await __classPrivateFieldGet3(this, _AgentResultArtifacts_resource, "f").content(artifact.id, { session_id: __classPrivateFieldGet3(this, _AgentResultArtifacts_sessionID, "f") }, options);
     if (!response.body) {
       throw new OpenAIError("Artifact response has no content stream");
@@ -175329,7 +175544,7 @@ var Artifacts = class extends APIResource3 {
    */
   retrieve(artifactID, params, options) {
     const { session_id } = params;
-    return this._client.get(path10`/agents/sessions/${session_id}/artifacts/${artifactID}`, resolveResourceRequestOptions44(options, (options2) => ({
+    return this._client.get(path13`/agents/sessions/${session_id}/artifacts/${artifactID}`, resolveResourceRequestOptions44(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -175342,7 +175557,7 @@ var Artifacts = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.getAPIList(path10`/agents/sessions/${sessionID}/artifacts`, CursorPage, resolveResourceRequestOptions44(options, (options2) => ({
+    return this._client.getAPIList(path13`/agents/sessions/${sessionID}/artifacts`, CursorPage, resolveResourceRequestOptions44(options, (options2) => ({
       query,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
@@ -175365,7 +175580,7 @@ var Artifacts = class extends APIResource3 {
    */
   delete(artifactID, params, options) {
     const { session_id } = params;
-    return this._client.delete(path10`/agents/sessions/${session_id}/artifacts/${artifactID}`, resolveResourceRequestOptions44(options, (options2) => ({
+    return this._client.delete(path13`/agents/sessions/${session_id}/artifacts/${artifactID}`, resolveResourceRequestOptions44(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -175390,7 +175605,7 @@ var Artifacts = class extends APIResource3 {
    */
   content(artifactID, params, options) {
     const { session_id } = params;
-    return this._client.get(path10`/agents/sessions/${session_id}/artifacts/${artifactID}/content`, resolveResourceRequestOptions44(options, (options2) => ({
+    return this._client.get(path13`/agents/sessions/${session_id}/artifacts/${artifactID}/content`, resolveResourceRequestOptions44(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([
         { "OpenAI-Beta": "agents=v1", Accept: "application/octet-stream" },
@@ -175441,7 +175656,7 @@ var Events3 = class extends APIResource3 {
    */
   create(sessionID, params, options) {
     const { "Idempotency-Key": idempotencyKey, ...body } = params;
-    return this._client.post(path10`/agents/sessions/${sessionID}/events`, resolveResourceRequestOptions45(options, (options2) => ({
+    return this._client.post(path13`/agents/sessions/${sessionID}/events`, resolveResourceRequestOptions45(options, (options2) => ({
       body,
       ...options2,
       headers: buildHeaders3([
@@ -175468,7 +175683,7 @@ var Events3 = class extends APIResource3 {
    * ```
    */
   stream(sessionID, options) {
-    return this._client.get(path10`/agents/sessions/${sessionID}/events`, resolveResourceRequestOptions45(options, (options2) => ({
+    return this._client.get(path13`/agents/sessions/${sessionID}/events`, resolveResourceRequestOptions45(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([
         { "OpenAI-Beta": "agents=v1", Accept: "text/event-stream" },
@@ -175533,7 +175748,7 @@ var Items2 = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.getAPIList(path10`/agents/sessions/${sessionID}/items`, CursorPage, resolveResourceRequestOptions46(options, (options2) => ({
+    return this._client.getAPIList(path13`/agents/sessions/${sessionID}/items`, CursorPage, resolveResourceRequestOptions46(options, (options2) => ({
       query,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
@@ -175595,7 +175810,7 @@ var Traces2 = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.getAPIList(path10`/agents/sessions/${sessionID}/traces`, CursorPage, resolveResourceRequestOptions47(options, (options2) => ({
+    return this._client.getAPIList(path13`/agents/sessions/${sessionID}/traces`, CursorPage, resolveResourceRequestOptions47(options, (options2) => ({
       query,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
@@ -175626,7 +175841,7 @@ var Items3 = class extends APIResource3 {
    */
   list(subagentID, params, options) {
     const { session_id, ...query } = params;
-    return this._client.getAPIList(path10`/agents/sessions/${session_id}/subagents/${subagentID}/items`, CursorPage, resolveResourceRequestOptions48(options, (options2) => ({
+    return this._client.getAPIList(path13`/agents/sessions/${session_id}/subagents/${subagentID}/items`, CursorPage, resolveResourceRequestOptions48(options, (options2) => ({
       query,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
@@ -175657,7 +175872,7 @@ var Items4 = class extends APIResource3 {
    */
   list(turnID, params, options) {
     const { session_id, subagent_id, ...query } = params;
-    return this._client.getAPIList(path10`/agents/sessions/${session_id}/subagents/${subagent_id}/turns/${turnID}/items`, CursorPage, resolveResourceRequestOptions49(options, (options2) => ({
+    return this._client.getAPIList(path13`/agents/sessions/${session_id}/subagents/${subagent_id}/turns/${turnID}/items`, CursorPage, resolveResourceRequestOptions49(options, (options2) => ({
       query,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
@@ -175693,7 +175908,7 @@ var Turns = class extends APIResource3 {
    */
   retrieve(turnID, params, options) {
     const { session_id, subagent_id } = params;
-    return this._client.get(path10`/agents/sessions/${session_id}/subagents/${subagent_id}/turns/${turnID}`, resolveResourceRequestOptions50(options, (options2) => ({
+    return this._client.get(path13`/agents/sessions/${session_id}/subagents/${subagent_id}/turns/${turnID}`, resolveResourceRequestOptions50(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -175716,7 +175931,7 @@ var Turns = class extends APIResource3 {
    */
   list(subagentID, params, options) {
     const { session_id, ...query } = params;
-    return this._client.getAPIList(path10`/agents/sessions/${session_id}/subagents/${subagentID}/turns`, CursorPage, resolveResourceRequestOptions50(options, (options2) => ({
+    return this._client.getAPIList(path13`/agents/sessions/${session_id}/subagents/${subagentID}/turns`, CursorPage, resolveResourceRequestOptions50(options, (options2) => ({
       query,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
@@ -175792,7 +176007,7 @@ var Subagents = class extends APIResource3 {
    */
   retrieve(subagentID, params, options) {
     const { session_id } = params;
-    return this._client.get(path10`/agents/sessions/${session_id}/subagents/${subagentID}`, resolveResourceRequestOptions51(options, (options2) => ({
+    return this._client.get(path13`/agents/sessions/${session_id}/subagents/${subagentID}`, resolveResourceRequestOptions51(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -175805,7 +176020,7 @@ var Subagents = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.getAPIList(path10`/agents/sessions/${sessionID}/subagents`, CursorPage, resolveResourceRequestOptions51(options, (options2) => ({
+    return this._client.getAPIList(path13`/agents/sessions/${sessionID}/subagents`, CursorPage, resolveResourceRequestOptions51(options, (options2) => ({
       query,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
@@ -175839,7 +176054,7 @@ var Items5 = class extends APIResource3 {
    */
   list(turnID, params, options) {
     const { session_id, ...query } = params;
-    return this._client.getAPIList(path10`/agents/sessions/${session_id}/turns/${turnID}/items`, ConversationCursorPage, resolveResourceRequestOptions52(options, (options2) => ({
+    return this._client.getAPIList(path13`/agents/sessions/${session_id}/turns/${turnID}/items`, ConversationCursorPage, resolveResourceRequestOptions52(options, (options2) => ({
       query,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
@@ -175914,7 +176129,7 @@ var Turns2 = class extends APIResource3 {
    */
   retrieve(turnID, params, options) {
     const { session_id } = params;
-    return this._client.get(path10`/agents/sessions/${session_id}/turns/${turnID}`, resolveResourceRequestOptions53(options, (options2) => ({
+    return this._client.get(path13`/agents/sessions/${session_id}/turns/${turnID}`, resolveResourceRequestOptions53(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -175927,7 +176142,7 @@ var Turns2 = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.getAPIList(path10`/agents/sessions/${sessionID}/turns`, CursorPage, resolveResourceRequestOptions53(options, (options2) => ({
+    return this._client.getAPIList(path13`/agents/sessions/${sessionID}/turns`, CursorPage, resolveResourceRequestOptions53(options, (options2) => ({
       query,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
@@ -176024,7 +176239,7 @@ var Sessions4 = class extends APIResource3 {
    * ```
    */
   retrieve(sessionID, options) {
-    return this._client.get(path10`/agents/sessions/${sessionID}`, resolveResourceRequestOptions54(options, (options2) => ({
+    return this._client.get(path13`/agents/sessions/${sessionID}`, resolveResourceRequestOptions54(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -176042,7 +176257,7 @@ var Sessions4 = class extends APIResource3 {
    * ```
    */
   update(sessionID, body = {}, options) {
-    return this._client.post(path10`/agents/sessions/${sessionID}`, resolveResourceRequestOptions54(options, (options2) => ({
+    return this._client.post(path13`/agents/sessions/${sessionID}`, resolveResourceRequestOptions54(options, (options2) => ({
       body,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
@@ -176077,7 +176292,7 @@ var Sessions4 = class extends APIResource3 {
    * ```
    */
   delete(sessionID, options) {
-    return this._client.delete(path10`/agents/sessions/${sessionID}`, resolveResourceRequestOptions54(options, (options2) => ({
+    return this._client.delete(path13`/agents/sessions/${sessionID}`, resolveResourceRequestOptions54(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -176159,7 +176374,7 @@ var Credentials2 = class extends APIResource3 {
    * ```
    */
   create(vaultID, body, options) {
-    return this._client.post(path10`/vaults/${vaultID}/credentials`, resolveResourceRequestOptions55(options, (options2) => ({
+    return this._client.post(path13`/vaults/${vaultID}/credentials`, resolveResourceRequestOptions55(options, (options2) => ({
       body,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
@@ -176181,7 +176396,7 @@ var Credentials2 = class extends APIResource3 {
    */
   retrieve(credentialID, params, options) {
     const { vault_id } = params;
-    return this._client.get(path10`/vaults/${vault_id}/credentials/${credentialID}`, resolveResourceRequestOptions55(options, (options2) => ({
+    return this._client.get(path13`/vaults/${vault_id}/credentials/${credentialID}`, resolveResourceRequestOptions55(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -176202,7 +176417,7 @@ var Credentials2 = class extends APIResource3 {
    */
   update(credentialID, params, options) {
     const { vault_id, ...body } = params;
-    return this._client.post(path10`/vaults/${vault_id}/credentials/${credentialID}`, resolveResourceRequestOptions55(options, (options2) => ({
+    return this._client.post(path13`/vaults/${vault_id}/credentials/${credentialID}`, resolveResourceRequestOptions55(options, (options2) => ({
       body,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
@@ -176216,7 +176431,7 @@ var Credentials2 = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.getAPIList(path10`/vaults/${vaultID}/credentials`, CursorPage, resolveResourceRequestOptions55(options, (options2) => ({
+    return this._client.getAPIList(path13`/vaults/${vaultID}/credentials`, CursorPage, resolveResourceRequestOptions55(options, (options2) => ({
       query,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
@@ -176238,7 +176453,7 @@ var Credentials2 = class extends APIResource3 {
    */
   delete(credentialID, params, options) {
     const { vault_id } = params;
-    return this._client.delete(path10`/vaults/${vault_id}/credentials/${credentialID}`, resolveResourceRequestOptions55(options, (options2) => ({
+    return this._client.delete(path13`/vaults/${vault_id}/credentials/${credentialID}`, resolveResourceRequestOptions55(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -176325,7 +176540,7 @@ var Vaults2 = class extends APIResource3 {
    * ```
    */
   retrieve(vaultID, options) {
-    return this._client.get(path10`/vaults/${vaultID}`, resolveResourceRequestOptions56(options, (options2) => ({
+    return this._client.get(path13`/vaults/${vaultID}`, resolveResourceRequestOptions56(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -176345,7 +176560,7 @@ var Vaults2 = class extends APIResource3 {
    * ```
    */
   update(vaultID, body, options) {
-    return this._client.post(path10`/vaults/${vaultID}`, resolveResourceRequestOptions56(options, (options2) => ({
+    return this._client.post(path13`/vaults/${vaultID}`, resolveResourceRequestOptions56(options, (options2) => ({
       body,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
@@ -176378,7 +176593,7 @@ var Vaults2 = class extends APIResource3 {
    * ```
    */
   delete(vaultID, options) {
-    return this._client.delete(path10`/vaults/${vaultID}`, resolveResourceRequestOptions56(options, (options2) => ({
+    return this._client.delete(path13`/vaults/${vaultID}`, resolveResourceRequestOptions56(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -176468,7 +176683,7 @@ var Agents2 = class extends APIResource3 {
    * ```
    */
   retrieve(agentID, options) {
-    return this._client.get(path10`/agents/${agentID}`, resolveResourceRequestOptions57(options, (options2) => ({
+    return this._client.get(path13`/agents/${agentID}`, resolveResourceRequestOptions57(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -176484,7 +176699,7 @@ var Agents2 = class extends APIResource3 {
    * ```
    */
   update(agentID, body = {}, options) {
-    return this._client.post(path10`/agents/${agentID}`, resolveResourceRequestOptions57(options, (options2) => ({
+    return this._client.post(path13`/agents/${agentID}`, resolveResourceRequestOptions57(options, (options2) => ({
       body,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
@@ -176517,7 +176732,7 @@ var Agents2 = class extends APIResource3 {
    * ```
    */
   delete(agentID, options) {
-    return this._client.delete(path10`/agents/${agentID}`, resolveResourceRequestOptions57(options, (options2) => ({
+    return this._client.delete(path13`/agents/${agentID}`, resolveResourceRequestOptions57(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "agents=v1" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -176565,7 +176780,7 @@ var Sessions5 = class extends APIResource3 {
    * ```
    */
   cancel(sessionID, options) {
-    return this._client.post(path10`/chatkit/sessions/${sessionID}/cancel`, resolveResourceRequestOptions58(options, (options2) => ({
+    return this._client.post(path13`/chatkit/sessions/${sessionID}/cancel`, resolveResourceRequestOptions58(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "chatkit_beta=v1" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -176629,7 +176844,7 @@ var Threads4 = class extends APIResource3 {
    * ```
    */
   retrieve(threadID, options) {
-    return this._client.get(path10`/chatkit/threads/${threadID}`, resolveResourceRequestOptions59(options, (options2) => ({
+    return this._client.get(path13`/chatkit/threads/${threadID}`, resolveResourceRequestOptions59(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "chatkit_beta=v1" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -176660,7 +176875,7 @@ var Threads4 = class extends APIResource3 {
    * ```
    */
   delete(threadID, options) {
-    return this._client.delete(path10`/chatkit/threads/${threadID}`, resolveResourceRequestOptions59(options, (options2) => ({
+    return this._client.delete(path13`/chatkit/threads/${threadID}`, resolveResourceRequestOptions59(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "chatkit_beta=v1" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -176673,7 +176888,7 @@ var Threads4 = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.getAPIList(path10`/chatkit/threads/${threadID}/items`, ConversationCursorPage, resolveResourceRequestOptions59(options, (options2) => ({
+    return this._client.getAPIList(path13`/chatkit/threads/${threadID}/items`, ConversationCursorPage, resolveResourceRequestOptions59(options, (options2) => ({
       query,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "chatkit_beta=v1" }, options2?.headers]),
@@ -176747,7 +176962,7 @@ var InputItems = class extends APIResource3 {
     }
     params = params;
     const { betas, ...query } = params ?? {};
-    return this._client.getAPIList(path10`/responses/${responseID}/input_items?beta=true`, CursorPage, resolveResourceRequestOptions60(options, (options2) => ({
+    return this._client.getAPIList(path13`/responses/${responseID}/input_items?beta=true`, CursorPage, resolveResourceRequestOptions60(options, (options2) => ({
       query,
       ...options2,
       headers: buildHeaders3([
@@ -176865,7 +177080,7 @@ var Responses = class extends APIResource3 {
     }
     params = params;
     const { betas, ...query } = params ?? {};
-    return this._client.get(path10`/responses/${responseID}?beta=true`, resolveResourceRequestOptions62(options, (options2) => ({
+    return this._client.get(path13`/responses/${responseID}?beta=true`, resolveResourceRequestOptions62(options, (options2) => ({
       query,
       ...options2,
       headers: buildHeaders3([
@@ -176888,7 +177103,7 @@ var Responses = class extends APIResource3 {
    */
   delete(responseID, params = {}, options) {
     const { betas } = params ?? {};
-    return this._client.delete(path10`/responses/${responseID}?beta=true`, resolveResourceRequestOptions62(options, (options2) => ({
+    return this._client.delete(path13`/responses/${responseID}?beta=true`, resolveResourceRequestOptions62(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([
         {
@@ -176914,7 +177129,7 @@ var Responses = class extends APIResource3 {
    */
   cancel(responseID, params = {}, options) {
     const { betas } = params ?? {};
-    return this._client.post(path10`/responses/${responseID}/cancel?beta=true`, resolveResourceRequestOptions62(options, (options2) => ({
+    return this._client.post(path13`/responses/${responseID}/cancel?beta=true`, resolveResourceRequestOptions62(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([
         { ...betas?.toString() != null ? { "openai-beta": betas?.toString() } : void 0 },
@@ -177007,7 +177222,7 @@ var Messages4 = class extends APIResource3 {
    * @deprecated The Assistants API is deprecated in favor of the Responses API
    */
   create(threadID, body, options) {
-    return this._client.post(path10`/threads/${threadID}/messages`, resolveResourceRequestOptions63(options, (options2) => ({
+    return this._client.post(path13`/threads/${threadID}/messages`, resolveResourceRequestOptions63(options, (options2) => ({
       body,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "assistants=v2" }, options2?.headers]),
@@ -177021,7 +177236,7 @@ var Messages4 = class extends APIResource3 {
    */
   retrieve(messageID, params, options) {
     const { thread_id } = params;
-    return this._client.get(path10`/threads/${thread_id}/messages/${messageID}`, resolveResourceRequestOptions63(options, (options2) => ({
+    return this._client.get(path13`/threads/${thread_id}/messages/${messageID}`, resolveResourceRequestOptions63(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "assistants=v2" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -177034,7 +177249,7 @@ var Messages4 = class extends APIResource3 {
    */
   update(messageID, params, options) {
     const { thread_id, ...body } = params;
-    return this._client.post(path10`/threads/${thread_id}/messages/${messageID}`, resolveResourceRequestOptions63(options, (options2) => ({
+    return this._client.post(path13`/threads/${thread_id}/messages/${messageID}`, resolveResourceRequestOptions63(options, (options2) => ({
       body,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "assistants=v2" }, options2?.headers]),
@@ -177048,7 +177263,7 @@ var Messages4 = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.getAPIList(path10`/threads/${threadID}/messages`, CursorPage, resolveResourceRequestOptions63(options, (options2) => ({
+    return this._client.getAPIList(path13`/threads/${threadID}/messages`, CursorPage, resolveResourceRequestOptions63(options, (options2) => ({
       query,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "assistants=v2" }, options2?.headers]),
@@ -177062,7 +177277,7 @@ var Messages4 = class extends APIResource3 {
    */
   delete(messageID, params, options) {
     const { thread_id } = params;
-    return this._client.delete(path10`/threads/${thread_id}/messages/${messageID}`, resolveResourceRequestOptions63(options, (options2) => ({
+    return this._client.delete(path13`/threads/${thread_id}/messages/${messageID}`, resolveResourceRequestOptions63(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "assistants=v2" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -177082,7 +177297,7 @@ var Steps = class extends APIResource3 {
    */
   retrieve(stepID, params, options) {
     const { thread_id, run_id, ...query } = params;
-    return this._client.get(path10`/threads/${thread_id}/runs/${run_id}/steps/${stepID}`, resolveResourceRequestOptions64(options, (options2) => ({
+    return this._client.get(path13`/threads/${thread_id}/runs/${run_id}/steps/${stepID}`, resolveResourceRequestOptions64(options, (options2) => ({
       query,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "assistants=v2" }, options2?.headers]),
@@ -177096,7 +177311,7 @@ var Steps = class extends APIResource3 {
    */
   list(runID, params, options) {
     const { thread_id, ...query } = params;
-    return this._client.getAPIList(path10`/threads/${thread_id}/runs/${runID}/steps`, CursorPage, resolveResourceRequestOptions64(options, (options2) => ({
+    return this._client.getAPIList(path13`/threads/${thread_id}/runs/${runID}/steps`, CursorPage, resolveResourceRequestOptions64(options, (options2) => ({
       query,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "assistants=v2" }, options2?.headers]),
@@ -178299,7 +178514,7 @@ var Runs4 = class extends APIResource3 {
   }
   create(threadID, params, options) {
     const { include, ...body } = params;
-    return this._client.post(path10`/threads/${threadID}/runs`, resolveResourceRequestOptions65(options, (options2) => withBodyFinalization5({
+    return this._client.post(path13`/threads/${threadID}/runs`, resolveResourceRequestOptions65(options, (options2) => withBodyFinalization5({
       query: { include },
       body,
       ...options2,
@@ -178316,7 +178531,7 @@ var Runs4 = class extends APIResource3 {
    */
   retrieve(runID, params, options) {
     const { thread_id } = params;
-    return this._client.get(path10`/threads/${thread_id}/runs/${runID}`, resolveResourceRequestOptions65(options, (options2) => ({
+    return this._client.get(path13`/threads/${thread_id}/runs/${runID}`, resolveResourceRequestOptions65(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "assistants=v2" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -178329,7 +178544,7 @@ var Runs4 = class extends APIResource3 {
    */
   update(runID, params, options) {
     const { thread_id, ...body } = params;
-    return this._client.post(path10`/threads/${thread_id}/runs/${runID}`, resolveResourceRequestOptions65(options, (options2) => ({
+    return this._client.post(path13`/threads/${thread_id}/runs/${runID}`, resolveResourceRequestOptions65(options, (options2) => ({
       body,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "assistants=v2" }, options2?.headers]),
@@ -178343,7 +178558,7 @@ var Runs4 = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.getAPIList(path10`/threads/${threadID}/runs`, CursorPage, resolveResourceRequestOptions65(options, (options2) => ({
+    return this._client.getAPIList(path13`/threads/${threadID}/runs`, CursorPage, resolveResourceRequestOptions65(options, (options2) => ({
       query,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "assistants=v2" }, options2?.headers]),
@@ -178357,7 +178572,7 @@ var Runs4 = class extends APIResource3 {
    */
   cancel(runID, params, options) {
     const { thread_id } = params;
-    return this._client.post(path10`/threads/${thread_id}/runs/${runID}/cancel`, resolveResourceRequestOptions65(options, (options2) => ({
+    return this._client.post(path13`/threads/${thread_id}/runs/${runID}/cancel`, resolveResourceRequestOptions65(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "assistants=v2" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -178396,7 +178611,7 @@ var Runs4 = class extends APIResource3 {
   }
   submitToolOutputs(runID, params, options) {
     const { thread_id, ...body } = params;
-    return this._client.post(path10`/threads/${thread_id}/runs/${runID}/submit_tool_outputs`, resolveResourceRequestOptions65(options, (options2) => withBodyFinalization5({
+    return this._client.post(path13`/threads/${thread_id}/runs/${runID}/submit_tool_outputs`, resolveResourceRequestOptions65(options, (options2) => withBodyFinalization5({
       body,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "assistants=v2" }, options2?.headers]),
@@ -178457,7 +178672,7 @@ var Threads5 = class extends APIResource3 {
    * @deprecated The Assistants API is deprecated in favor of the Responses API
    */
   retrieve(threadID, options) {
-    return this._client.get(path10`/threads/${threadID}`, resolveResourceRequestOptions66(options, (options2) => ({
+    return this._client.get(path13`/threads/${threadID}`, resolveResourceRequestOptions66(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "assistants=v2" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -178469,7 +178684,7 @@ var Threads5 = class extends APIResource3 {
    * @deprecated The Assistants API is deprecated in favor of the Responses API
    */
   update(threadID, body, options) {
-    return this._client.post(path10`/threads/${threadID}`, resolveResourceRequestOptions66(options, (options2) => ({
+    return this._client.post(path13`/threads/${threadID}`, resolveResourceRequestOptions66(options, (options2) => ({
       body,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "assistants=v2" }, options2?.headers]),
@@ -178482,7 +178697,7 @@ var Threads5 = class extends APIResource3 {
    * @deprecated The Assistants API is deprecated in favor of the Responses API
    */
   delete(threadID, options) {
-    return this._client.delete(path10`/threads/${threadID}`, resolveResourceRequestOptions66(options, (options2) => ({
+    return this._client.delete(path13`/threads/${threadID}`, resolveResourceRequestOptions66(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "assistants=v2" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -178559,7 +178774,7 @@ var Content = class extends APIResource3 {
    */
   retrieve(fileID, params, options) {
     const { container_id } = params;
-    return this._client.get(path10`/containers/${container_id}/files/${fileID}/content`, resolveResourceRequestOptions68(options, (options2) => ({
+    return this._client.get(path13`/containers/${container_id}/files/${fileID}/content`, resolveResourceRequestOptions68(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ Accept: "application/binary" }, options2?.headers]),
       __security: { bearerAuth: true },
@@ -178628,14 +178843,14 @@ var Files4 = class extends APIResource3 {
    * a JSON request with a file ID.
    */
   create(containerID, body, options) {
-    return this._client.post(path10`/containers/${containerID}/files`, resolveResourceRequestOptions69(options, (options2) => maybeMultipartFormRequestOptions(withBodyFinalization8({ body, ...options2, __security: { bearerAuth: true } }, { finalizeMultipart: true }), this._client)));
+    return this._client.post(path13`/containers/${containerID}/files`, resolveResourceRequestOptions69(options, (options2) => maybeMultipartFormRequestOptions(withBodyFinalization8({ body, ...options2, __security: { bearerAuth: true } }, { finalizeMultipart: true }), this._client)));
   }
   /**
    * Retrieve Container File
    */
   retrieve(fileID, params, options) {
     const { container_id } = params;
-    return this._client.get(path10`/containers/${container_id}/files/${fileID}`, resolveResourceRequestOptions69(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.get(path13`/containers/${container_id}/files/${fileID}`, resolveResourceRequestOptions69(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
   list(containerID, query = {}, options) {
     const normalizeRequestOptionsForQueryOptions = normalizeRequestOptionsForQuery43(query, ["after", "limit", "order"], options);
@@ -178644,7 +178859,7 @@ var Files4 = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.getAPIList(path10`/containers/${containerID}/files`, CursorPage, resolveResourceRequestOptions69(options, (options2) => ({
+    return this._client.getAPIList(path13`/containers/${containerID}/files`, CursorPage, resolveResourceRequestOptions69(options, (options2) => ({
       query,
       ...options2,
       __security: { bearerAuth: true }
@@ -178655,7 +178870,7 @@ var Files4 = class extends APIResource3 {
    */
   delete(fileID, params, options) {
     const { container_id } = params;
-    return this._client.delete(path10`/containers/${container_id}/files/${fileID}`, resolveResourceRequestOptions69(options, (options2) => ({
+    return this._client.delete(path13`/containers/${container_id}/files/${fileID}`, resolveResourceRequestOptions69(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ Accept: "*/*" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -178728,7 +178943,7 @@ var Containers = class extends APIResource3 {
    * Retrieve Container
    */
   retrieve(containerID, options) {
-    return this._client.get(path10`/containers/${containerID}`, resolveResourceRequestOptions70(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.get(path13`/containers/${containerID}`, resolveResourceRequestOptions70(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
   list(query = {}, options) {
     const normalizeRequestOptionsForQueryOptions = normalizeRequestOptionsForQuery44(query, ["after", "limit", "name", "order"], options);
@@ -178747,7 +178962,7 @@ var Containers = class extends APIResource3 {
    * Delete Container
    */
   delete(containerID, options) {
-    return this._client.delete(path10`/containers/${containerID}`, resolveResourceRequestOptions70(options, (options2) => ({
+    return this._client.delete(path13`/containers/${containerID}`, resolveResourceRequestOptions70(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ Accept: "*/*" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -178828,7 +179043,7 @@ var Items6 = class extends APIResource3 {
    */
   create(conversationID, params, options) {
     const { include, ...body } = params;
-    return this._client.post(path10`/conversations/${conversationID}/items`, resolveResourceRequestOptions72(options, (options2) => ({
+    return this._client.post(path13`/conversations/${conversationID}/items`, resolveResourceRequestOptions72(options, (options2) => ({
       query: { include },
       body,
       ...options2,
@@ -178840,7 +179055,7 @@ var Items6 = class extends APIResource3 {
    */
   retrieve(itemID, params, options) {
     const { conversation_id, ...query } = params;
-    return this._client.get(path10`/conversations/${conversation_id}/items/${itemID}`, resolveResourceRequestOptions72(options, (options2) => ({
+    return this._client.get(path13`/conversations/${conversation_id}/items/${itemID}`, resolveResourceRequestOptions72(options, (options2) => ({
       query,
       ...options2,
       __security: { bearerAuth: true }
@@ -178853,7 +179068,7 @@ var Items6 = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.getAPIList(path10`/conversations/${conversationID}/items`, ConversationCursorPage, resolveResourceRequestOptions72(options, (options2) => ({
+    return this._client.getAPIList(path13`/conversations/${conversationID}/items`, ConversationCursorPage, resolveResourceRequestOptions72(options, (options2) => ({
       query,
       ...options2,
       __security: { bearerAuth: true }
@@ -178864,7 +179079,7 @@ var Items6 = class extends APIResource3 {
    */
   delete(itemID, params, options) {
     const { conversation_id } = params;
-    return this._client.delete(path10`/conversations/${conversation_id}/items/${itemID}`, resolveResourceRequestOptions72(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.delete(path13`/conversations/${conversation_id}/items/${itemID}`, resolveResourceRequestOptions72(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
 };
 
@@ -178891,13 +179106,13 @@ var Conversations = class extends APIResource3 {
    * Get a conversation
    */
   retrieve(conversationID, options) {
-    return this._client.get(path10`/conversations/${conversationID}`, resolveResourceRequestOptions73(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.get(path13`/conversations/${conversationID}`, resolveResourceRequestOptions73(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
   /**
    * Update a conversation
    */
   update(conversationID, body, options) {
-    return this._client.post(path10`/conversations/${conversationID}`, resolveResourceRequestOptions73(options, (options2) => ({
+    return this._client.post(path13`/conversations/${conversationID}`, resolveResourceRequestOptions73(options, (options2) => ({
       body,
       ...options2,
       __security: { bearerAuth: true }
@@ -178907,7 +179122,7 @@ var Conversations = class extends APIResource3 {
    * Delete a conversation. Items in the conversation will not be deleted.
    */
   delete(conversationID, options) {
-    return this._client.delete(path10`/conversations/${conversationID}`, resolveResourceRequestOptions73(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.delete(path13`/conversations/${conversationID}`, resolveResourceRequestOptions73(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
 };
 Conversations.Items = Items6;
@@ -178987,14 +179202,14 @@ var OutputItems = class extends APIResource3 {
    */
   retrieve(outputItemID, params, options) {
     const { eval_id, run_id } = params;
-    return this._client.get(path10`/evals/${eval_id}/runs/${run_id}/output_items/${outputItemID}`, resolveResourceRequestOptions75(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.get(path13`/evals/${eval_id}/runs/${run_id}/output_items/${outputItemID}`, resolveResourceRequestOptions75(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
   /**
    * Get a list of output items for an evaluation run.
    */
   list(runID, params, options) {
     const { eval_id, ...query } = params;
-    return this._client.getAPIList(path10`/evals/${eval_id}/runs/${runID}/output_items`, CursorPage, resolveResourceRequestOptions75(options, (options2) => ({
+    return this._client.getAPIList(path13`/evals/${eval_id}/runs/${runID}/output_items`, CursorPage, resolveResourceRequestOptions75(options, (options2) => ({
       query,
       ...options2,
       __security: { bearerAuth: true }
@@ -179058,7 +179273,7 @@ var Runs5 = class extends APIResource3 {
    * schema specified in the config of the evaluation.
    */
   create(evalID, body, options) {
-    return this._client.post(path10`/evals/${evalID}/runs`, resolveResourceRequestOptions76(options, (options2) => ({
+    return this._client.post(path13`/evals/${evalID}/runs`, resolveResourceRequestOptions76(options, (options2) => ({
       body,
       ...options2,
       __security: { bearerAuth: true }
@@ -179069,7 +179284,7 @@ var Runs5 = class extends APIResource3 {
    */
   retrieve(runID, params, options) {
     const { eval_id } = params;
-    return this._client.get(path10`/evals/${eval_id}/runs/${runID}`, resolveResourceRequestOptions76(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.get(path13`/evals/${eval_id}/runs/${runID}`, resolveResourceRequestOptions76(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
   list(evalID, query = {}, options) {
     const normalizeRequestOptionsForQueryOptions = normalizeRequestOptionsForQuery46(query, ["after", "limit", "order", "status"], options);
@@ -179078,7 +179293,7 @@ var Runs5 = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.getAPIList(path10`/evals/${evalID}/runs`, CursorPage, resolveResourceRequestOptions76(options, (options2) => ({
+    return this._client.getAPIList(path13`/evals/${evalID}/runs`, CursorPage, resolveResourceRequestOptions76(options, (options2) => ({
       query,
       ...options2,
       __security: { bearerAuth: true }
@@ -179089,14 +179304,14 @@ var Runs5 = class extends APIResource3 {
    */
   delete(runID, params, options) {
     const { eval_id } = params;
-    return this._client.delete(path10`/evals/${eval_id}/runs/${runID}`, resolveResourceRequestOptions76(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.delete(path13`/evals/${eval_id}/runs/${runID}`, resolveResourceRequestOptions76(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
   /**
    * Cancel an ongoing evaluation run.
    */
   cancel(runID, params, options) {
     const { eval_id } = params;
-    return this._client.post(path10`/evals/${eval_id}/runs/${runID}/cancel`, resolveResourceRequestOptions76(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.post(path13`/evals/${eval_id}/runs/${runID}/cancel`, resolveResourceRequestOptions76(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
 };
 Runs5.OutputItems = OutputItems;
@@ -179170,13 +179385,13 @@ var Evals = class extends APIResource3 {
    * Get an evaluation by ID.
    */
   retrieve(evalID, options) {
-    return this._client.get(path10`/evals/${evalID}`, resolveResourceRequestOptions77(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.get(path13`/evals/${evalID}`, resolveResourceRequestOptions77(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
   /**
    * Update certain properties of an evaluation.
    */
   update(evalID, body, options) {
-    return this._client.post(path10`/evals/${evalID}`, resolveResourceRequestOptions77(options, (options2) => ({
+    return this._client.post(path13`/evals/${evalID}`, resolveResourceRequestOptions77(options, (options2) => ({
       body,
       ...options2,
       __security: { bearerAuth: true }
@@ -179199,7 +179414,7 @@ var Evals = class extends APIResource3 {
    * Delete an evaluation.
    */
   delete(evalID, options) {
-    return this._client.delete(path10`/evals/${evalID}`, resolveResourceRequestOptions77(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.delete(path13`/evals/${evalID}`, resolveResourceRequestOptions77(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
 };
 Evals.Runs = Runs5;
@@ -179303,7 +179518,7 @@ var Files5 = class extends APIResource3 {
    * Returns information about a specific file.
    */
   retrieve(fileID, options) {
-    return this._client.get(path10`/files/${fileID}`, resolveResourceRequestOptions78(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.get(path13`/files/${fileID}`, resolveResourceRequestOptions78(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
   list(query = {}, options) {
     const normalizeRequestOptionsForQueryOptions = normalizeRequestOptionsForQuery48(query, ["after", "limit", "order", "purpose"], options);
@@ -179322,13 +179537,13 @@ var Files5 = class extends APIResource3 {
    * Delete a file and remove it from all vector stores.
    */
   delete(fileID, options) {
-    return this._client.delete(path10`/files/${fileID}`, resolveResourceRequestOptions78(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.delete(path13`/files/${fileID}`, resolveResourceRequestOptions78(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
   /**
    * Returns a response containing the contents of the specified file.
    */
   content(fileID, options) {
-    return this._client.get(path10`/files/${fileID}/content`, resolveResourceRequestOptions78(options, (options2) => ({
+    return this._client.get(path13`/files/${fileID}/content`, resolveResourceRequestOptions78(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ Accept: "application/binary" }, options2?.headers]),
       __security: { bearerAuth: true },
@@ -179476,7 +179691,7 @@ var Permissions = class extends APIResource3 {
    * ```
    */
   create(fineTunedModelCheckpoint, body, options) {
-    return this._client.getAPIList(path10`/fine_tuning/checkpoints/${fineTunedModelCheckpoint}/permissions`, Page2, resolveResourceRequestOptions80(options, (options2) => ({
+    return this._client.getAPIList(path13`/fine_tuning/checkpoints/${fineTunedModelCheckpoint}/permissions`, Page2, resolveResourceRequestOptions80(options, (options2) => ({
       body,
       method: "post",
       ...options2,
@@ -179490,7 +179705,7 @@ var Permissions = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.get(path10`/fine_tuning/checkpoints/${fineTunedModelCheckpoint}/permissions`, resolveResourceRequestOptions80(options, (options2) => ({
+    return this._client.get(path13`/fine_tuning/checkpoints/${fineTunedModelCheckpoint}/permissions`, resolveResourceRequestOptions80(options, (options2) => ({
       query,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -179503,7 +179718,7 @@ var Permissions = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.getAPIList(path10`/fine_tuning/checkpoints/${fineTunedModelCheckpoint}/permissions`, ConversationCursorPage, resolveResourceRequestOptions80(options, (options2) => ({
+    return this._client.getAPIList(path13`/fine_tuning/checkpoints/${fineTunedModelCheckpoint}/permissions`, ConversationCursorPage, resolveResourceRequestOptions80(options, (options2) => ({
       query,
       ...options2,
       __security: { adminAPIKeyAuth: true }
@@ -179530,7 +179745,7 @@ var Permissions = class extends APIResource3 {
    */
   delete(permissionID, params, options) {
     const { fine_tuned_model_checkpoint } = params;
-    return this._client.delete(path10`/fine_tuning/checkpoints/${fine_tuned_model_checkpoint}/permissions/${permissionID}`, resolveResourceRequestOptions80(options, (options2) => ({
+    return this._client.delete(path13`/fine_tuning/checkpoints/${fine_tuned_model_checkpoint}/permissions/${permissionID}`, resolveResourceRequestOptions80(options, (options2) => ({
       ...options2,
       __security: { adminAPIKeyAuth: true }
     })));
@@ -179599,7 +179814,7 @@ var Checkpoints2 = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.getAPIList(path10`/fine_tuning/jobs/${fineTuningJobID}/checkpoints`, CursorPage, resolveResourceRequestOptions81(options, (options2) => ({
+    return this._client.getAPIList(path13`/fine_tuning/jobs/${fineTuningJobID}/checkpoints`, CursorPage, resolveResourceRequestOptions81(options, (options2) => ({
       query,
       ...options2,
       __security: { bearerAuth: true }
@@ -179694,7 +179909,7 @@ var Jobs = class extends APIResource3 {
    * ```
    */
   retrieve(fineTuningJobID, options) {
-    return this._client.get(path10`/fine_tuning/jobs/${fineTuningJobID}`, resolveResourceRequestOptions82(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.get(path13`/fine_tuning/jobs/${fineTuningJobID}`, resolveResourceRequestOptions82(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
   list(query = {}, options) {
     const normalizeRequestOptionsForQueryOptions = normalizeRequestOptionsForQuery51(query, ["after", "limit", "metadata"], options);
@@ -179720,7 +179935,7 @@ var Jobs = class extends APIResource3 {
    * ```
    */
   cancel(fineTuningJobID, options) {
-    return this._client.post(path10`/fine_tuning/jobs/${fineTuningJobID}/cancel`, resolveResourceRequestOptions82(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.post(path13`/fine_tuning/jobs/${fineTuningJobID}/cancel`, resolveResourceRequestOptions82(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
   listEvents(fineTuningJobID, query = {}, options) {
     const normalizeRequestOptionsForQueryOptions = normalizeRequestOptionsForQuery51(query, ["after", "limit"], options);
@@ -179729,7 +179944,7 @@ var Jobs = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.getAPIList(path10`/fine_tuning/jobs/${fineTuningJobID}/events`, CursorPage, resolveResourceRequestOptions82(options, (options2) => ({
+    return this._client.getAPIList(path13`/fine_tuning/jobs/${fineTuningJobID}/events`, CursorPage, resolveResourceRequestOptions82(options, (options2) => ({
       query,
       ...options2,
       __security: { bearerAuth: true }
@@ -179746,7 +179961,7 @@ var Jobs = class extends APIResource3 {
    * ```
    */
   pause(fineTuningJobID, options) {
-    return this._client.post(path10`/fine_tuning/jobs/${fineTuningJobID}/pause`, resolveResourceRequestOptions82(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.post(path13`/fine_tuning/jobs/${fineTuningJobID}/pause`, resolveResourceRequestOptions82(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
   /**
    * Resume a fine-tune job.
@@ -179759,7 +179974,7 @@ var Jobs = class extends APIResource3 {
    * ```
    */
   resume(fineTuningJobID, options) {
-    return this._client.post(path10`/fine_tuning/jobs/${fineTuningJobID}/resume`, resolveResourceRequestOptions82(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.post(path13`/fine_tuning/jobs/${fineTuningJobID}/resume`, resolveResourceRequestOptions82(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
 };
 Jobs.Checkpoints = Checkpoints2;
@@ -179850,7 +180065,7 @@ var Sessions6 = class extends APIResource3 {
    * ```
    */
   accept(sessionID, body, options) {
-    return this._client.post(path10`/live/sessions/${sessionID}/accept`, resolveResourceRequestOptions84(options, (options2) => ({
+    return this._client.post(path13`/live/sessions/${sessionID}/accept`, resolveResourceRequestOptions84(options, (options2) => ({
       body,
       ...options2,
       headers: buildHeaders3([{ Accept: "*/*" }, options2?.headers]),
@@ -179870,7 +180085,7 @@ var Sessions6 = class extends APIResource3 {
    * ```
    */
   downloadRecording(sessionID, options) {
-    return this._client.get(path10`/live/sessions/${sessionID}/content`, resolveResourceRequestOptions84(options, (options2) => ({
+    return this._client.get(path13`/live/sessions/${sessionID}/content`, resolveResourceRequestOptions84(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ Accept: "application/binary" }, options2?.headers]),
       __security: { bearerAuth: true },
@@ -179889,7 +180104,7 @@ var Sessions6 = class extends APIResource3 {
    * ```
    */
   fork(sessionID, body, options) {
-    return this._client.post(path10`/live/sessions/${sessionID}/fork`, resolveResourceRequestOptions84(options, (options2) => ({
+    return this._client.post(path13`/live/sessions/${sessionID}/fork`, resolveResourceRequestOptions84(options, (options2) => ({
       body,
       ...options2,
       __security: { bearerAuth: true }
@@ -179904,7 +180119,7 @@ var Sessions6 = class extends APIResource3 {
    * ```
    */
   hangup(sessionID, options) {
-    return this._client.post(path10`/live/sessions/${sessionID}/hangup`, resolveResourceRequestOptions84(options, (options2) => ({
+    return this._client.post(path13`/live/sessions/${sessionID}/hangup`, resolveResourceRequestOptions84(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ Accept: "*/*" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -179922,7 +180137,7 @@ var Sessions6 = class extends APIResource3 {
    * ```
    */
   refer(sessionID, body, options) {
-    return this._client.post(path10`/live/sessions/${sessionID}/refer`, resolveResourceRequestOptions84(options, (options2) => ({
+    return this._client.post(path13`/live/sessions/${sessionID}/refer`, resolveResourceRequestOptions84(options, (options2) => ({
       body,
       ...options2,
       headers: buildHeaders3([{ Accept: "*/*" }, options2?.headers]),
@@ -179941,7 +180156,7 @@ var Sessions6 = class extends APIResource3 {
    * ```
    */
   reject(sessionID, body, options) {
-    return this._client.post(path10`/live/sessions/${sessionID}/reject`, resolveResourceRequestOptions84(options, (options2) => ({
+    return this._client.post(path13`/live/sessions/${sessionID}/reject`, resolveResourceRequestOptions84(options, (options2) => ({
       body,
       ...options2,
       headers: buildHeaders3([{ Accept: "*/*" }, options2?.headers]),
@@ -180003,7 +180218,7 @@ var Models3 = class extends APIResource3 {
    * the owner and permissioning.
    */
   retrieve(model, options) {
-    return this._client.get(path10`/models/${model}`, resolveResourceRequestOptions86(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.get(path13`/models/${model}`, resolveResourceRequestOptions86(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
   /**
    * Lists the currently available models, and provides basic information about each
@@ -180017,7 +180232,7 @@ var Models3 = class extends APIResource3 {
    * delete a model.
    */
   delete(model, options) {
-    return this._client.delete(path10`/models/${model}`, resolveResourceRequestOptions86(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.delete(path13`/models/${model}`, resolveResourceRequestOptions86(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
 };
 
@@ -180122,7 +180337,7 @@ var Calls = class extends APIResource3 {
    * ```
    */
   accept(callID, body, options) {
-    return this._client.post(path10`/realtime/calls/${callID}/accept`, resolveResourceRequestOptions88(options, (options2) => ({
+    return this._client.post(path13`/realtime/calls/${callID}/accept`, resolveResourceRequestOptions88(options, (options2) => ({
       body,
       ...options2,
       headers: buildHeaders3([{ Accept: "*/*" }, options2?.headers]),
@@ -180138,7 +180353,7 @@ var Calls = class extends APIResource3 {
    * ```
    */
   hangup(callID, options) {
-    return this._client.post(path10`/realtime/calls/${callID}/hangup`, resolveResourceRequestOptions88(options, (options2) => ({
+    return this._client.post(path13`/realtime/calls/${callID}/hangup`, resolveResourceRequestOptions88(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ Accept: "*/*" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -180155,7 +180370,7 @@ var Calls = class extends APIResource3 {
    * ```
    */
   refer(callID, body, options) {
-    return this._client.post(path10`/realtime/calls/${callID}/refer`, resolveResourceRequestOptions88(options, (options2) => ({
+    return this._client.post(path13`/realtime/calls/${callID}/refer`, resolveResourceRequestOptions88(options, (options2) => ({
       body,
       ...options2,
       headers: buildHeaders3([{ Accept: "*/*" }, options2?.headers]),
@@ -180171,7 +180386,7 @@ var Calls = class extends APIResource3 {
    * ```
    */
   reject(callID, body = {}, options) {
-    return this._client.post(path10`/realtime/calls/${callID}/reject`, resolveResourceRequestOptions88(options, (options2) => ({
+    return this._client.post(path13`/realtime/calls/${callID}/reject`, resolveResourceRequestOptions88(options, (options2) => ({
       body,
       ...options2,
       headers: buildHeaders3([{ Accept: "*/*" }, options2?.headers]),
@@ -182090,7 +182305,7 @@ var InputItems2 = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.getAPIList(path10`/responses/${responseID}/input_items`, CursorPage, resolveResourceRequestOptions91(options, (options2) => ({
+    return this._client.getAPIList(path13`/responses/${responseID}/input_items`, CursorPage, resolveResourceRequestOptions91(options, (options2) => ({
       query,
       ...options2,
       __security: { bearerAuth: true }
@@ -182197,7 +182412,7 @@ var Responses2 = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.get(path10`/responses/${responseID}`, resolveResourceRequestOptions93(options, (options2) => ({
+    return this._client.get(path13`/responses/${responseID}`, resolveResourceRequestOptions93(options, (options2) => ({
       query,
       ...options2,
       stream: query?.stream ?? false,
@@ -182220,7 +182435,7 @@ var Responses2 = class extends APIResource3 {
    * ```
    */
   delete(responseID, options) {
-    return this._client.delete(path10`/responses/${responseID}`, resolveResourceRequestOptions93(options, (options2) => ({
+    return this._client.delete(path13`/responses/${responseID}`, resolveResourceRequestOptions93(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ Accept: "*/*" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -182248,7 +182463,7 @@ var Responses2 = class extends APIResource3 {
    * ```
    */
   cancel(responseID, options) {
-    return this._client.post(path10`/responses/${responseID}/cancel`, resolveResourceRequestOptions93(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.post(path13`/responses/${responseID}/cancel`, resolveResourceRequestOptions93(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
   /**
    * Compact a conversation. Returns a compacted response object.
@@ -182285,7 +182500,7 @@ var Alerts = class extends APIResource3 {
    * Get a safety alert belonging to the authenticated API project.
    */
   retrieve(id2, options) {
-    return this._client.get(path10`/safety/alerts/${id2}`, resolveResourceRequestOptions94(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.get(path13`/safety/alerts/${id2}`, resolveResourceRequestOptions94(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
 };
 
@@ -182298,7 +182513,7 @@ var Cases = class extends APIResource3 {
    * Get a safety case by ID.
    */
   retrieve(id2, options) {
-    return this._client.get(path10`/safety/cases/${id2}`, resolveResourceRequestOptions95(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.get(path13`/safety/cases/${id2}`, resolveResourceRequestOptions95(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
 };
 
@@ -182322,7 +182537,7 @@ var Content2 = class extends APIResource3 {
    * Download a skill zip bundle by its ID.
    */
   retrieve(skillID, options) {
-    return this._client.get(path10`/skills/${skillID}/content`, resolveResourceRequestOptions96(options, (options2) => ({
+    return this._client.get(path13`/skills/${skillID}/content`, resolveResourceRequestOptions96(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ Accept: "application/binary" }, options2?.headers]),
       __security: { bearerAuth: true },
@@ -182341,7 +182556,7 @@ var Content3 = class extends APIResource3 {
    */
   retrieve(version5, params, options) {
     const { skill_id } = params;
-    return this._client.get(path10`/skills/${skill_id}/versions/${version5}/content`, resolveResourceRequestOptions97(options, (options2) => ({
+    return this._client.get(path13`/skills/${skill_id}/versions/${version5}/content`, resolveResourceRequestOptions97(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ Accept: "application/binary" }, options2?.headers]),
       __security: { bearerAuth: true },
@@ -182407,14 +182622,14 @@ var Versions4 = class extends APIResource3 {
    * Create a new immutable skill version.
    */
   create(skillID, body = {}, options) {
-    return this._client.post(path10`/skills/${skillID}/versions`, maybeMultipartFormRequestOptions(withBodyFinalization11({ body, ...options, __security: { bearerAuth: true } }, { finalizeMultipart: true }), this._client, { stripFilenames: false }));
+    return this._client.post(path13`/skills/${skillID}/versions`, maybeMultipartFormRequestOptions(withBodyFinalization11({ body, ...options, __security: { bearerAuth: true } }, { finalizeMultipart: true }), this._client, { stripFilenames: false }));
   }
   /**
    * Get a specific skill version.
    */
   retrieve(version5, params, options) {
     const { skill_id } = params;
-    return this._client.get(path10`/skills/${skill_id}/versions/${version5}`, resolveResourceRequestOptions98(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.get(path13`/skills/${skill_id}/versions/${version5}`, resolveResourceRequestOptions98(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
   list(skillID, query = {}, options) {
     const normalizeRequestOptionsForQueryOptions = normalizeRequestOptionsForQuery54(query, ["after", "limit", "order"], options);
@@ -182423,7 +182638,7 @@ var Versions4 = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.getAPIList(path10`/skills/${skillID}/versions`, CursorPage, resolveResourceRequestOptions98(options, (options2) => ({
+    return this._client.getAPIList(path13`/skills/${skillID}/versions`, CursorPage, resolveResourceRequestOptions98(options, (options2) => ({
       query,
       ...options2,
       __security: { bearerAuth: true }
@@ -182434,7 +182649,7 @@ var Versions4 = class extends APIResource3 {
    */
   delete(version5, params, options) {
     const { skill_id } = params;
-    return this._client.delete(path10`/skills/${skill_id}/versions/${version5}`, resolveResourceRequestOptions98(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.delete(path13`/skills/${skill_id}/versions/${version5}`, resolveResourceRequestOptions98(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
 };
 Versions4.Content = Content3;
@@ -182503,13 +182718,13 @@ var Skills3 = class extends APIResource3 {
    * Get a skill by its ID.
    */
   retrieve(skillID, options) {
-    return this._client.get(path10`/skills/${skillID}`, resolveResourceRequestOptions99(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.get(path13`/skills/${skillID}`, resolveResourceRequestOptions99(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
   /**
    * Update the default version pointer for a skill.
    */
   update(skillID, body, options) {
-    return this._client.post(path10`/skills/${skillID}`, resolveResourceRequestOptions99(options, (options2) => ({
+    return this._client.post(path13`/skills/${skillID}`, resolveResourceRequestOptions99(options, (options2) => ({
       body,
       ...options2,
       __security: { bearerAuth: true }
@@ -182532,7 +182747,7 @@ var Skills3 = class extends APIResource3 {
    * Delete a skill by its ID.
    */
   delete(skillID, options) {
-    return this._client.delete(path10`/skills/${skillID}`, resolveResourceRequestOptions99(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.delete(path13`/skills/${skillID}`, resolveResourceRequestOptions99(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
 };
 Skills3.Content = Content2;
@@ -182558,7 +182773,7 @@ var Parts = class extends APIResource3 {
    * [complete the Upload](https://developers.openai.com/api/reference/resources/uploads/methods/complete).
    */
   create(uploadID, body, options) {
-    return this._client.post(path10`/uploads/${uploadID}/parts`, resolveResourceRequestOptions100(options, (options2) => multipartFormRequestOptions2({ body, ...options2, __security: { bearerAuth: true } }, this._client)));
+    return this._client.post(path13`/uploads/${uploadID}/parts`, resolveResourceRequestOptions100(options, (options2) => multipartFormRequestOptions2({ body, ...options2, __security: { bearerAuth: true } }, this._client)));
   }
 };
 
@@ -182607,7 +182822,7 @@ var Uploads = class extends APIResource3 {
    * Returns the Upload object with status `cancelled`.
    */
   cancel(uploadID, options) {
-    return this._client.post(path10`/uploads/${uploadID}/cancel`, resolveResourceRequestOptions101(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.post(path13`/uploads/${uploadID}/cancel`, resolveResourceRequestOptions101(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
   /**
    * Completes the
@@ -182627,7 +182842,7 @@ var Uploads = class extends APIResource3 {
    * object.
    */
   complete(uploadID, body, options) {
-    return this._client.post(path10`/uploads/${uploadID}/complete`, resolveResourceRequestOptions101(options, (options2) => ({
+    return this._client.post(path13`/uploads/${uploadID}/complete`, resolveResourceRequestOptions101(options, (options2) => ({
       body,
       ...options2,
       __security: { bearerAuth: true }
@@ -182700,7 +182915,7 @@ var FileBatches = class extends APIResource3 {
    * Create a vector store file batch.
    */
   create(vectorStoreID, body, options) {
-    return this._client.post(path10`/vector_stores/${vectorStoreID}/file_batches`, resolveResourceRequestOptions102(options, (options2) => ({
+    return this._client.post(path13`/vector_stores/${vectorStoreID}/file_batches`, resolveResourceRequestOptions102(options, (options2) => ({
       body,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "assistants=v2" }, options2?.headers]),
@@ -182712,7 +182927,7 @@ var FileBatches = class extends APIResource3 {
    */
   retrieve(batchID, params, options) {
     const { vector_store_id } = params;
-    return this._client.get(path10`/vector_stores/${vector_store_id}/file_batches/${batchID}`, resolveResourceRequestOptions102(options, (options2) => ({
+    return this._client.get(path13`/vector_stores/${vector_store_id}/file_batches/${batchID}`, resolveResourceRequestOptions102(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "assistants=v2" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -182724,7 +182939,7 @@ var FileBatches = class extends APIResource3 {
    */
   cancel(batchID, params, options) {
     const { vector_store_id } = params;
-    return this._client.post(path10`/vector_stores/${vector_store_id}/file_batches/${batchID}/cancel`, resolveResourceRequestOptions102(options, (options2) => ({
+    return this._client.post(path13`/vector_stores/${vector_store_id}/file_batches/${batchID}/cancel`, resolveResourceRequestOptions102(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "assistants=v2" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -182742,7 +182957,7 @@ var FileBatches = class extends APIResource3 {
    */
   listFiles(batchID, params, options) {
     const { vector_store_id, ...query } = params;
-    return this._client.getAPIList(path10`/vector_stores/${vector_store_id}/file_batches/${batchID}/files`, CursorPage, resolveResourceRequestOptions102(options, (options2) => ({
+    return this._client.getAPIList(path13`/vector_stores/${vector_store_id}/file_batches/${batchID}/files`, CursorPage, resolveResourceRequestOptions102(options, (options2) => ({
       query,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "assistants=v2" }, options2?.headers]),
@@ -182820,7 +183035,7 @@ var Files6 = class extends APIResource3 {
    * [vector store](https://developers.openai.com/api/reference/resources/vector_stores).
    */
   create(vectorStoreID, body, options) {
-    return this._client.post(path10`/vector_stores/${vectorStoreID}/files`, resolveResourceRequestOptions103(options, (options2) => ({
+    return this._client.post(path13`/vector_stores/${vectorStoreID}/files`, resolveResourceRequestOptions103(options, (options2) => ({
       body,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "assistants=v2" }, options2?.headers]),
@@ -182832,7 +183047,7 @@ var Files6 = class extends APIResource3 {
    */
   retrieve(fileID, params, options) {
     const { vector_store_id } = params;
-    return this._client.get(path10`/vector_stores/${vector_store_id}/files/${fileID}`, resolveResourceRequestOptions103(options, (options2) => ({
+    return this._client.get(path13`/vector_stores/${vector_store_id}/files/${fileID}`, resolveResourceRequestOptions103(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "assistants=v2" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -182843,7 +183058,7 @@ var Files6 = class extends APIResource3 {
    */
   update(fileID, params, options) {
     const { vector_store_id, ...body } = params;
-    return this._client.post(path10`/vector_stores/${vector_store_id}/files/${fileID}`, resolveResourceRequestOptions103(options, (options2) => ({
+    return this._client.post(path13`/vector_stores/${vector_store_id}/files/${fileID}`, resolveResourceRequestOptions103(options, (options2) => ({
       body,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "assistants=v2" }, options2?.headers]),
@@ -182857,7 +183072,7 @@ var Files6 = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.getAPIList(path10`/vector_stores/${vectorStoreID}/files`, CursorPage, resolveResourceRequestOptions103(options, (options2) => ({
+    return this._client.getAPIList(path13`/vector_stores/${vectorStoreID}/files`, CursorPage, resolveResourceRequestOptions103(options, (options2) => ({
       query,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "assistants=v2" }, options2?.headers]),
@@ -182872,7 +183087,7 @@ var Files6 = class extends APIResource3 {
    */
   delete(fileID, params, options) {
     const { vector_store_id } = params;
-    return this._client.delete(path10`/vector_stores/${vector_store_id}/files/${fileID}`, resolveResourceRequestOptions103(options, (options2) => ({
+    return this._client.delete(path13`/vector_stores/${vector_store_id}/files/${fileID}`, resolveResourceRequestOptions103(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "assistants=v2" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -182916,7 +183131,7 @@ var Files6 = class extends APIResource3 {
    */
   content(fileID, params, options) {
     const { vector_store_id } = params;
-    return this._client.getAPIList(path10`/vector_stores/${vector_store_id}/files/${fileID}/content`, Page2, resolveResourceRequestOptions103(options, (options2) => ({
+    return this._client.getAPIList(path13`/vector_stores/${vector_store_id}/files/${fileID}/content`, Page2, resolveResourceRequestOptions103(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "assistants=v2" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -182990,7 +183205,7 @@ var VectorStores = class extends APIResource3 {
    * Retrieves a vector store.
    */
   retrieve(vectorStoreID, options) {
-    return this._client.get(path10`/vector_stores/${vectorStoreID}`, resolveResourceRequestOptions104(options, (options2) => ({
+    return this._client.get(path13`/vector_stores/${vectorStoreID}`, resolveResourceRequestOptions104(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "assistants=v2" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -183000,7 +183215,7 @@ var VectorStores = class extends APIResource3 {
    * Modifies a vector store.
    */
   update(vectorStoreID, body, options) {
-    return this._client.post(path10`/vector_stores/${vectorStoreID}`, resolveResourceRequestOptions104(options, (options2) => ({
+    return this._client.post(path13`/vector_stores/${vectorStoreID}`, resolveResourceRequestOptions104(options, (options2) => ({
       body,
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "assistants=v2" }, options2?.headers]),
@@ -183025,7 +183240,7 @@ var VectorStores = class extends APIResource3 {
    * Delete a vector store.
    */
   delete(vectorStoreID, options) {
-    return this._client.delete(path10`/vector_stores/${vectorStoreID}`, resolveResourceRequestOptions104(options, (options2) => ({
+    return this._client.delete(path13`/vector_stores/${vectorStoreID}`, resolveResourceRequestOptions104(options, (options2) => ({
       ...options2,
       headers: buildHeaders3([{ "OpenAI-Beta": "assistants=v2" }, options2?.headers]),
       __security: { bearerAuth: true }
@@ -183036,7 +183251,7 @@ var VectorStores = class extends APIResource3 {
    * filter.
    */
   search(vectorStoreID, body, options) {
-    return this._client.getAPIList(path10`/vector_stores/${vectorStoreID}/search`, Page2, resolveResourceRequestOptions104(options, (options2) => ({
+    return this._client.getAPIList(path13`/vector_stores/${vectorStoreID}/search`, Page2, resolveResourceRequestOptions104(options, (options2) => ({
       body,
       method: "post",
       ...options2,
@@ -183111,7 +183326,7 @@ var Videos = class extends APIResource3 {
    * @deprecated The Sora API is scheduled to permanently shut down on September 24, 2026.
    */
   retrieve(videoID, options) {
-    return this._client.get(path10`/videos/${videoID}`, resolveResourceRequestOptions105(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.get(path13`/videos/${videoID}`, resolveResourceRequestOptions105(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
   list(query = {}, options) {
     const normalizeRequestOptionsForQueryOptions = normalizeRequestOptionsForQuery58(query, ["after", "limit", "order"], options);
@@ -183132,7 +183347,7 @@ var Videos = class extends APIResource3 {
    * @deprecated The Sora API is scheduled to permanently shut down on September 24, 2026.
    */
   delete(videoID, options) {
-    return this._client.delete(path10`/videos/${videoID}`, resolveResourceRequestOptions105(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.delete(path13`/videos/${videoID}`, resolveResourceRequestOptions105(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
   /**
    * Create a character from an uploaded video.
@@ -183149,7 +183364,7 @@ var Videos = class extends APIResource3 {
       query = {};
     }
     query = query;
-    return this._client.get(path10`/videos/${videoID}/content`, resolveResourceRequestOptions105(options, (options2) => ({
+    return this._client.get(path13`/videos/${videoID}/content`, resolveResourceRequestOptions105(options, (options2) => ({
       query,
       ...options2,
       headers: buildHeaders3([{ Accept: "application/binary" }, options2?.headers]),
@@ -183180,7 +183395,7 @@ var Videos = class extends APIResource3 {
    * @deprecated The Sora API is scheduled to permanently shut down on September 24, 2026.
    */
   getCharacter(characterID, options) {
-    return this._client.get(path10`/videos/characters/${characterID}`, resolveResourceRequestOptions105(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.get(path13`/videos/characters/${characterID}`, resolveResourceRequestOptions105(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
   /**
    * Create a remix of a completed video using a refreshed prompt.
@@ -183188,7 +183403,7 @@ var Videos = class extends APIResource3 {
    * @deprecated The Sora API is scheduled to permanently shut down on September 24, 2026.
    */
   remix(videoID, body, options) {
-    return this._client.post(path10`/videos/${videoID}/remix`, resolveResourceRequestOptions105(options, (options2) => maybeMultipartFormRequestOptions(withBodyFinalization13({ body, ...options2, __security: { bearerAuth: true } }, { finalizeMultipart: true }), this._client)));
+    return this._client.post(path13`/videos/${videoID}/remix`, resolveResourceRequestOptions105(options, (options2) => maybeMultipartFormRequestOptions(withBodyFinalization13({ body, ...options2, __security: { bearerAuth: true } }, { finalizeMultipart: true }), this._client)));
   }
 };
 
@@ -183393,7 +183608,7 @@ var Webhooks2 = class extends APIResource3 {
    * ```
    */
   retrieve(webhookEndpointID, options) {
-    return this._client.get(path10`/webhook_endpoints/${webhookEndpointID}`, resolveResourceRequestOptions107(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.get(path13`/webhook_endpoints/${webhookEndpointID}`, resolveResourceRequestOptions107(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
   /**
    * Updates a webhook endpoint for the authenticated project.
@@ -183404,7 +183619,7 @@ var Webhooks2 = class extends APIResource3 {
    * ```
    */
   update(webhookEndpointID, body = {}, options) {
-    return this._client.post(path10`/webhook_endpoints/${webhookEndpointID}`, resolveResourceRequestOptions107(options, (options2) => ({
+    return this._client.post(path13`/webhook_endpoints/${webhookEndpointID}`, resolveResourceRequestOptions107(options, (options2) => ({
       body,
       ...options2,
       __security: { bearerAuth: true }
@@ -183434,7 +183649,7 @@ var Webhooks2 = class extends APIResource3 {
    * ```
    */
   delete(webhookEndpointID, options) {
-    return this._client.delete(path10`/webhook_endpoints/${webhookEndpointID}`, resolveResourceRequestOptions107(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
+    return this._client.delete(path13`/webhook_endpoints/${webhookEndpointID}`, resolveResourceRequestOptions107(options, (options2) => ({ ...options2, __security: { bearerAuth: true } })));
   }
   /**
    * Rotates the signing secret for a webhook endpoint in the authenticated project.
@@ -183446,7 +183661,7 @@ var Webhooks2 = class extends APIResource3 {
    * ```
    */
   rotateSecret(webhookEndpointID, body = {}, options) {
-    return this._client.post(path10`/webhook_endpoints/${webhookEndpointID}/rotate_secret`, resolveResourceRequestOptions107(options, (options2) => ({
+    return this._client.post(path13`/webhook_endpoints/${webhookEndpointID}/rotate_secret`, resolveResourceRequestOptions107(options, (options2) => ({
       body,
       ...options2,
       __security: { bearerAuth: true }
@@ -183464,7 +183679,7 @@ var Webhooks2 = class extends APIResource3 {
    * ```
    */
   test(webhookEndpointID, body, options) {
-    return this._client.post(path10`/webhook_endpoints/${webhookEndpointID}/test`, resolveResourceRequestOptions107(options, (options2) => ({
+    return this._client.post(path13`/webhook_endpoints/${webhookEndpointID}/test`, resolveResourceRequestOptions107(options, (options2) => ({
       body,
       ...options2,
       __security: { bearerAuth: true }
@@ -183984,22 +184199,22 @@ var OpenAI = class {
     capture?.(cached2);
     return true;
   }
-  buildURL(path27, query, defaultBaseURL) {
+  buildURL(path28, query, defaultBaseURL) {
     const baseURL = !__classPrivateFieldGet3(this, _OpenAI_instances, "m", _OpenAI_baseURLOverridden).call(this) && defaultBaseURL || this.baseURL;
     let url2;
     let baseQuery = {};
     let baseParams;
-    if (isAbsoluteURL3(path27)) {
-      url2 = new URL(path27);
+    if (isAbsoluteURL3(path28)) {
+      url2 = new URL(path28);
     } else if (baseURL.includes("?")) {
       const base = new URL(baseURL);
       baseParams = new URLSearchParams(base.search);
       baseQuery = Object.fromEntries(baseParams);
       base.search = "";
       base.hash = "";
-      url2 = new URL(base.toString() + (base.pathname.endsWith("/") && path27.startsWith("/") ? path27.slice(1) : path27));
+      url2 = new URL(base.toString() + (base.pathname.endsWith("/") && path28.startsWith("/") ? path28.slice(1) : path28));
     } else {
-      url2 = new URL(baseURL + (baseURL.endsWith("/") && path27.startsWith("/") ? path27.slice(1) : path27));
+      url2 = new URL(baseURL + (baseURL.endsWith("/") && path28.startsWith("/") ? path28.slice(1) : path28));
     }
     const defaultQuery = this.defaultQuery();
     const pathQuery = Object.fromEntries(url2.searchParams);
@@ -184051,24 +184266,24 @@ var OpenAI = class {
    */
   async prepareRequest(request, { url: url2, options }) {
   }
-  get(path27, opts) {
-    return this.methodRequest("get", path27, opts);
+  get(path28, opts) {
+    return this.methodRequest("get", path28, opts);
   }
-  post(path27, opts) {
-    return this.methodRequest("post", path27, opts);
+  post(path28, opts) {
+    return this.methodRequest("post", path28, opts);
   }
-  patch(path27, opts) {
-    return this.methodRequest("patch", path27, opts);
+  patch(path28, opts) {
+    return this.methodRequest("patch", path28, opts);
   }
-  put(path27, opts) {
-    return this.methodRequest("put", path27, opts);
+  put(path28, opts) {
+    return this.methodRequest("put", path28, opts);
   }
-  delete(path27, opts) {
-    return this.methodRequest("delete", path27, opts);
+  delete(path28, opts) {
+    return this.methodRequest("delete", path28, opts);
   }
-  methodRequest(method, path27, opts) {
+  methodRequest(method, path28, opts) {
     return this.request(Promise.resolve(opts).then((opts2) => {
-      return { method, path: path27, ...opts2 };
+      return { method, path: path28, ...opts2 };
     }));
   }
   request(options, remainingRetries = null) {
@@ -184443,8 +184658,8 @@ var OpenAI = class {
       startTime
     };
   }
-  getAPIList(path27, Page3, opts) {
-    return this.requestAPIList(Page3, opts && "then" in opts ? opts.then((opts2) => ({ method: "get", path: path27, ...opts2 })) : { method: "get", path: path27, ...opts });
+  getAPIList(path28, Page3, opts) {
+    return this.requestAPIList(Page3, opts && "then" in opts ? opts.then((opts2) => ({ method: "get", path: path28, ...opts2 })) : { method: "get", path: path28, ...opts });
   }
   requestAPIList(Page3, options) {
     const authentication = __classPrivateFieldGet3(this, _OpenAI_x509Authentication, "f") ?? this._workloadIdentityAuth;
@@ -184599,8 +184814,8 @@ var OpenAI = class {
     }
     const x509ClientFetchOptions = x509Authentication ? snapshotX509RequestOptions(this.fetchOptions) : void 0;
     const x509RequestFetchOptions = x509Authentication ? snapshotX509RequestOptions(options.fetchOptions) : void 0;
-    const { method, path: path27, query, defaultBaseURL } = options;
-    const url2 = this.buildURL(path27, query, defaultBaseURL);
+    const { method, path: path28, query, defaultBaseURL } = options;
+    const url2 = this.buildURL(path28, query, defaultBaseURL);
     x509Authentication?.snapshotAPIURL(url2);
     const explicitTimeout = "timeout" in options;
     if (explicitTimeout)
@@ -187013,21 +187228,21 @@ function assignSchema(target, ...sources) {
   }
   return target;
 }
-function forEachJSONSchemaChild(schema, path27, visit3) {
+function forEachJSONSchemaChild(schema, path28, visit3) {
   const record2 = schema;
   for (const keyword of JSON_SCHEMA_SINGLE_SCHEMA_KEYWORDS) {
     if (keyword in record2) {
-      visit3(record2[keyword], [...path27, keyword], keyword);
+      visit3(record2[keyword], [...path28, keyword], keyword);
     }
   }
   for (const keyword of JSON_SCHEMA_ARRAY_SCHEMA_KEYWORDS) {
     const children = record2[keyword];
     if (Array.isArray(children)) {
       for (const [index2, child] of children.entries()) {
-        visit3(child, [...path27, keyword, String(index2)], keyword);
+        visit3(child, [...path28, keyword, String(index2)], keyword);
       }
     } else if (children !== void 0) {
-      visit3(children, [...path27, keyword], keyword);
+      visit3(children, [...path28, keyword], keyword);
     }
   }
   for (const keyword of JSON_SCHEMA_MAP_SCHEMA_KEYWORDS) {
@@ -187039,7 +187254,7 @@ function forEachJSONSchemaChild(schema, path27, visit3) {
       if (keyword === "dependencies" && !isSchemaDefinition(child)) {
         continue;
       }
-      visit3(child, [...path27, keyword, key], keyword);
+      visit3(child, [...path28, keyword, key], keyword);
     }
   }
 }
@@ -187350,41 +187565,41 @@ function isNullable(schema, root, seenRefs = /* @__PURE__ */ new Set()) {
   }
   return true;
 }
-function ensureStrictJsonSchema(jsonSchema, path27, root) {
+function ensureStrictJsonSchema(jsonSchema, path28, root) {
   if (typeof jsonSchema === "boolean") {
-    throw new TypeError(`Expected object schema but got boolean; path=${path27.join("/")}`);
+    throw new TypeError(`Expected object schema but got boolean; path=${path28.join("/")}`);
   }
   if (!isObject2(jsonSchema)) {
-    throw new TypeError(`Expected ${JSON.stringify(jsonSchema)} to be an object; path=${path27.join("/")}`);
+    throw new TypeError(`Expected ${JSON.stringify(jsonSchema)} to be an object; path=${path28.join("/")}`);
   }
-  if (mergeObjectAllOf(jsonSchema, path27, root)) {
-    return ensureStrictJsonSchema(jsonSchema, path27, root);
+  if (mergeObjectAllOf(jsonSchema, path28, root)) {
+    return ensureStrictJsonSchema(jsonSchema, path28, root);
   }
   normalizeAnyOfFalseBranches(jsonSchema);
-  normalizeObjectUnionWrapper(jsonSchema, path27, root);
+  normalizeObjectUnionWrapper(jsonSchema, path28, root);
   if (hasObjectConstraints(jsonSchema)) {
     if (!hasOwn3(jsonSchema, "additionalProperties")) {
       jsonSchema.additionalProperties = false;
     } else if (jsonSchema.additionalProperties !== false) {
-      throw new Error(`Object schema at \`${path27.join("/") || "<root>"}\` must set \`additionalProperties: false\` to be compatible with strict Structured Outputs.`);
+      throw new Error(`Object schema at \`${path28.join("/") || "<root>"}\` must set \`additionalProperties: false\` to be compatible with strict Structured Outputs.`);
     }
   }
   const required2 = jsonSchema.required ?? [];
   if (!Array.isArray(required2) || required2.some((key) => typeof key !== "string")) {
-    throw new TypeError(`Expected \`required\` to be an array of strings; path=${path27.join("/") || "<root>"}`);
+    throw new TypeError(`Expected \`required\` to be an array of strings; path=${path28.join("/") || "<root>"}`);
   }
   const properties = jsonSchema.properties;
   if (hasObjectConstraints(jsonSchema)) {
     for (const key of required2) {
       if (!isObject2(properties) || !hasOwn3(properties, key)) {
-        throw new Error(`Object schema at \`${path27.join("/") || "<root>"}\` requires property \`${key}\` but does not declare it in \`properties\`.`);
+        throw new Error(`Object schema at \`${path28.join("/") || "<root>"}\` requires property \`${key}\` but does not declare it in \`properties\`.`);
       }
     }
   }
   if (isObject2(properties)) {
     for (const [key, value] of Object.entries(properties)) {
       if (!isNullable(value, root) && !required2.includes(key)) {
-        throw new Error(`Schema field at \`${[...path27, "properties", key].join("/")}\` uses \`.optional()\` without \`.nullable()\` which is not supported by the API. See: https://platform.openai.com/docs/guides/structured-outputs?api-mode=responses#all-fields-must-be-required`);
+        throw new Error(`Schema field at \`${[...path28, "properties", key].join("/")}\` uses \`.optional()\` without \`.nullable()\` which is not supported by the API. See: https://platform.openai.com/docs/guides/structured-outputs?api-mode=responses#all-fields-must-be-required`);
       }
     }
     jsonSchema.required = Object.keys(properties);
@@ -187392,21 +187607,21 @@ function ensureStrictJsonSchema(jsonSchema, path27, root) {
   const items = jsonSchema.items;
   const additionalItems = jsonSchema.additionalItems;
   if (Array.isArray(items)) {
-    throw new TypeError(`Schema at \`${path27.join("/") || "<root>"}\` uses tuple-form \`items\`, which cannot be represented in strict Structured Outputs.`);
+    throw new TypeError(`Schema at \`${path28.join("/") || "<root>"}\` uses tuple-form \`items\`, which cannot be represented in strict Structured Outputs.`);
   }
   if (additionalItems !== void 0) {
-    throw new Error(`Schema at \`${path27.join("/") || "<root>"}\` uses unsupported keyword \`additionalItems\` and cannot be represented in strict Structured Outputs.`);
+    throw new Error(`Schema at \`${path28.join("/") || "<root>"}\` uses unsupported keyword \`additionalItems\` and cannot be represented in strict Structured Outputs.`);
   }
   const allOf = jsonSchema.allOf;
   if (Array.isArray(allOf) && allOf.length === 1 && hasOnlyAnnotationSiblings(jsonSchema, "allOf")) {
     const branch = allOf[0];
     if (branch === false) {
-      throw new Error(`Schema at \`${path27.join("/") || "<root>"}\` uses \`allOf: [false]\`, which cannot be represented in strict Structured Outputs.`);
+      throw new Error(`Schema at \`${path28.join("/") || "<root>"}\` uses \`allOf: [false]\`, which cannot be represented in strict Structured Outputs.`);
     }
     if (branch === true) {
       delete jsonSchema.allOf;
     } else {
-      const resolved = ensureStrictJsonSchema(branch, [...path27, "allOf", "0"], root);
+      const resolved = ensureStrictJsonSchema(branch, [...path28, "allOf", "0"], root);
       const annotations = { ...jsonSchema };
       delete annotations.allOf;
       assignSchema(jsonSchema, resolved, annotations);
@@ -187417,16 +187632,16 @@ function ensureStrictJsonSchema(jsonSchema, path27, root) {
   const schemaRecord = jsonSchema;
   for (const keyword of JSON_SCHEMA_UNSUPPORTED_SCHEMA_KEYWORDS) {
     if (schemaRecord[keyword] !== void 0) {
-      throw new Error(`Schema at \`${path27.join("/") || "<root>"}\` uses unsupported keyword \`${keyword}\` and cannot be represented in strict Structured Outputs.`);
+      throw new Error(`Schema at \`${path28.join("/") || "<root>"}\` uses unsupported keyword \`${keyword}\` and cannot be represented in strict Structured Outputs.`);
     }
     delete schemaRecord[keyword];
   }
   const type = jsonSchema.type;
   const currentItems = jsonSchema.items;
   if ((type === "array" || Array.isArray(type) && type.includes("array")) && currentItems === void 0) {
-    throw new Error(`Schema at \`${path27.join("/") || "<root>"}\` declares an array without \`items\`, which cannot be represented in strict Structured Outputs.`);
+    throw new Error(`Schema at \`${path28.join("/") || "<root>"}\` declares an array without \`items\`, which cannot be represented in strict Structured Outputs.`);
   }
-  forEachJSONSchemaChild(jsonSchema, path27, (child, childPath2, keyword) => {
+  forEachJSONSchemaChild(jsonSchema, path28, (child, childPath2, keyword) => {
     if (typeof child === "boolean" && (keyword === "additionalProperties" || keyword === "additionalItems")) {
       return;
     }
@@ -187607,7 +187822,7 @@ function hasObjectConstraints(schema) {
 function isRedundantUnionWrapperType(type, branchType) {
   return type === branchType || Array.isArray(type) && type.length === 2 && type.includes(branchType) && type.includes("null");
 }
-function normalizeObjectUnionWrapper(jsonSchema, path27, root) {
+function normalizeObjectUnionWrapper(jsonSchema, path28, root) {
   if (jsonSchema.anyOf === void 0) {
     return;
   }
@@ -187627,7 +187842,7 @@ function normalizeObjectUnionWrapper(jsonSchema, path27, root) {
     delete jsonSchema.type;
     return;
   }
-  throw new Error("Object anyOf schema at `" + (path27.join("/") || "<root>") + "` cannot be represented in strict Structured Outputs without changing Draft 7 validation.");
+  throw new Error("Object anyOf schema at `" + (path28.join("/") || "<root>") + "` cannot be represented in strict Structured Outputs without changing Draft 7 validation.");
 }
 function normalizeArrayUnionWrapper(jsonSchema, root) {
   if (isRedundantUnionWrapperType(jsonSchema.type, "array") && jsonSchema.items === void 0 && Array.isArray(jsonSchema.anyOf) && jsonSchema.anyOf.every((branch) => isArrayOnlySchema(branch, root))) {
@@ -187644,14 +187859,14 @@ function normalizeAnyOfFalseBranches(jsonSchema) {
   }
 }
 function assertNoNestedSchemaIds(schema) {
-  const visit3 = (value, path27) => {
+  const visit3 = (value, path28) => {
     if (!isObject2(value)) {
       return;
     }
-    if (path27.length > 0 && value.$id !== void 0) {
-      throw new Error("Nested $id at " + JSON.stringify(path27.join("/")) + " establishes a separate JSON Schema resource scope and cannot be represented in strict Structured Outputs.");
+    if (path28.length > 0 && value.$id !== void 0) {
+      throw new Error("Nested $id at " + JSON.stringify(path28.join("/")) + " establishes a separate JSON Schema resource scope and cannot be represented in strict Structured Outputs.");
     }
-    forEachJSONSchemaChild(value, path27, (child, childPath2) => {
+    forEachJSONSchemaChild(value, path28, (child, childPath2) => {
       visit3(child, childPath2);
     });
   };
@@ -187841,30 +188056,30 @@ function preserveDiscardedAllOfPropertyRefTargets(root, discardedPaths) {
   };
   rewriteRefs(root);
 }
-function validateRefSchemas(schema, path27, root) {
+function validateRefSchemas(schema, path28, root) {
   if (!isObject2(schema)) {
     return;
   }
   const ref = schema.$ref;
   if (ref !== void 0) {
     if (typeof ref !== "string") {
-      throw new TypeError(`Received non-string $ref - ${ref}; path=${path27.join("/")}`);
+      throw new TypeError(`Received non-string $ref - ${ref}; path=${path28.join("/")}`);
     }
     if (!ref.startsWith("#")) {
-      throw new Error(`External $ref at \`${path27.join("/") || "<root>"}\` is not supported in strict Structured Outputs: ${JSON.stringify(ref)}`);
+      throw new Error(`External $ref at \`${path28.join("/") || "<root>"}\` is not supported in strict Structured Outputs: ${JSON.stringify(ref)}`);
     }
     const resolved = resolveLocalRef(root, ref);
     if (resolved === void 0 || !isSchemaDefinition(resolved)) {
-      throw new Error(`Local $ref at \`${path27.join("/") || "<root>"}\` does not resolve to an object or boolean schema: ${JSON.stringify(ref)}`);
+      throw new Error(`Local $ref at \`${path28.join("/") || "<root>"}\` does not resolve to an object or boolean schema: ${JSON.stringify(ref)}`);
     }
     if (typeof resolved === "boolean") {
-      throw new TypeError(`Expected object schema but got boolean; path=${path27.join("/")}`);
+      throw new TypeError(`Expected object schema but got boolean; path=${path28.join("/")}`);
     }
     if (!hasOnlyRefAndAnnotations(schema)) {
-      throw new Error(`Schema $ref at \`${path27.join("/") || "<root>"}\` has non-annotation siblings that Draft 7 ignores and cannot be represented in strict Structured Outputs.`);
+      throw new Error(`Schema $ref at \`${path28.join("/") || "<root>"}\` has non-annotation siblings that Draft 7 ignores and cannot be represented in strict Structured Outputs.`);
     }
   }
-  forEachJSONSchemaChild(schema, path27, (child, childPath2) => {
+  forEachJSONSchemaChild(schema, path28, (child, childPath2) => {
     validateRefSchemas(child, childPath2, root);
   });
 }
@@ -187902,7 +188117,7 @@ function resolveObjectAllOfBranch(schema, root, normalizing) {
     return { schema: resolved, refChain };
   }
 }
-function normalizeObjectAllOfBranches(schema, path27, root, normalizing = /* @__PURE__ */ new Set()) {
+function normalizeObjectAllOfBranches(schema, path28, root, normalizing = /* @__PURE__ */ new Set()) {
   if (!isObject2(schema)) {
     return;
   }
@@ -187912,10 +188127,10 @@ function normalizeObjectAllOfBranches(schema, path27, root, normalizing = /* @__
   normalizing.add(schema);
   try {
     while (true) {
-      forEachJSONSchemaChild(schema, path27, (child, childPath2) => {
+      forEachJSONSchemaChild(schema, path28, (child, childPath2) => {
         normalizeObjectAllOfBranches(child, childPath2, root, normalizing);
       });
-      if (!mergeObjectAllOf(schema, path27, root, normalizing)) {
+      if (!mergeObjectAllOf(schema, path28, root, normalizing)) {
         return;
       }
     }
@@ -187923,7 +188138,7 @@ function normalizeObjectAllOfBranches(schema, path27, root, normalizing = /* @__
     normalizing.delete(schema);
   }
 }
-function mergeObjectAllOf(jsonSchema, path27, root, normalizing = /* @__PURE__ */ new Set()) {
+function mergeObjectAllOf(jsonSchema, path28, root, normalizing = /* @__PURE__ */ new Set()) {
   const allOf = jsonSchema.allOf;
   if (!Array.isArray(allOf) || allOf.length === 0) {
     return false;
@@ -187952,19 +188167,19 @@ function mergeObjectAllOf(jsonSchema, path27, root, normalizing = /* @__PURE__ *
     return false;
   }
   const fail2 = () => {
-    throw new Error(`Object allOf at \`${path27.join("/") || "<root>"}\` cannot be merged without changing Draft 7 validation.`);
+    throw new Error(`Object allOf at \`${path28.join("/") || "<root>"}\` cannot be merged without changing Draft 7 validation.`);
   };
   if (!parentIsMergeableObject && ["additionalProperties", "properties", "required", "type"].some((keyword) => keyword in jsonSchema)) {
     fail2();
   }
   for (const keyword of Object.keys(jsonSchema)) {
-    if (keyword !== "allOf" && keyword !== "$defs" && keyword !== "definitions" && !(path27.length === 0 && JSON_SCHEMA_ROOT_METADATA_KEYWORDS.has(keyword)) && !MERGEABLE_OBJECT_ALL_OF_KEYWORDS.has(keyword)) {
+    if (keyword !== "allOf" && keyword !== "$defs" && keyword !== "definitions" && !(path28.length === 0 && JSON_SCHEMA_ROOT_METADATA_KEYWORDS.has(keyword)) && !MERGEABLE_OBJECT_ALL_OF_KEYWORDS.has(keyword)) {
       fail2();
     }
   }
   const branches = [];
   if (parentIsMergeableObject) {
-    branches.push({ schema: jsonSchema, sourcePath: path27 });
+    branches.push({ schema: jsonSchema, sourcePath: path28 });
   }
   for (const [index2, entry] of allOf.entries()) {
     if (!isObject2(entry)) {
@@ -187978,7 +188193,7 @@ function mergeObjectAllOf(jsonSchema, path27, root, normalizing = /* @__PURE__ *
     if (isMergeableObjectSchema(branch)) {
       branches.push({
         schema: branch,
-        sourcePath: branch === entry ? [...path27, "allOf", String(index2)] : void 0
+        sourcePath: branch === entry ? [...path28, "allOf", String(index2)] : void 0
       });
     } else if (!hasOnlyNeutralAllOfBranchKeywords(branch)) {
       fail2();
@@ -187990,7 +188205,7 @@ function mergeObjectAllOf(jsonSchema, path27, root, normalizing = /* @__PURE__ *
       merged[keyword] = jsonSchema[keyword];
     }
   }
-  if (path27.length === 0) {
+  if (path28.length === 0) {
     for (const keyword of JSON_SCHEMA_ROOT_METADATA_KEYWORDS) {
       if (keyword in jsonSchema) {
         merged[keyword] = jsonSchema[keyword];
@@ -188032,7 +188247,7 @@ function mergeObjectAllOf(jsonSchema, path27, root, normalizing = /* @__PURE__ *
       if ((keyword === "$defs" || keyword === "definitions") && isObject2(branch[keyword])) {
         continue;
       }
-      if (branch === jsonSchema && path27.length === 0 && JSON_SCHEMA_ROOT_METADATA_KEYWORDS.has(keyword)) {
+      if (branch === jsonSchema && path28.length === 0 && JSON_SCHEMA_ROOT_METADATA_KEYWORDS.has(keyword)) {
         continue;
       }
       if (!MERGEABLE_OBJECT_ALL_OF_KEYWORDS.has(keyword)) {
@@ -188219,8 +188434,8 @@ var patternProducingStringChecks = /* @__PURE__ */ new Set([
   "ulid",
   "nanoid"
 ]);
-function unsupported(path27, kind, explanation) {
-  throw new Error(`Zod schema field \`${path27}\` uses \`${kind}\`, which cannot be represented by strict Structured Outputs: ${explanation}`);
+function unsupported(path28, kind, explanation) {
+  throw new Error(`Zod schema field \`${path28}\` uses \`${kind}\`, which cannot be represented by strict Structured Outputs: ${explanation}`);
 }
 function literalDomain(value) {
   if (value === null) {
@@ -188337,49 +188552,49 @@ function domainsOverlap(left, right) {
   }
   return [...left.values].some((value) => rightValues.has(value));
 }
-function assertUnambiguousUnion(options, path27) {
+function assertUnambiguousUnion(options, path28) {
   const domains = options.map((option) => domainsFor(option));
   for (const [index2, left] of domains.entries()) {
     for (const right of domains.slice(index2 + 1)) {
       if (left.some((first) => right.some((second) => domainsOverlap(first, second)))) {
-        unsupported(path27, "ZodUnion", "ambiguous union branches overlap; use disjoint JSON types, distinct literals, or a discriminated union");
+        unsupported(path28, "ZodUnion", "ambiguous union branches overlap; use disjoint JSON types, distinct literals, or a discriminated union");
       }
     }
   }
 }
-function schemaChildren(def, path27) {
+function schemaChildren(def, path28) {
   switch (def.typeName) {
     case "ZodObject": {
       const children = Object.entries(def.shape()).map(([name2, schema]) => ({
         schema,
-        path: `${path27}.${name2}`
+        path: `${path28}.${name2}`
       }));
       if (def.catchall && def.catchall._def.typeName !== "ZodNever") {
-        children.push({ schema: def.catchall, path: `${path27}.<catchall>` });
+        children.push({ schema: def.catchall, path: `${path28}.<catchall>` });
       }
       return children;
     }
     case "ZodArray": {
-      return [{ schema: def.type, path: `${path27}[]` }];
+      return [{ schema: def.type, path: `${path28}[]` }];
     }
     case "ZodUnion":
     case "ZodDiscriminatedUnion": {
       return [...def.options.values()].map((schema, index2) => ({
         schema,
-        path: `${path27}[${index2}]`
+        path: `${path28}[${index2}]`
       }));
     }
     case "ZodOptional":
     case "ZodNullable":
     case "ZodDefault":
     case "ZodReadonly": {
-      return [{ schema: def.innerType, path: path27 }];
+      return [{ schema: def.innerType, path: path28 }];
     }
     case "ZodBranded": {
-      return [{ schema: def.type, path: path27 }];
+      return [{ schema: def.type, path: path28 }];
     }
     case "ZodLazy": {
-      return [{ schema: def.getter(), path: path27 }];
+      return [{ schema: def.getter(), path: path28 }];
     }
     default: {
       return void 0;
@@ -188442,41 +188657,41 @@ function hasProvablyJSONNativeOutput(schema, active = /* @__PURE__ */ new Set())
     }
   }
 }
-function assertSupportedSchemaValue(def, path27) {
+function assertSupportedSchemaValue(def, path28) {
   const rejection = unsupportedReasons.get(def.typeName);
   if (rejection) {
-    unsupported(path27, def.typeName, rejection);
+    unsupported(path28, def.typeName, rejection);
   }
   if (def.typeName === "ZodLiteral" && !literalDomain(def.value)) {
-    unsupported(path27, def.typeName, "literal values must be finite JSON primitives");
+    unsupported(path28, def.typeName, "literal values must be finite JSON primitives");
   }
   if (def.typeName === "ZodNumber" && def.coerce === true && !hasFiniteNumberOutput(def)) {
-    unsupported(path27, def.typeName, "number coercion must prove its parsed output is finite");
+    unsupported(path28, def.typeName, "number coercion must prove its parsed output is finite");
   }
   if (def.typeName === "ZodDefault" && !hasProvablyJSONNativeOutput(def.innerType)) {
-    unsupported(path27, def.typeName, "default factory output is not independently guaranteed to be finite and JSON-native; it may contain bigint");
+    unsupported(path28, def.typeName, "default factory output is not independently guaranteed to be finite and JSON-native; it may contain bigint");
   }
   if (def.typeName === "ZodString" && def.checks?.some(({ kind }) => valueChangingStringChecks.has(kind))) {
-    unsupported(path27, def.typeName, "value-changing string checks are not represented in JSON Schema");
+    unsupported(path28, def.typeName, "value-changing string checks are not represented in JSON Schema");
   }
   if (def.typeName === "ZodString" && (def.checks?.filter(({ kind }) => patternProducingStringChecks.has(kind)).length ?? 0) > 1) {
-    unsupported(path27, def.typeName, "multiple pattern-producing checks require unsupported allOf");
+    unsupported(path28, def.typeName, "multiple pattern-producing checks require unsupported allOf");
   }
 }
-function visit2(schema, path27, visited) {
+function visit2(schema, path28, visited) {
   const def = schema._def;
   if (visited.has(def)) {
     return;
   }
   visited.add(def);
-  if (def.typeName === "ZodIntersection" && path27 === "$") {
+  if (def.typeName === "ZodIntersection" && path28 === "$") {
     return;
   }
-  assertSupportedSchemaValue(def, path27);
-  const children = schemaChildren(def, path27);
+  assertSupportedSchemaValue(def, path28);
+  const children = schemaChildren(def, path28);
   if (!children) {
     if (!supportedLeaves.has(def.typeName)) {
-      unsupported(path27, def.typeName, "this Zod schema is outside the documented JSON-native subset");
+      unsupported(path28, def.typeName, "this Zod schema is outside the documented JSON-native subset");
     }
     return;
   }
@@ -188484,10 +188699,10 @@ function visit2(schema, path27, visited) {
     visit2(child.schema, child.path, visited);
   }
   if (def.typeName === "ZodObject" && (def.unknownKeys === "passthrough" || def.catchall !== void 0 && def.catchall._def.typeName !== "ZodNever")) {
-    unsupported(path27, def.typeName, "open object schemas require additionalProperties: false");
+    unsupported(path28, def.typeName, "open object schemas require additionalProperties: false");
   }
-  if (def.typeName === "ZodUnion" && path27 !== "$") {
-    assertUnambiguousUnion(children.map(({ schema: child }) => child), path27);
+  if (def.typeName === "ZodUnion" && path28 !== "$") {
+    assertUnambiguousUnion(children.map(({ schema: child }) => child), path28);
   }
 }
 function assertSupportedZodV3Schema(schema, definitions) {
@@ -188497,61 +188712,61 @@ function assertSupportedZodV3Schema(schema, definitions) {
     visit2(definition, `$.definitions.${name2}`, visited);
   }
 }
-function assertNoJSONSerializationHook(value, path27) {
+function assertNoJSONSerializationHook(value, path28) {
   for (let current = value; current !== null; current = Object.getPrototypeOf(current)) {
     const descriptor = Object.getOwnPropertyDescriptor(current, "toJSON");
     if (!descriptor) {
       continue;
     }
     if (!("value" in descriptor) || typeof descriptor.value === "function") {
-      throw new Error(`Strict Structured Outputs schema field \`${path27}\` contains an unsupported \`toJSON\` serialization hook`);
+      throw new Error(`Strict Structured Outputs schema field \`${path28}\` contains an unsupported \`toJSON\` serialization hook`);
     }
     return;
   }
 }
-function assertJSONSerializableNumber(value, path27) {
+function assertJSONSerializableNumber(value, path28) {
   if (Object.is(value, -0)) {
-    throw new TypeError(`Strict Structured Outputs schema field \`${path27}\` contains negative zero, which cannot round-trip through JSON`);
+    throw new TypeError(`Strict Structured Outputs schema field \`${path28}\` contains negative zero, which cannot round-trip through JSON`);
   }
 }
-function assertJSONSerializableSchema(value, path27 = "$", ancestors2 = /* @__PURE__ */ new Set()) {
+function assertJSONSerializableSchema(value, path28 = "$", ancestors2 = /* @__PURE__ */ new Set()) {
   if (value === null || typeof value === "string" || typeof value === "boolean") {
     return;
   }
   if (typeof value === "number" && Number.isFinite(value)) {
-    assertJSONSerializableNumber(value, path27);
+    assertJSONSerializableNumber(value, path28);
     return;
   }
   if (typeof value !== "object") {
-    throw new TypeError(`Strict Structured Outputs schema field \`${path27}\` contains a non-JSON ${typeof value} value`);
+    throw new TypeError(`Strict Structured Outputs schema field \`${path28}\` contains a non-JSON ${typeof value} value`);
   }
   if (ancestors2.has(value)) {
-    throw new Error(`Strict Structured Outputs schema field \`${path27}\` contains a circular JSON value`);
+    throw new Error(`Strict Structured Outputs schema field \`${path28}\` contains a circular JSON value`);
   }
   const prototype = Object.getPrototypeOf(value);
   if (!Array.isArray(value) && prototype !== Object.prototype && prototype !== null) {
-    throw new Error(`Strict Structured Outputs schema field \`${path27}\` contains a non-JSON native object`);
+    throw new Error(`Strict Structured Outputs schema field \`${path28}\` contains a non-JSON native object`);
   }
-  assertNoJSONSerializationHook(value, path27);
+  assertNoJSONSerializationHook(value, path28);
   ancestors2.add(value);
   if (Array.isArray(value)) {
     for (let index2 = 0; index2 < value.length; index2 += 1) {
       const descriptor = Object.getOwnPropertyDescriptor(value, String(index2));
       if (!descriptor) {
-        throw new Error(`Strict Structured Outputs schema field \`${path27}[${index2}]\` contains a sparse array`);
+        throw new Error(`Strict Structured Outputs schema field \`${path28}[${index2}]\` contains a sparse array`);
       }
       if (!("value" in descriptor)) {
-        throw new Error(`Strict Structured Outputs schema field \`${path27}[${index2}]\` contains an array accessor`);
+        throw new Error(`Strict Structured Outputs schema field \`${path28}[${index2}]\` contains an array accessor`);
       }
-      assertJSONSerializableSchema(descriptor.value, `${path27}[${index2}]`, ancestors2);
+      assertJSONSerializableSchema(descriptor.value, `${path28}[${index2}]`, ancestors2);
     }
   } else {
     for (const key of Object.keys(value)) {
       const descriptor = Object.getOwnPropertyDescriptor(value, key);
       if (!descriptor || !("value" in descriptor)) {
-        throw new Error(`Strict Structured Outputs schema field \`${path27}.${key}\` contains an accessor`);
+        throw new Error(`Strict Structured Outputs schema field \`${path28}.${key}\` contains an accessor`);
       }
-      assertJSONSerializableSchema(descriptor.value, `${path27}.${key}`, ancestors2);
+      assertJSONSerializableSchema(descriptor.value, `${path28}.${key}`, ancestors2);
     }
   }
   ancestors2.delete(value);
@@ -188629,10 +188844,10 @@ function zodV4ToJsonSchema(schema, options = {}) {
   const jsonSchema = toJSONSchema(schema, {
     target: "draft-7",
     ...metadata ? { metadata } : void 0,
-    override: ({ zodSchema, jsonSchema: jsonSchema2, path: path27 }) => {
+    override: ({ zodSchema, jsonSchema: jsonSchema2, path: path28 }) => {
       const def = zodSchema._zod.def;
       if (def.type === "object" && hasOwn3(def.shape, "__proto__")) {
-        const propertyPath = [...path27, "properties", "__proto__"].map((part) => encodeSchemaDefinitionRefToken(String(part))).join("/");
+        const propertyPath = [...path28, "properties", "__proto__"].map((part) => encodeSchemaDefinitionRefToken(String(part))).join("/");
         throw new Error(`Zod field at \`#/${propertyPath}\` uses unsupported property name \`__proto__\`, which Zod omits from parsed output.`);
       }
       if (def.type === "union" && "discriminator" in def && Array.isArray(jsonSchema2.oneOf)) {
@@ -193568,7 +193783,7 @@ function orderModels(models, preferred) {
 // src/runtime/run-executor.ts
 import fsp3 from "node:fs/promises";
 import os3 from "node:os";
-import path18 from "node:path";
+import path19 from "node:path";
 
 // src/domain/model-prices.ts
 var PRICES_AS_OF = "2026-10-28";
@@ -193829,8 +194044,8 @@ function numberOr(value) {
 // src/tools/node-toolkit.ts
 var import_undici2 = __toESM(require_undici());
 import { spawn as spawn4 } from "node:child_process";
-import fs9 from "node:fs/promises";
-import path13 from "node:path";
+import fs11 from "node:fs/promises";
+import path16 from "node:path";
 
 // src/tools/text.ts
 function htmlToText(html) {
@@ -193865,8 +194080,8 @@ function optionalPositiveInt(args, key, options) {
 }
 
 // src/tools/tool-output.ts
-import fs7 from "node:fs/promises";
-import path11 from "node:path";
+import fs9 from "node:fs/promises";
+import path14 from "node:path";
 var TOOL_OUTPUT_DIR = ".tool-output";
 function readerFor(permissions) {
   if (permissions.read) {
@@ -193945,9 +194160,9 @@ ${body}`;
   async save(tool2, content) {
     this.saved += 1;
     const name2 = `${fileSafe(this.options.nodeId)}-${fileSafe(tool2)}-${this.saved}.txt`;
-    const dir = path11.join(this.options.workspace.root, TOOL_OUTPUT_DIR);
-    await fs7.mkdir(dir, { recursive: true });
-    await fs7.writeFile(path11.join(dir, name2), content);
+    const dir = path14.join(this.options.workspace.root, TOOL_OUTPUT_DIR);
+    await fs9.mkdir(dir, { recursive: true });
+    await fs9.writeFile(path14.join(dir, name2), content);
     return `${TOOL_OUTPUT_DIR}/${name2}`;
   }
 };
@@ -193994,9 +194209,9 @@ function fileSafe(value) {
 
 // src/tools/jobs.ts
 import { spawn as spawn3 } from "node:child_process";
-import fs8 from "node:fs";
+import fs10 from "node:fs";
 import fsp2 from "node:fs/promises";
-import path12 from "node:path";
+import path15 from "node:path";
 var GROUP_POLL_MS = 250;
 var MAX_TIMER_MS = 2 ** 31 - 1;
 var LOG_DIR = ".jobs";
@@ -194017,11 +194232,11 @@ var JobRegistry = class {
   /** Starts `command` in its own process group, its output going to a log in the workspace. */
   async start(command2, nodeId, timeoutMs) {
     const id2 = this.nextId();
-    const log = path12.posix.join(LOG_DIR, `${id2}.log`);
+    const log = path15.posix.join(LOG_DIR, `${id2}.log`);
     const home = this.options.workspace.root;
-    await fsp2.mkdir(path12.join(home, LOG_DIR), { recursive: true });
-    await fsp2.mkdir(path12.join(home, "tmp"), { recursive: true });
-    const fd = fs8.openSync(path12.join(home, log), "a");
+    await fsp2.mkdir(path15.join(home, LOG_DIR), { recursive: true });
+    await fsp2.mkdir(path15.join(home, "tmp"), { recursive: true });
+    const fd = fs10.openSync(path15.join(home, log), "a");
     let child;
     try {
       child = spawn3(command2, {
@@ -194032,11 +194247,11 @@ var JobRegistry = class {
         stdio: ["ignore", fd, fd]
       });
     } finally {
-      fs8.closeSync(fd);
+      fs10.closeSync(fd);
     }
     const tracked = this.track({ id: id2, command: command2, nodeId, log }, timeoutMs, child, child.pid);
     child.on("error", (error62) => {
-      fs8.appendFile(path12.join(home, log), `
+      fs10.appendFile(path15.join(home, log), `
 [job could not start: ${error62.message}]
 `, () => void 0);
       tracked.finish("exited", `could not start: ${error62.message}`);
@@ -194116,7 +194331,7 @@ var JobRegistry = class {
     if (!log) {
       return "";
     }
-    const file2 = path12.join(this.options.workspace.root, log);
+    const file2 = path15.join(this.options.workspace.root, log);
     let handle;
     try {
       handle = await fsp2.open(file2, "r");
@@ -194562,7 +194777,7 @@ async function readFileTool(workspace, args, output2) {
   const offset = optionalByteCount(args, "offset", 0);
   const length = Math.min(optionalByteCount(args, "length", output2.limitBytes) || output2.limitBytes, output2.limitBytes);
   const resolved = await workspace.resolve(target);
-  const handle = await fs9.open(resolved, "r");
+  const handle = await fs11.open(resolved, "r");
   try {
     const { size } = await handle.stat();
     if (offset > 0 && offset >= size) {
@@ -194604,8 +194819,8 @@ async function writeFileTool(workspace, args) {
   const target = requireString(args, "path");
   const content = requireString(args, "content", { allowEmpty: true });
   const resolved = await workspace.resolve(target);
-  await fs9.mkdir(path13.dirname(resolved), { recursive: true });
-  await fs9.writeFile(resolved, content, "utf8");
+  await fs11.mkdir(path16.dirname(resolved), { recursive: true });
+  await fs11.writeFile(resolved, content, "utf8");
   return `Wrote ${Buffer.byteLength(content, "utf8")} bytes to ${target}.`;
 }
 async function runBashTool(workspace, args, limits, output2, signal, jobs) {
@@ -194627,7 +194842,7 @@ async function runBashTool(workspace, args, limits, output2, signal, jobs) {
   const timeoutMs = Math.min(seconds === void 0 ? limits.bashTimeoutMs : seconds * 1e3, maxBashTimeout(limits));
   const collectLimit = output2.saving ? output2.saveLimitBytes : output2.limitBytes;
   const home = workspace.root;
-  await fs9.mkdir(path13.join(home, "tmp"), { recursive: true });
+  await fs11.mkdir(path16.join(home, "tmp"), { recursive: true });
   return new Promise((resolve2) => {
     const child = spawn4(command2, {
       cwd: home,
@@ -194825,7 +195040,7 @@ var StreamEnd = class {
 };
 function assertAllowedCommand(command2) {
   for (const token of command2.split(SHELL_SEPARATORS)) {
-    const name2 = path13.basename(token).replace(/\.exe$/i, "");
+    const name2 = path16.basename(token).replace(/\.exe$/i, "");
     if (DENIED_COMMANDS.has(name2)) {
       throw new Error(`"${name2}" is not permitted: privilege escalation is blocked.`);
     }
@@ -201191,13 +201406,13 @@ function combineAliasesAndInvert(constructor) {
   }, {});
 }
 async function reviver(value) {
-  const { optionalImportsMap, optionalImportEntrypoints: optionalImportEntrypoints$1, importMap, secretsMap, secretsFromEnv, path: path27, depth, maxDepth } = this;
-  const pathStr = path27.join(".");
+  const { optionalImportsMap, optionalImportEntrypoints: optionalImportEntrypoints$1, importMap, secretsMap, secretsFromEnv, path: path28, depth, maxDepth } = this;
+  const pathStr = path28.join(".");
   if (depth > maxDepth) throw new Error(`Maximum recursion depth (${maxDepth}) exceeded during deserialization. This may indicate a malicious payload or you may need to increase maxDepth.`);
   if (typeof value !== "object" || value == null) return value;
   if (Array.isArray(value)) return Promise.all(value.map((v, i) => reviver.call({
     ...this,
-    path: [...path27, `${i}`],
+    path: [...path28, `${i}`],
     depth: depth + 1
   }, v)));
   const record2 = value;
@@ -201251,7 +201466,7 @@ async function reviver(value) {
     if (typeof builder !== "function") throw new Error(`Invalid identifer: ${pathStr} -> ${str}`);
     const kwargs = await reviver.call({
       ...this,
-      path: [...path27, "kwargs"],
+      path: [...path28, "kwargs"],
       depth: depth + 1
     }, serialized.kwargs);
     const instance = new builder(mapKeys(kwargs, keyFromJson, combineAliasesAndInvert(builder)));
@@ -201261,7 +201476,7 @@ async function reviver(value) {
   const result = {};
   for (const [key, val] of Object.entries(record2)) result[key] = await reviver.call({
     ...this,
-    path: [...path27, key],
+    path: [...path28, key],
     depth: depth + 1
   }, val);
   return result;
@@ -202864,8 +203079,8 @@ var StreamMux = class {
   * @param path - The namespace path to register.
   * @param stream - The run stream handle for that namespace.
   */
-  register(path27, stream2) {
-    this.#streamMap.set(nsKey(path27), stream2);
+  register(path28, stream2) {
+    this.#streamMap.set(nsKey(path28), stream2);
   }
   /**
   * Registers a transformer and replays all buffered events through it so
@@ -203065,13 +203280,13 @@ var StreamMux = class {
   * @param startAt - Zero-based index into the event log to begin from.
   * @returns An async iterator over matching {@link ProtocolEvent}s.
   */
-  subscribeEvents(path27, startAt = 0) {
+  subscribeEvents(path28, startAt = 0) {
     const base = this._events.iterate(startAt);
     return { async next() {
       while (true) {
         const result = await base.next();
         if (result.done) return result;
-        if (hasPrefix(result.value.params.namespace, path27)) return result;
+        if (hasPrefix(result.value.params.namespace, path28)) return result;
       }
     } };
   }
@@ -203113,7 +203328,7 @@ function hasPrefix(ns3, prefix) {
 }
 
 // node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/stream/transformers/lifecycle.js
-function filterLifecycleEntries(log, path27, startAt = 0) {
+function filterLifecycleEntries(log, path28, startAt = 0) {
   return { [Symbol.asyncIterator]() {
     const base = log.iterate(startAt);
     return { async next() {
@@ -203123,7 +203338,7 @@ function filterLifecycleEntries(log, path27, startAt = 0) {
           value: void 0,
           done: true
         };
-        if (hasPrefix(result.value.namespace, path27)) return {
+        if (hasPrefix(result.value.namespace, path28)) return {
           value: result.value,
           done: false
         };
@@ -203447,7 +203662,7 @@ function getMessageStreamKey(data) {
   if (data.event === "message-start" && typeof record2.id === "string") return `message:${record2.id}`;
   return "__default__";
 }
-function createMessagesTransformer(path27, nodeFilter) {
+function createMessagesTransformer(path28, nodeFilter) {
   const log = StreamChannel.local();
   const active = /* @__PURE__ */ new Map();
   const ignored2 = /* @__PURE__ */ new Set();
@@ -203455,8 +203670,8 @@ function createMessagesTransformer(path27, nodeFilter) {
     init: () => ({ messages: log.toAsyncIterable() }),
     process(event) {
       if (event.method !== "messages") return true;
-      if (!hasPrefix(event.params.namespace, path27)) return true;
-      if (event.params.namespace.length !== path27.length + 1) return true;
+      if (!hasPrefix(event.params.namespace, path28)) return true;
+      if (event.params.namespace.length !== path28.length + 1) return true;
       if (nodeFilter !== void 0 && event.params.node !== nodeFilter) return true;
       const data = event.params.data;
       switch (data.event) {
@@ -203524,8 +203739,8 @@ function createMessagesTransformer(path27, nodeFilter) {
 }
 
 // node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/stream/transformers/subgraphs.js
-function filterSubgraphHandles(log, path27, startAt = 0) {
-  const targetDepth = path27.length + 1;
+function filterSubgraphHandles(log, path28, startAt = 0) {
+  const targetDepth = path28.length + 1;
   return { [Symbol.asyncIterator]() {
     const base = log.iterate(startAt);
     return { async next() {
@@ -203536,7 +203751,7 @@ function filterSubgraphHandles(log, path27, startAt = 0) {
           done: true
         };
         const { ns: ns3, stream: stream2 } = result.value;
-        if (ns3.length === targetDepth && hasPrefix(ns3, path27)) return {
+        if (ns3.length === targetDepth && hasPrefix(ns3, path28)) return {
           value: stream2,
           done: false
         };
@@ -203574,14 +203789,14 @@ function createSubgraphDiscoveryTransformer(mux, options) {
 }
 
 // node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/stream/transformers/values.js
-function createValuesTransformer(path27) {
+function createValuesTransformer(path28) {
   const valuesLog = StreamChannel.local();
   return {
     init: () => ({ _valuesLog: valuesLog }),
     process(event) {
       if (event.method !== "values") return true;
-      if (event.params.namespace.length !== path27.length) return true;
-      if (!hasPrefix(event.params.namespace, path27)) return true;
+      if (event.params.namespace.length !== path28.length) return true;
+      if (!hasPrefix(event.params.namespace, path28)) return true;
       valuesLog.push(event.params.data);
       return true;
     },
@@ -203646,8 +203861,8 @@ var GraphRunStream = class {
   * @param extensions - Pre-initialized transformer projections.
   * @param abortController - Controller for programmatic cancellation.
   */
-  constructor(path27, mux, discoveryStart = 0, eventStart = 0, extensions2, abortController) {
-    this.path = path27;
+  constructor(path28, mux, discoveryStart = 0, eventStart = 0, extensions2, abortController) {
+    this.path = path28;
     this._mux = mux;
     this.#discoveryStart = discoveryStart;
     this.#eventStart = eventStart;
@@ -203701,9 +203916,9 @@ var GraphRunStream = class {
     const done = this.#valuesDone;
     const mux = this._mux;
     const eventStart = this.#eventStart;
-    const path27 = this.path;
+    const path28 = this.path;
     const iterable = log ? log.toAsyncIterable() : { [Symbol.asyncIterator]: () => {
-      const base = mux.subscribeEvents(path27, eventStart);
+      const base = mux.subscribeEvents(path28, eventStart);
       return { async next() {
         while (true) {
           const result = await base.next();
@@ -203711,7 +203926,7 @@ var GraphRunStream = class {
             value: void 0,
             done: true
           };
-          if (result.value.method === "values" && result.value.params.namespace.length === path27.length) return {
+          if (result.value.method === "values" && result.value.params.namespace.length === path28.length) return {
             value: result.value.params.data,
             done: false
           };
@@ -203897,9 +204112,9 @@ var SubgraphRunStream = class extends GraphRunStream {
   * @param extensions - Pre-initialized transformer projections.
   * @param abortController - Controller for programmatic cancellation.
   */
-  constructor(path27, mux, discoveryStart = 0, eventStart = 0, extensions2, abortController) {
-    super(path27, mux, discoveryStart, eventStart, extensions2, abortController);
-    const lastSegment = path27[path27.length - 1] ?? "";
+  constructor(path28, mux, discoveryStart = 0, eventStart = 0, extensions2, abortController) {
+    super(path28, mux, discoveryStart, eventStart, extensions2, abortController);
+    const lastSegment = path28[path28.length - 1] ?? "";
     const colonIdx = lastSegment.lastIndexOf(":");
     if (colonIdx >= 0) {
       this.name = lastSegment.slice(0, colonIdx);
@@ -203917,10 +204132,10 @@ function createGraphRunStream(source, transformers = [], optionsOrAbortControlle
   const lifecycleTransformer = createLifecycleTransformer();
   const lifecycleProjection = lifecycleTransformer.init();
   const lifecycleLog = lifecycleProjection._lifecycleLog;
-  const subgraphDiscoveryTransformer = createSubgraphDiscoveryTransformer(mux, { createStream: (path27, discoveryStart, eventStart) => {
-    const sub = new SubgraphRunStream(path27, mux, discoveryStart, eventStart);
-    sub[SET_SUBGRAPHS_ITERABLE](filterSubgraphHandles(mux._discoveries, path27, discoveryStart));
-    sub[SET_LIFECYCLE_ITERABLE](filterLifecycleEntries(lifecycleLog, path27, lifecycleLog.size));
+  const subgraphDiscoveryTransformer = createSubgraphDiscoveryTransformer(mux, { createStream: (path28, discoveryStart, eventStart) => {
+    const sub = new SubgraphRunStream(path28, mux, discoveryStart, eventStart);
+    sub[SET_SUBGRAPHS_ITERABLE](filterSubgraphHandles(mux._discoveries, path28, discoveryStart));
+    sub[SET_LIFECYCLE_ITERABLE](filterLifecycleEntries(lifecycleLog, path28, lifecycleLog.size));
     return sub;
   } });
   const subgraphsProjection = subgraphDiscoveryTransformer.init();
@@ -204881,12 +205096,12 @@ function getRunnableForEntrypoint(name2, func) {
 var increment = (current) => {
   return current !== void 0 ? current + 1 : 1;
 };
-function taskPathStr(path27) {
-  if (Array.isArray(path27)) return `~${path27.map(taskPathStr).join(", ")}`;
-  if (typeof path27 === "boolean") return path27 ? "0000000001" : "0000000000";
-  if (typeof path27 === "number") return path27 < 0 ? `-${String(-path27).padStart(9, "0")}` : String(path27).padStart(10, "0");
-  if (path27 === void 0 || path27 === null) return "~";
-  return String(path27);
+function taskPathStr(path28) {
+  if (Array.isArray(path28)) return `~${path28.map(taskPathStr).join(", ")}`;
+  if (typeof path28 === "boolean") return path28 ? "0000000001" : "0000000000";
+  if (typeof path28 === "number") return path28 < 0 ? `-${String(-path28).padStart(9, "0")}` : String(path28).padStart(10, "0");
+  if (path28 === void 0 || path28 === null) return "~";
+  return String(path28);
 }
 function triggersNextStep(updatedChannels, triggerToNodes) {
   if (triggerToNodes == null) return false;
@@ -207165,7 +207380,7 @@ var PregelLoop = class PregelLoop2 {
     });
     const grouped = /* @__PURE__ */ new Map();
     const order = [];
-    for (const [step, tid, path27, ch, v] of pending) {
+    for (const [step, tid, path28, ch, v] of pending) {
       let synthTid;
       let synthPath;
       if (tid === "00000000-0000-0000-0000-000000000000") {
@@ -207173,10 +207388,10 @@ var PregelLoop = class PregelLoop2 {
         synthPath = "";
       } else if (step === this._exitFirstStep) {
         synthTid = exitDeltaTaskId(step, tid);
-        synthPath = path27;
+        synthPath = path28;
       } else {
         synthTid = exitDeltaLateTaskId(step, tid);
-        synthPath = `~~${taskPathStr(step)}${path27}`;
+        synthPath = `~~${taskPathStr(step)}${path28}`;
       }
       const key = `${synthTid}\0${synthPath}`;
       let group = grouped.get(key);
@@ -207191,8 +207406,8 @@ var PregelLoop = class PregelLoop2 {
       }
       group.push([ch, v]);
     }
-    for (const { key, tid, path: path27 } of order) {
-      const saved = this.checkpointer.putWrites(anchorWriteConfig, grouped.get(key), tid, path27);
+    for (const { key, tid, path: path28 } of order) {
+      const saved = this.checkpointer.putWrites(anchorWriteConfig, grouped.get(key), tid, path28);
       this._trackCheckpointerPromise(saved);
       this._pendingDeltaWrites.push(saved);
     }
@@ -209617,10 +209832,10 @@ var Graph$1 = class {
     this.edges.add([startKey, endKey]);
     return this;
   }
-  addConditionalEdges(source, path27, pathMap) {
+  addConditionalEdges(source, path28, pathMap) {
     const options = typeof source === "object" ? source : {
       source,
-      path: path27,
+      path: path28,
       pathMap
     };
     this.warnIfCompiled("Adding an edge to a graph that has already been compiled. This will not be reflected in the compiled graph.");
@@ -211370,10 +211585,10 @@ var entrypoint = function entrypoint2(optionsOrName, func) {
     cache: cache2
   });
 };
-entrypoint.final = function final({ value, save }) {
+entrypoint.final = function final({ value, save: save2 }) {
   return {
     value,
-    save,
+    save: save2,
     __lg_type: "__pregel_final"
   };
 };
@@ -211828,25 +212043,8 @@ function createEmailToolkit(options) {
 }
 
 // src/tools/workspace.ts
-import fs10 from "node:fs/promises";
-import path15 from "node:path";
-
-// src/domain/paths.ts
-import path14 from "node:path";
-function isInside(root, candidate) {
-  if (candidate === root) {
-    return true;
-  }
-  const relative = path14.relative(root, candidate);
-  return relative.length > 0 && !relative.startsWith("..") && !path14.isAbsolute(relative);
-}
-function childPath(root, name2) {
-  const base = path14.resolve(root);
-  const resolved = path14.resolve(base, name2);
-  return resolved !== base && isInside(base, resolved) ? resolved : void 0;
-}
-
-// src/tools/workspace.ts
+import fs12 from "node:fs/promises";
+import path17 from "node:path";
 var WorkspaceEscapeError = class extends Error {
   constructor(message) {
     super(message);
@@ -211861,14 +212059,14 @@ var Workspace = class _Workspace {
   root;
   rootReal;
   static async open(root) {
-    await fs10.mkdir(root, { recursive: true });
-    return new _Workspace(root, await fs10.realpath(root));
+    await fs12.mkdir(root, { recursive: true });
+    return new _Workspace(root, await fs12.realpath(root));
   }
   async resolve(target) {
     if (typeof target !== "string" || target.trim().length === 0) {
       throw new WorkspaceEscapeError("A file path is required.");
     }
-    const absolute = path15.isAbsolute(target) ? path15.resolve(target) : path15.resolve(this.rootReal, target);
+    const absolute = path17.isAbsolute(target) ? path17.resolve(target) : path17.resolve(this.rootReal, target);
     const resolved = await realpathOfNearestExisting(absolute);
     if (!isInside(this.rootReal, resolved)) {
       throw new WorkspaceEscapeError(`"${target}" resolves outside the run workspace.`);
@@ -211881,15 +212079,15 @@ async function realpathOfNearestExisting(absolute) {
   let current = absolute;
   for (; ; ) {
     try {
-      await fs10.lstat(current);
-      const real = await fs10.realpath(current);
-      return path15.resolve(real, ...missing.reverse());
+      await fs12.lstat(current);
+      const real = await fs12.realpath(current);
+      return path17.resolve(real, ...missing.reverse());
     } catch {
-      const parent = path15.dirname(current);
+      const parent = path17.dirname(current);
       if (parent === current) {
         return absolute;
       }
-      missing.push(path15.basename(current));
+      missing.push(path17.basename(current));
       current = parent;
     }
   }
@@ -211898,132 +212096,8 @@ async function realpathOfNearestExisting(absolute) {
 // src/runtime/run-events.ts
 import { randomUUID as randomUUID5 } from "node:crypto";
 import { createWriteStream } from "node:fs";
-import fs12 from "node:fs/promises";
-import path17 from "node:path";
-
-// src/runtime/run-store.ts
-import { randomUUID as randomUUID4 } from "node:crypto";
-import fs11 from "node:fs/promises";
-import path16 from "node:path";
-var PRIVATE_DIR_MODE = 448;
-var PRIVATE_FILE_MODE = 384;
-var RunStore = class {
-  constructor(config2) {
-    this.config = config2;
-  }
-  config;
-  async ensureLayout() {
-    for (const dir of [this.config.dataDir, this.config.runsDir, this.config.workspacesDir]) {
-      await fs11.mkdir(dir, { recursive: true, mode: PRIVATE_DIR_MODE });
-      await fs11.chmod(dir, PRIVATE_DIR_MODE).catch(() => void 0);
-    }
-  }
-  createRun(graph, input2, source) {
-    return {
-      id: randomUUID4(),
-      graphId: graph.id,
-      graphName: graph.name,
-      input: input2,
-      source,
-      status: "running",
-      outputs: {},
-      startedAt: (/* @__PURE__ */ new Date()).toISOString()
-    };
-  }
-  async createRunWorkspace(runId) {
-    const workspace = this.requireContained(this.config.workspacesDir, runId);
-    await fs11.mkdir(workspace, { recursive: true, mode: PRIVATE_DIR_MODE });
-    return workspace;
-  }
-  async writeRun(run2) {
-    await this.writeJson(this.runFile(run2.id), run2);
-  }
-  async readRun(id2) {
-    const dir = childPath(this.config.runsDir, id2);
-    return dir ? this.readJson(path16.join(dir, "meta.json")) : null;
-  }
-  async requireRun(id2) {
-    const run2 = await this.readRun(id2);
-    if (!run2) {
-      throw new Error(`No run with id "${id2}".`);
-    }
-    return run2;
-  }
-  async listRuns() {
-    const entries = await this.readdir(this.config.runsDir);
-    const runs = [];
-    for (const entry of entries) {
-      const run2 = await this.readRun(entry);
-      if (run2) {
-        runs.push(run2);
-      }
-    }
-    return runs.sort((a, b) => b.startedAt.localeCompare(a.startedAt));
-  }
-  async readEvents(runId) {
-    const dir = childPath(this.config.runsDir, runId);
-    const raw = dir ? await this.readText(path16.join(dir, "events.jsonl")) : null;
-    if (!raw) {
-      return [];
-    }
-    return raw.split("\n").flatMap((line) => line.trim() ? [parseEvent(line)] : []).filter((event) => event !== null).sort((a, b) => a.seq - b.seq);
-  }
-  eventsFile(runId) {
-    return path16.join(this.requireContained(this.config.runsDir, runId), "events.jsonl");
-  }
-  runFile(id2) {
-    return path16.join(this.requireContained(this.config.runsDir, id2), "meta.json");
-  }
-  /** A run id names a directory below `root`; anything that resolves elsewhere is not a run. */
-  requireContained(root, id2) {
-    const resolved = childPath(root, id2);
-    if (!resolved) {
-      throw new Error(`Invalid run id "${id2}".`);
-    }
-    return resolved;
-  }
-  async readdir(dir) {
-    try {
-      return await fs11.readdir(dir);
-    } catch {
-      return [];
-    }
-  }
-  async readText(file2) {
-    try {
-      return await fs11.readFile(file2, "utf8");
-    } catch {
-      return null;
-    }
-  }
-  async readJson(file2) {
-    const raw = await this.readText(file2);
-    if (raw === null) {
-      return null;
-    }
-    try {
-      return JSON.parse(raw);
-    } catch {
-      return null;
-    }
-  }
-  async writeJson(file2, value) {
-    await fs11.mkdir(path16.dirname(file2), { recursive: true, mode: PRIVATE_DIR_MODE });
-    const temporary = `${file2}.${randomUUID4()}.tmp`;
-    await fs11.writeFile(temporary, `${JSON.stringify(value, null, 2)}
-`, { encoding: "utf8", mode: PRIVATE_FILE_MODE });
-    await fs11.rename(temporary, file2);
-  }
-};
-function parseEvent(line) {
-  try {
-    return JSON.parse(line);
-  } catch {
-    return null;
-  }
-}
-
-// src/runtime/run-events.ts
+import fs13 from "node:fs/promises";
+import path18 from "node:path";
 var RunEventSink = class _RunEventSink {
   constructor(options) {
     this.options = options;
@@ -212034,7 +212108,7 @@ var RunEventSink = class _RunEventSink {
   static async open(options) {
     const sink = new _RunEventSink(options);
     if (options.file) {
-      await fs12.mkdir(path17.dirname(options.file), { recursive: true, mode: PRIVATE_DIR_MODE });
+      await fs13.mkdir(path18.dirname(options.file), { recursive: true, mode: PRIVATE_DIR_MODE });
       sink.stream = createWriteStream(options.file, { flags: "a", mode: PRIVATE_FILE_MODE });
     }
     return sink;
@@ -212165,7 +212239,7 @@ var RunExecutor = class {
     try {
       const workspace = await Workspace.open(await this.store.createRunWorkspace(run2.id));
       for (const file2 of options.seedFiles ?? []) {
-        await fsp3.copyFile(file2, path18.join(workspace.root, path18.basename(file2)));
+        await fsp3.copyFile(file2, path19.join(workspace.root, path19.basename(file2)));
       }
       timer = setTimeout(() => {
         budget.timedOut = true;
@@ -212987,8 +213061,8 @@ async function runGraph(parsed, context2) {
 }
 
 // src/cli/init.ts
-import fs13 from "node:fs/promises";
-import path19 from "node:path";
+import fs14 from "node:fs/promises";
+import path20 from "node:path";
 
 // src/app/starter-flow.ts
 var STARTER_MODELS = {
@@ -213166,12 +213240,12 @@ WEB_FETCH_LIMIT_BYTES=262144
 import { emitKeypressEvents } from "node:readline";
 import readline2 from "node:readline/promises";
 import { Writable } from "node:stream";
-async function askChoice(question, labels) {
+async function askChoice(question2, labels) {
   const choices = labels.map((label2, index2) => `  ${index2 + 1}. ${label2}`).join("\n");
   const rl = readline2.createInterface({ input: process.stdin, output: process.stderr });
   try {
     for (; ; ) {
-      const answer = (await rl.question(`${question}
+      const answer = (await rl.question(`${question2}
 ${choices}
 Choice [1-${labels.length}]: `)).trim();
       const index2 = Number(answer) - 1;
@@ -213211,7 +213285,7 @@ function checklistLines(labels, state2, columns) {
     return columns && columns > 1 && line.length >= columns ? line.slice(0, columns - 1) : line;
   });
 }
-async function askChecklist(question, items) {
+async function askChecklist(question2, items) {
   const input2 = process.stdin;
   const output2 = process.stderr;
   const labels = items.map((item) => item.label);
@@ -213223,7 +213297,7 @@ async function askChecklist(question, items) {
 `);
     drawn = lines.length;
   };
-  output2.write(`${question}
+  output2.write(`${question2}
 ${CHECKLIST_HINT}
 `);
   emitKeypressEvents(input2);
@@ -213260,8 +213334,8 @@ ${CHECKLIST_HINT}
   }
   return state2.checked;
 }
-async function askSecret(question) {
-  process.stderr.write(question);
+async function askSecret(question2) {
+  process.stderr.write(question2);
   const muted = new Writable({ write: (_chunk, _encoding, done) => done() });
   const rl = readline2.createInterface({ input: process.stdin, output: muted, terminal: true });
   try {
@@ -213281,16 +213355,16 @@ async function runInit(parsed) {
   const interactive = !readBooleanFlag(parsed, "yes") && process.stdin.isTTY === true && process.stderr.isTTY === true;
   const dataDir = resolveDataDir(readOptionalFlag(parsed, "data-dir"));
   const envFlag = readOptionalFlag(parsed, "env-file");
-  const envFile = envFlag ? path19.resolve(process.cwd(), envFlag) : path19.join(dataDir, ".env");
-  await fs13.mkdir(dataDir, { recursive: true, mode: PRIVATE_DIR_MODE });
-  await fs13.chmod(dataDir, PRIVATE_DIR_MODE);
+  const envFile = envFlag ? path20.resolve(process.cwd(), envFlag) : path20.join(dataDir, ".env");
+  await fs14.mkdir(dataDir, { recursive: true, mode: PRIVATE_DIR_MODE });
+  await fs14.chmod(dataDir, PRIVATE_DIR_MODE);
   const provider = await chooseProvider(parsed, interactive);
   const envKey = catalogEntry(provider).envKey;
   const keyInEnv = Boolean(process.env[envKey]?.trim());
   const typedKey = !keyInEnv && interactive ? await askSecret(`${envKey} (input hidden, Enter to skip): `) : "";
   const keyConfigured = keyInEnv || typedKey.length > 0;
   const envStatus = await writeEnvFile(envFile, envKey, typedKey);
-  const flowPath = path19.resolve(process.cwd(), FLOW_FILE);
+  const flowPath = path20.resolve(process.cwd(), FLOW_FILE);
   const flowStatus = await writeIfMissing(flowPath, `${JSON.stringify(starterFlow(provider), null, 2)}
 `);
   if (readBooleanFlag(parsed, "json") || !process.stdout.isTTY) {
@@ -213321,20 +213395,20 @@ async function chooseProvider(parsed, interactive) {
   return picked?.id ?? DEFAULT_PROVIDER;
 }
 async function writeEnvFile(file2, envKey, key) {
-  const existing = await fs13.readFile(file2, "utf8").catch(() => void 0);
+  const existing = await fs14.readFile(file2, "utf8").catch(() => void 0);
   if (existing !== void 0 && key.length === 0) {
     return "kept";
   }
   const base = existing ?? ENV_TEMPLATE;
   const content = key.length === 0 ? base : setEnvValues(base, { [envKey]: key });
-  await fs13.mkdir(path19.dirname(file2), { recursive: true, mode: PRIVATE_DIR_MODE });
-  await fs13.writeFile(file2, content, { encoding: "utf8", mode: PRIVATE_FILE_MODE });
-  await fs13.chmod(file2, PRIVATE_FILE_MODE);
+  await fs14.mkdir(path20.dirname(file2), { recursive: true, mode: PRIVATE_DIR_MODE });
+  await fs14.writeFile(file2, content, { encoding: "utf8", mode: PRIVATE_FILE_MODE });
+  await fs14.chmod(file2, PRIVATE_FILE_MODE);
   return existing === void 0 ? "created" : "updated";
 }
 async function writeIfMissing(file2, content) {
   try {
-    await fs13.writeFile(file2, content, { encoding: "utf8", flag: "wx" });
+    await fs14.writeFile(file2, content, { encoding: "utf8", flag: "wx" });
     return "created";
   } catch (error62) {
     if (error62.code === "EEXIST") {
@@ -213381,7 +213455,7 @@ async function runProviders(parsed, context2) {
 }
 
 // src/cli/run.ts
-import fs14 from "node:fs/promises";
+import fs15 from "node:fs/promises";
 
 // src/domain/flow-estimate.ts
 var MINIMUM_NOTE = "Minimum only: a lower bound, not a forecast. Agents loop and every iteration re-sends the context so far, so a real run spends more, by an amount that varies with the flow and the model. Compare with the run's costUsd.";
@@ -213533,6 +213607,25 @@ function lintGraph(graph) {
   }
   return warnings;
 }
+function lintParallelLimit(graph, maxParallelNodes) {
+  if (maxParallelNodes > 1) {
+    return [];
+  }
+  const entries = graph.nodes.filter((node2) => incomingEdges(graph, node2.id).length === 0);
+  const forks = graph.nodes.filter((node2) => outgoingEdges(graph, node2.id).length > 1);
+  if (entries.length < 2 && forks.length === 0) {
+    return [];
+  }
+  const where2 = entries.length >= 2 ? `this flow has ${entries.length} entry nodes` : `"${forks[0]?.label}" has several outgoing edges`;
+  return [
+    {
+      severity: "warning",
+      code: "parallel-limit-one",
+      message: `MAX_PARALLEL_NODES is ${maxParallelNodes}, and ${where2}, so two nodes can be ready at once. At 1, a run stops after the first of them and still reports "completed", without their outputs.`,
+      hint: "Set MAX_PARALLEL_NODES to 2 or more in the settings file, then restart the server or run the command again."
+    }
+  ];
+}
 function ignored(node2, code) {
   return node2.lintIgnore?.includes(code) ?? false;
 }
@@ -213633,7 +213726,7 @@ function concurrentWrite({ graph, node: node2 }) {
     if (!concurrent) {
       continue;
     }
-    const shared = paths.find((path27) => writePathsIn(other.prompt).includes(path27));
+    const shared = paths.find((path28) => writePathsIn(other.prompt).includes(path28));
     if (shared) {
       return [
         warning(
@@ -213668,7 +213761,7 @@ function branchIndex(graph, branch, nodeId) {
   return indexes.length === 1 ? indexes[0] : void 0;
 }
 function writePathsIn(prompt) {
-  return [...new Set((prompt.match(WRITE_PATH_PATTERN) ?? []).filter((path27) => !URL_PATTERN.test(path27)))];
+  return [...new Set((prompt.match(WRITE_PATH_PATTERN) ?? []).filter((path28) => !URL_PATTERN.test(path28)))];
 }
 function warning(node2, code, message, hint) {
   return { severity: "warning", code, message, hint, nodeId: node2.id };
@@ -213680,7 +213773,7 @@ function label(node2) {
 // src/app/flow-validation.ts
 function validateFlow(graph, config2) {
   const issues = validateGraph(graph);
-  const warnings = issues.length === 0 ? lintGraph(graph) : [];
+  const warnings = issues.length === 0 ? [...lintGraph(graph), ...lintParallelLimit(graph, config2.maxParallelNodes)] : [];
   const minimum = issues.length === 0 ? minimumGraph(graph, config2) : void 0;
   return {
     ok: issues.length === 0,
@@ -213702,13 +213795,17 @@ async function runRun(parsed, context2) {
   const input2 = await readRunInput(parsed);
   const machineReadable = readBooleanFlag(parsed, "json") || !process.stdout.isTTY;
   const eventMode = readEventMode(parsed);
-  const save = readSaveFlag(parsed);
+  const save2 = readSaveFlag(parsed);
   const labels = new Map(graph.nodes.map((node2) => [node2.id, node2.label]));
   const validation = validateFlow(graph, context2.config);
   if (!validation.ok) {
     process.stderr.write(`${JSON.stringify({ ok: false, issues: validation.issues })}
 `);
     return EXIT.invalidInput;
+  }
+  for (const warning2 of validation.warnings.filter((entry) => entry.code === "parallel-limit-one")) {
+    process.stderr.write(`Warning: ${warning2.message} ${warning2.hint}
+`);
   }
   if (shouldDrawDiagram(parsed, eventMode)) {
     process.stderr.write(`${renderFlow(graph, "ascii")}
@@ -213721,7 +213818,7 @@ async function runRun(parsed, context2) {
   process.once("SIGTERM", onSignal);
   try {
     const started = await context2.runs.start(graph, input2, {
-      save,
+      save: save2,
       source: "cli",
       signal: controller.signal,
       onEvent: (event) => emitEvent(event, eventMode, labels)
@@ -213883,7 +213980,7 @@ async function readRunInput(parsed) {
   }
   if (file2 !== void 0) {
     try {
-      return await fs14.readFile(file2, "utf8");
+      return await fs15.readFile(file2, "utf8");
     } catch {
       throw new FlowError(`Could not read the input file "${file2}".`);
     }
@@ -214108,18 +214205,18 @@ function writeJson2(value) {
 }
 
 // src/cli/settings.ts
-import path23 from "node:path";
+import path24 from "node:path";
 
 // src/mcp/settings.ts
 var import_dotenv2 = __toESM(require_dist2());
 import fsSync from "node:fs";
-import fs16 from "node:fs/promises";
-import path22 from "node:path";
+import fs17 from "node:fs/promises";
+import path23 from "node:path";
 
 // src/mcp/hermes-home.ts
-import fs15 from "node:fs";
+import fs16 from "node:fs";
 import os4 from "node:os";
-import path20 from "node:path";
+import path21 from "node:path";
 var HERMES_PLUGIN_NAME = "agents-automations";
 function hermesHome() {
   const home = process.env.HERMES_HOME?.trim();
@@ -214127,19 +214224,19 @@ function hermesHome() {
     return home.replace(/^~(?=$|[\\/])/, os4.homedir());
   }
   if (process.platform === "win32") {
-    return path20.join(process.env.LOCALAPPDATA?.trim() || path20.join(os4.homedir(), "AppData", "Local"), "hermes");
+    return path21.join(process.env.LOCALAPPDATA?.trim() || path21.join(os4.homedir(), "AppData", "Local"), "hermes");
   }
-  return path20.join(os4.homedir(), ".hermes");
+  return path21.join(os4.homedir(), ".hermes");
 }
 function hermesEnvFile() {
-  return path20.join(hermesHome(), ".env");
+  return path21.join(hermesHome(), ".env");
 }
 function hermesPluginInstalled() {
-  return fs15.existsSync(path20.join(hermesHome(), "plugins", HERMES_PLUGIN_NAME));
+  return fs16.existsSync(path21.join(hermesHome(), "plugins", HERMES_PLUGIN_NAME));
 }
 
 // src/mcp/policy.ts
-import path21 from "node:path";
+import path22 from "node:path";
 var PolicyError = class extends Error {
   constructor(message) {
     super(message);
@@ -214168,45 +214265,51 @@ function readMcpPolicy(config2) {
     maxResultBytes: config2.mcpMaxResultBytes
   };
 }
-function assertFlowAllowed(graph, policy) {
-  const blocked = [];
-  for (const node2 of graph.nodes) {
-    if (node2.permissions.bash && !policy.allowBash) {
-      blocked.push(`"${node2.label}" requests bash`);
-    }
-    if (node2.permissions.write && !policy.allowWrite) {
-      blocked.push(`"${node2.label}" requests write`);
-    }
-    if (node2.permissions.web && !policy.allowWeb) {
-      blocked.push(`"${node2.label}" requests web`);
-    }
-    if (node2.permissions.email_read && !policy.allowEmail) {
-      blocked.push(`"${node2.label}" requests email_read`);
-    }
-    if (node2.permissions.browser && !policy.allowBrowser) {
-      blocked.push(`"${node2.label}" requests browser`);
+var GATED = [
+  { permission: "web", setting: "AGENTS_AUTOMATIONS_ALLOW_WEB", id: "web", field: "allowWeb" },
+  { permission: "write", setting: "AGENTS_AUTOMATIONS_ALLOW_WRITE", id: "write", field: "allowWrite" },
+  { permission: "bash", setting: "AGENTS_AUTOMATIONS_ALLOW_BASH", id: "bash", field: "allowBash" },
+  { permission: "email_read", setting: "AGENTS_AUTOMATIONS_ALLOW_EMAIL", id: "email", field: "allowEmail" },
+  { permission: "browser", setting: "AGENTS_AUTOMATIONS_ALLOW_BROWSER", id: "browser", field: "allowBrowser" }
+];
+function blockedPermissions(graph, policy, granted = /* @__PURE__ */ new Set()) {
+  return GATED.filter((gate) => !policy[gate.field] && !granted.has(gate.setting)).map((gate) => ({ ...gate, nodes: graph.nodes.filter((node2) => node2.permissions[gate.permission]).map((node2) => node2.label) })).filter((blocked) => blocked.nodes.length > 0);
+}
+function allowInPolicy(policy, settings) {
+  for (const setting of settings) {
+    const gate = GATED.find((entry) => entry.setting === setting);
+    if (gate) {
+      policy[gate.field] = true;
     }
   }
+}
+function policyDenied(blocked, lead = "The MCP server policy denies this flow") {
+  const requests = blocked.flatMap((entry) => entry.nodes.map((label2) => `"${label2}" requests ${entry.permission}`));
+  const server = path22.resolve(process.argv[1] ?? "server.mjs");
+  return new PolicyError(
+    `${lead}: ${requests.join(", ")}. The person can allow it by running \`node "${server}" settings --allow ${blocked.map((entry) => entry.id).join(",")}\`, then restarting the server.`
+  );
+}
+function assertFlowAllowed(graph, policy, granted) {
+  const blocked = blockedPermissions(graph, policy, granted);
   if (blocked.length > 0) {
-    throw new PolicyError(
-      `The MCP server policy denies this flow: ${blocked.join(", ")}. The person can allow it by running \`node "${path21.resolve(process.argv[1] ?? "server.mjs")}" settings\`, then restarting the server.`
-    );
+    throw policyDenied(blocked);
   }
 }
 
 // src/mcp/settings.ts
 var SETTINGS_URL = "https://github.com/Bruce-Hopkins/agent-automations/blob/main/.env.example";
 var PERMISSIONS_QUESTION = "Which permissions may flows use?";
-function permission(id2, name2, about) {
-  return { id: id2, name: name2, label: `${id2.padEnd(11)} ${about}` };
+function permission(id2, name2, about, offered) {
+  return { id: id2, name: name2, about, label: `${id2.padEnd(11)} ${about}`, offered };
 }
 var PERMISSIONS = [
-  permission("web", "AGENTS_AUTOMATIONS_ALLOW_WEB", "fetch web pages (web_fetch)"),
-  permission("write", "AGENTS_AUTOMATIONS_ALLOW_WRITE", "write files in the run workspace (write_file)"),
-  permission("bash", "AGENTS_AUTOMATIONS_ALLOW_BASH", "run shell commands (run_bash): any command you can"),
-  permission("email", "AGENTS_AUTOMATIONS_ALLOW_EMAIL", "read your mailbox, read-only (needs a mailbox login)"),
-  permission("browser", "AGENTS_AUTOMATIONS_ALLOW_BROWSER", "drive a headless Chrome (chrome-devtools-mcp)"),
-  permission("flow-paths", "AGENTS_AUTOMATIONS_ALLOW_FLOW_PATHS", "load a flow from a file path, not only inline JSON")
+  permission("web", "AGENTS_AUTOMATIONS_ALLOW_WEB", "fetch web pages (web_fetch)", true),
+  permission("write", "AGENTS_AUTOMATIONS_ALLOW_WRITE", "write files in the run workspace (write_file)", true),
+  permission("bash", "AGENTS_AUTOMATIONS_ALLOW_BASH", "run shell commands (run_bash): any command you can", false),
+  permission("email", "AGENTS_AUTOMATIONS_ALLOW_EMAIL", "read your mailbox, read-only (needs a mailbox login)", false),
+  permission("browser", "AGENTS_AUTOMATIONS_ALLOW_BROWSER", "drive a headless Chrome (chrome-devtools-mcp)", false),
+  permission("flow-paths", "AGENTS_AUTOMATIONS_ALLOW_FLOW_PATHS", "load a flow from a file path, not only inline JSON", true)
 ];
 function isSet(values, name2) {
   return Boolean(values[name2]?.trim());
@@ -214251,7 +214354,7 @@ function parsePermissionList(flag, text) {
 }
 async function readIfPresent(file2) {
   try {
-    return await fs16.readFile(file2, "utf8");
+    return await fs17.readFile(file2, "utf8");
   } catch (error62) {
     if (error62.code === "ENOENT") {
       return void 0;
@@ -214260,15 +214363,15 @@ async function readIfPresent(file2) {
   }
 }
 async function writePrivate(file2, content) {
-  const target = await fs16.realpath(file2).catch(() => file2);
-  await fs16.mkdir(path22.dirname(target), { recursive: true, mode: PRIVATE_DIR_MODE });
+  const target = await fs17.realpath(file2).catch(() => file2);
+  await fs17.mkdir(path23.dirname(target), { recursive: true, mode: PRIVATE_DIR_MODE });
   const temp = `${target}.${process.pid}.tmp`;
   try {
-    await fs16.writeFile(temp, content, { encoding: "utf8", mode: PRIVATE_FILE_MODE, flag: "wx" });
-    await fs16.chmod(temp, PRIVATE_FILE_MODE);
-    await fs16.rename(temp, target);
+    await fs17.writeFile(temp, content, { encoding: "utf8", mode: PRIVATE_FILE_MODE, flag: "wx" });
+    await fs17.chmod(temp, PRIVATE_FILE_MODE);
+    await fs17.rename(temp, target);
   } finally {
-    await fs16.rm(temp, { force: true });
+    await fs17.rm(temp, { force: true });
   }
 }
 function hermesSettingsFile() {
@@ -214276,7 +214379,7 @@ function hermesSettingsFile() {
 }
 function dataSettingsFile(dataDir) {
   return {
-    envFile: path22.join(resolveDataDir(dataDir), ".env"),
+    envFile: path23.join(resolveDataDir(dataDir), ".env"),
     reader: "the agents-automations command and the MCP server for your other clients",
     hermes: false
   };
@@ -214395,7 +214498,7 @@ async function runSettingsCommand(parsed) {
   assertFlags(parsed, [...GLOBAL_FLAGS, "allow", "deny", "json"]);
   assertNoPositionals(parsed);
   const envFlag = readOptionalFlag(parsed, "env-file");
-  const files = envFlag ? [{ envFile: path23.resolve(process.cwd(), envFlag), hermes: false }] : settingsFiles(readOptionalFlag(parsed, "data-dir"));
+  const files = envFlag ? [{ envFile: path24.resolve(process.cwd(), envFlag), hermes: false }] : settingsFiles(readOptionalFlag(parsed, "data-dir"));
   await runSettings({
     files,
     allow: readOptionalFlag(parsed, "allow"),
@@ -214530,13 +214633,13 @@ function namedCommand(argv) {
 // src/mcp/init.ts
 var import_dotenv3 = __toESM(require_dist2());
 import { lstatSync, readlinkSync } from "node:fs";
-import path25 from "node:path";
+import path26 from "node:path";
 
 // src/mcp/agents.ts
 import { spawn as spawn5 } from "node:child_process";
-import fs17 from "node:fs";
+import fs18 from "node:fs";
 import os5 from "node:os";
-import path24 from "node:path";
+import path25 from "node:path";
 var SERVER_NAME = "agents-automations";
 var DEFAULT_PLUGIN_SOURCE = "Bruce-Hopkins/agent-automations/hermes-plugin";
 async function findAgents(pluginSource = process.env.AGENTS_AUTOMATIONS_PLUGIN_SOURCE?.trim() || DEFAULT_PLUGIN_SOURCE) {
@@ -214550,7 +214653,7 @@ async function findAgents(pluginSource = process.env.AGENTS_AUTOMATIONS_PLUGIN_S
     agents.push(claudeCodeAgent(claude));
   }
   for (const app of configFileApps()) {
-    if (fs17.existsSync(app.dir)) {
+    if (fs18.existsSync(app.dir)) {
       agents.push(configFileAgent(app, await readMcpConfig(app.file)));
     }
   }
@@ -214558,15 +214661,15 @@ async function findAgents(pluginSource = process.env.AGENTS_AUTOMATIONS_PLUGIN_S
 }
 function findCommand(name2) {
   const extensions2 = process.platform === "win32" ? (process.env.PATHEXT ?? ".COM;.EXE;.BAT;.CMD").split(";").filter(Boolean) : [""];
-  for (const dir of (process.env.PATH ?? "").split(path24.delimiter)) {
+  for (const dir of (process.env.PATH ?? "").split(path25.delimiter)) {
     if (!dir) {
       continue;
     }
     for (const extension of extensions2) {
-      const file2 = path24.join(dir, `${name2}${extension}`);
+      const file2 = path25.join(dir, `${name2}${extension}`);
       try {
-        fs17.accessSync(file2, fs17.constants.X_OK);
-        if (fs17.statSync(file2).isFile()) {
+        fs18.accessSync(file2, fs18.constants.X_OK);
+        if (fs18.statSync(file2).isFile()) {
           return file2;
         }
       } catch {
@@ -214639,7 +214742,7 @@ function claudeCodeAgent(command2) {
 function claudeCodeHasServer() {
   const dir = process.env.CLAUDE_CONFIG_DIR?.trim() || os5.homedir();
   try {
-    const config2 = JSON.parse(fs17.readFileSync(path24.join(dir, ".claude.json"), "utf8"));
+    const config2 = JSON.parse(fs18.readFileSync(path25.join(dir, ".claude.json"), "utf8"));
     return isObject4(config2) && isObject4(config2.mcpServers) && SERVER_NAME in config2.mcpServers;
   } catch {
     return false;
@@ -214647,10 +214750,10 @@ function claudeCodeHasServer() {
 }
 function configFileApps() {
   const home = os5.homedir();
-  const desktop = process.platform === "darwin" ? path24.join(home, "Library", "Application Support", "Claude") : process.platform === "win32" ? path24.join(process.env.APPDATA?.trim() || path24.join(home, "AppData", "Roaming"), "Claude") : path24.join(process.env.XDG_CONFIG_HOME?.trim() || path24.join(home, ".config"), "Claude");
+  const desktop = process.platform === "darwin" ? path25.join(home, "Library", "Application Support", "Claude") : process.platform === "win32" ? path25.join(process.env.APPDATA?.trim() || path25.join(home, "AppData", "Roaming"), "Claude") : path25.join(process.env.XDG_CONFIG_HOME?.trim() || path25.join(home, ".config"), "Claude");
   return [
-    { id: "claude-desktop", name: "Claude Desktop", dir: desktop, file: path24.join(desktop, "claude_desktop_config.json") },
-    { id: "cursor", name: "Cursor", dir: path24.join(home, ".cursor"), file: path24.join(home, ".cursor", "mcp.json") }
+    { id: "claude-desktop", name: "Claude Desktop", dir: desktop, file: path25.join(desktop, "claude_desktop_config.json") },
+    { id: "cursor", name: "Cursor", dir: path25.join(home, ".cursor"), file: path25.join(home, ".cursor", "mcp.json") }
   ];
 }
 function mcpEntry(server) {
@@ -214718,7 +214821,7 @@ function isObject4(value) {
 }
 function tilde(file2) {
   const home = os5.homedir();
-  return file2.startsWith(home + path24.sep) ? `~${file2.slice(home.length)}` : file2;
+  return file2.startsWith(home + path25.sep) ? `~${file2.slice(home.length)}` : file2;
 }
 function run(command2, args, stdio) {
   return new Promise((resolve2) => {
@@ -214778,7 +214881,7 @@ async function setup(options, { prompts, agents, server }) {
 }
 function settingsFilesFor(chosen, options) {
   if (options.envFile) {
-    return [{ envFile: path25.resolve(options.envFile), hermes: chosen.length > 0 && chosen.every((agent) => agent.readsHermesEnv) }];
+    return [{ envFile: path26.resolve(options.envFile), hermes: chosen.length > 0 && chosen.every((agent) => agent.readsHermesEnv) }];
   }
   return chosen.some((agent) => agent.readsHermesEnv) ? [hermesSettingsFile(), dataSettingsFile()] : [dataSettingsFile()];
 }
@@ -214798,10 +214901,10 @@ async function initSettings(files, prompts) {
   const key = (await prompts.secret(`${provider.envKey} (input hidden, Enter to ${everywhere(provider.envKey) ? "keep the current key" : "skip"}): `)).trim();
   const ticked = await prompts.checklist(
     PERMISSIONS_QUESTION,
-    PERMISSIONS.map(({ name: name2, label: label2 }) => ({
-      label: label2,
-      checked: read.filter(({ current }) => isSet(current, name2)).every(({ current }) => isTrue(current[name2]))
-    }))
+    PERMISSIONS.map(({ name: name2, label: label2, offered }) => {
+      const setIn = read.filter(({ current }) => isSet(current, name2));
+      return { label: label2, checked: setIn.length === 0 ? offered : setIn.every(({ current }) => isTrue(current[name2])) };
+    })
   );
   const allowed = new Map(PERMISSIONS.map(({ name: name2 }, index2) => [name2, ticked[index2] ?? false]));
   const results = [];
@@ -214824,9 +214927,9 @@ async function initSettings(files, prompts) {
   return results;
 }
 function serverScript() {
-  const script = path25.resolve(process.argv[1] ?? "server.mjs");
+  const script = path26.resolve(process.argv[1] ?? "server.mjs");
   try {
-    return lstatSync(script).isSymbolicLink() ? path25.resolve(path25.dirname(script), readlinkSync(script)) : script;
+    return lstatSync(script).isSymbolicLink() ? path26.resolve(path26.dirname(script), readlinkSync(script)) : script;
   } catch {
     return script;
   }
@@ -214942,14 +215045,15 @@ var RunManager = class {
   active = /* @__PURE__ */ new Map();
   /** Starts past the limit check but not yet in `active`. */
   starting = 0;
-  async start(graph, input2) {
+  /** `granted` holds the permissions the person allowed for this run only. */
+  async start(graph, input2, granted) {
     const running = this.active.size + this.starting;
     if (running >= this.policy.maxConcurrentRuns) {
       throw new PolicyError(
         `The MCP server is already running ${running} flow(s); its limit is ${this.policy.maxConcurrentRuns}.`
       );
     }
-    assertFlowAllowed(graph, this.policy);
+    assertFlowAllowed(graph, this.policy, granted);
     this.starting += 1;
     const controller = new AbortController();
     let started;
@@ -215155,11 +215259,11 @@ function normalizeObjectSchema(schema) {
   }
   return void 0;
 }
-function getDotPath(path27) {
-  if (path27.length === 0) {
+function getDotPath(path28) {
+  if (path28.length === 0) {
     return "object root";
   }
-  return path27.reduce((acc, seg, index2) => {
+  return path28.reduce((acc, seg, index2) => {
     if (index2 === 0) {
       return String(seg);
     }
@@ -220438,12 +220542,12 @@ var McpServer = class {
     }
     return registeredPrompt;
   }
-  _createRegisteredTool(name2, title, description, inputSchema11, outputSchema, annotations, execution, _meta, handler) {
+  _createRegisteredTool(name2, title, description, inputSchema13, outputSchema, annotations, execution, _meta, handler) {
     validateAndWarnToolName(name2);
     const registeredTool = {
       title,
       description,
-      inputSchema: getZodSchemaObject(inputSchema11),
+      inputSchema: getZodSchemaObject(inputSchema13),
       outputSchema: getZodSchemaObject(outputSchema),
       annotations,
       execution,
@@ -220494,7 +220598,7 @@ var McpServer = class {
       throw new Error(`Tool ${name2} is already registered`);
     }
     let description;
-    let inputSchema11;
+    let inputSchema13;
     let outputSchema;
     let annotations;
     if (typeof rest[0] === "string") {
@@ -220503,7 +220607,7 @@ var McpServer = class {
     if (rest.length > 1) {
       const firstArg = rest[0];
       if (isZodRawShapeCompat(firstArg)) {
-        inputSchema11 = rest.shift();
+        inputSchema13 = rest.shift();
         if (rest.length > 1 && typeof rest[0] === "object" && rest[0] !== null && !isZodRawShapeCompat(rest[0])) {
           annotations = rest.shift();
         }
@@ -220515,7 +220619,7 @@ var McpServer = class {
       }
     }
     const callback = rest[0];
-    return this._createRegisteredTool(name2, void 0, description, inputSchema11, outputSchema, annotations, { taskSupport: "forbidden" }, void 0, callback);
+    return this._createRegisteredTool(name2, void 0, description, inputSchema13, outputSchema, annotations, { taskSupport: "forbidden" }, void 0, callback);
   }
   /**
    * Registers a tool with a config object and callback.
@@ -220524,8 +220628,8 @@ var McpServer = class {
     if (this._registeredTools[name2]) {
       throw new Error(`Tool ${name2} is already registered`);
     }
-    const { title, description, inputSchema: inputSchema11, outputSchema, annotations, _meta } = config2;
-    return this._createRegisteredTool(name2, title, description, inputSchema11, outputSchema, annotations, { taskSupport: "forbidden" }, _meta, cb);
+    const { title, description, inputSchema: inputSchema13, outputSchema, annotations, _meta } = config2;
+    return this._createRegisteredTool(name2, title, description, inputSchema13, outputSchema, annotations, { taskSupport: "forbidden" }, _meta, cb);
   }
   prompt(name2, ...rest) {
     if (this._registeredPrompts[name2]) {
@@ -220718,6 +220822,24 @@ var getExampleFlowTool = {
   }
 };
 
+// src/mcp/tools/get-flow.ts
+var inputSchema3 = external_exports2.object({
+  name: external_exports2.string().min(1).describe("The flow's name, as list_flows shows it.")
+});
+var getFlowTool = {
+  name: "get_flow",
+  description: "Return a saved flow's document and file by name, to change it or run it again.",
+  inputSchema: inputSchema3,
+  annotations: { readOnlyHint: true },
+  async handle(input2, context2) {
+    const saved = await context2.library.read(input2.name);
+    if (!saved) {
+      return context2.results.error(`No saved flow is named "${input2.name}". Call list_flows for the saved names.`);
+    }
+    return context2.results.json({ name: input2.name, file: saved.file, flow: saved.document });
+  }
+};
+
 // src/app/design-guide.ts
 var DESIGN_GUIDE = `# Designing a flow
 
@@ -220728,7 +220850,8 @@ Every time you hand over or change a flow, show the user its diagram: the
 diagram names each node's model, so it is also the node-to-model mapping. Before
 start_run, state that mapping and the minimum tokens the flow implies, and run
 only with the user's agreement. A flow the user never saw is a flow the user
-cannot correct.
+cannot correct. start_run saves the flow by name: call list_flows before
+designing one the user may already have.
 
 A flow is { name, nodes, edges }. Entry nodes (no incoming edges) run when the
 run starts and receive --input; a terminal node has no outgoing edges and ends
@@ -220847,6 +220970,8 @@ minLines/maxLines on it: that is what rigid-deliverable warns about.
 - downstream-reads-input \u2014 a non-entry node expecting the run input.
 - rigid-deliverable \u2014 a template or a line check on a person-facing node.
 - concurrent-write \u2014 two nodes that may run at once writing the same path.
+- parallel-limit-one \u2014 MAX_PARALLEL_NODES is 1 and two nodes can be ready at
+  once; such a run loses outputs. Ask the user to raise the setting.
 
 Fix the cause, not the wording. Warnings are the difference between a flow that
 beats a lone agent and one that loses to it; opt a node out only when the lint is
@@ -220866,11 +220991,11 @@ pricesAsOf). Show the
 diagram it returns, as described under Delivery, before you run anything.`;
 
 // src/mcp/tools/get-flow-schema.ts
-var inputSchema3 = external_exports2.object({});
+var inputSchema4 = external_exports2.object({});
 var getFlowSchemaTool = {
   name: "get_flow_schema",
   description: 'Return the JSON Schema for a agents-automations flow document, plus "designGuide": the rules for choosing node boundaries, tiers and wiring. Read the guide before authoring a flow.',
-  inputSchema: inputSchema3,
+  inputSchema: inputSchema4,
   annotations: { readOnlyHint: true },
   async handle(_input, context2) {
     return context2.results.json({ ...FLOW_SCHEMA, designGuide: DESIGN_GUIDE });
@@ -220878,7 +221003,7 @@ var getFlowSchemaTool = {
 };
 
 // src/mcp/tools/get-run-events.ts
-var inputSchema4 = external_exports2.object({
+var inputSchema5 = external_exports2.object({
   runId: external_exports2.string().min(1),
   afterSeq: external_exports2.number().int().min(0).optional(),
   limit: external_exports2.number().int().min(1).max(500).optional(),
@@ -220894,7 +221019,7 @@ function withoutReasoning(event) {
 var getRunEventsTool = {
   name: "get_run_events",
   description: "Read a bounded page of a run event log, optionally after a sequence number. model_call events carry each call's tokens and cost; pass reasoning: true for the model's reasoning text too.",
-  inputSchema: inputSchema4,
+  inputSchema: inputSchema5,
   annotations: { readOnlyHint: true },
   async handle(input2, context2) {
     const events = (await context2.runManager.events(input2.runId, input2.afterSeq ?? 0)).slice(0, input2.limit ?? 100);
@@ -220904,13 +221029,13 @@ var getRunEventsTool = {
 };
 
 // src/mcp/tools/get-run.ts
-var inputSchema5 = external_exports2.object({
+var inputSchema6 = external_exports2.object({
   runId: external_exports2.string().min(1)
 });
 var getRunTool = {
   name: "get_run",
   description: "Get a run by id: status, outputs, personOutput (the person-facing deliverable), usage, cost, background jobs and any error.",
-  inputSchema: inputSchema5,
+  inputSchema: inputSchema6,
   annotations: { readOnlyHint: true },
   async handle(input2, context2) {
     const run2 = await context2.runManager.get(input2.runId);
@@ -220921,12 +221046,24 @@ var getRunTool = {
   }
 };
 
+// src/mcp/tools/list-flows.ts
+var inputSchema7 = external_exports2.object({});
+var listFlowsTool = {
+  name: "list_flows",
+  description: "List the saved flows, most recent first: every flow start_run has run, by name, with its file. Check here before designing a flow the user may already have. Run one again with start_run and flowPath set to its file; get_flow returns its document to change it.",
+  inputSchema: inputSchema7,
+  annotations: { readOnlyHint: true },
+  async handle(_input, context2) {
+    return context2.results.json({ flows: await context2.library.list() });
+  }
+};
+
 // src/mcp/tools/list-providers.ts
-var inputSchema6 = external_exports2.object({});
+var inputSchema8 = external_exports2.object({});
 var listProvidersTool = {
   name: "list_providers",
   description: "List the providers whose API keys are configured, with their models.",
-  inputSchema: inputSchema6,
+  inputSchema: inputSchema8,
   annotations: { readOnlyHint: true },
   async handle(_input, context2) {
     return context2.results.json(await context2.providers.list());
@@ -220934,13 +221071,13 @@ var listProvidersTool = {
 };
 
 // src/mcp/tools/list-runs.ts
-var inputSchema7 = external_exports2.object({
+var inputSchema9 = external_exports2.object({
   limit: external_exports2.number().int().min(1).max(100).optional()
 });
 var listRunsTool = {
   name: "list_runs",
   description: "List recent runs, newest first.",
-  inputSchema: inputSchema7,
+  inputSchema: inputSchema9,
   annotations: { readOnlyHint: true },
   async handle(input2, context2) {
     return context2.results.json(await context2.runManager.list(input2.limit ?? 20));
@@ -220949,6 +221086,9 @@ var listRunsTool = {
 
 // src/mcp/tools/load-flow.ts
 async function loadFlowReference(reference, context2) {
+  return (await loadFlowDocument(reference, context2)).graph;
+}
+async function loadFlowDocument(reference, context2) {
   const hasFlow = reference.flow !== void 0;
   const hasPath = reference.flowPath !== void 0 && reference.flowPath.length > 0;
   if (hasFlow && hasPath) {
@@ -220959,19 +221099,24 @@ async function loadFlowReference(reference, context2) {
     if (bytes > context2.policy.maxFlowBytes) {
       throw new PolicyError(`The flow document is ${bytes} bytes; the limit is ${context2.policy.maxFlowBytes}.`);
     }
-    return context2.flows.loadPayload(reference.flow);
+    return { graph: context2.flows.loadPayload(reference.flow), document: reference.flow };
   }
   if (hasPath) {
     if (!context2.policy.allowFlowPaths) {
       throw new PolicyError("flowPath is disabled by the MCP server policy; pass the flow object instead.");
     }
-    return context2.flows.loadPath(reference.flowPath ?? "");
+    if (reference.flowPath === "-") {
+      throw new PolicyError("flowPath must name a file.");
+    }
+    const text = await readFlowText(reference.flowPath ?? "");
+    const graph = await context2.flows.loadText(text);
+    return { graph, document: JSON.parse(text) };
   }
   throw new PolicyError("Pass a flow document or a flowPath.");
 }
 
 // src/mcp/tools/render-flow.ts
-var inputSchema8 = external_exports2.object({
+var inputSchema10 = external_exports2.object({
   flow: external_exports2.record(external_exports2.string(), external_exports2.unknown()).optional(),
   flowPath: external_exports2.string().optional(),
   format: external_exports2.enum(["ascii", "mermaid", "dot"]).optional()
@@ -220979,7 +221124,7 @@ var inputSchema8 = external_exports2.object({
 var renderFlowTool = {
   name: "render_flow",
   description: "Draw a flow as ASCII, Mermaid or DOT. validate_flow already returns the ASCII drawing; use this for Mermaid or DOT, and include the drawing in your reply.",
-  inputSchema: inputSchema8,
+  inputSchema: inputSchema10,
   annotations: { readOnlyHint: true },
   async handle(input2, context2) {
     const graph = await loadFlowReference(input2, context2);
@@ -220987,25 +221132,115 @@ var renderFlowTool = {
   }
 };
 
+// src/mcp/permission-request.ts
+async function requestPermissions(graph, context2, ask) {
+  const blocked = blockedPermissions(graph, context2.policy);
+  if (blocked.length === 0) {
+    return /* @__PURE__ */ new Set();
+  }
+  if (!ask) {
+    throw policyDenied(blocked);
+  }
+  const canSave = context2.settingsFile !== void 0;
+  let answer;
+  try {
+    answer = await ask({
+      mode: "form",
+      message: question(blocked, canSave),
+      requestedSchema: {
+        type: "object",
+        properties: canSave ? {
+          always: {
+            type: "boolean",
+            title: "Always allow",
+            description: `Save this to ${context2.settingsFile}, so later flows can use it without asking.`,
+            default: false
+          }
+        } : {}
+      }
+    });
+  } catch (error62) {
+    context2.logger.error("Asking the person for permission failed", error62);
+    throw policyDenied(blocked, "The person could not be asked to allow this flow");
+  }
+  if (answer.action !== "accept") {
+    throw policyDenied(blocked, "The person did not allow this flow");
+  }
+  const granted = new Set(blocked.map((entry) => entry.setting));
+  const always = answer.content?.always;
+  if (canSave && (always === true || always === "true")) {
+    await save(context2, granted);
+  }
+  return granted;
+}
+function question(blocked, canSave) {
+  const lines = ["This flow needs permissions that are turned off:"];
+  for (const entry of blocked) {
+    const about = PERMISSIONS.find((permission2) => permission2.name === entry.setting)?.about ?? entry.id;
+    lines.push(`- ${entry.id}: ${about}. Nodes: ${entry.nodes.map((label2) => `"${label2}"`).join(", ")}.`);
+  }
+  lines.push("", "Allow them for this run?");
+  if (!canSave) {
+    lines.push(
+      `To stop being asked, run: node "${process.argv[1] ?? "server.mjs"}" settings --allow ${blocked.map((entry) => entry.id).join(",")}`
+    );
+  }
+  return lines.join("\n");
+}
+async function save(context2, granted) {
+  const file2 = context2.settingsFile;
+  if (file2 === void 0) {
+    return;
+  }
+  try {
+    await changePermissions(
+      [{ envFile: file2, hermes: false }],
+      async (reads) => reads.map((read) => {
+        const wanted = new Map(read);
+        granted.forEach((setting) => wanted.set(setting, true));
+        return wanted;
+      })
+    );
+    allowInPolicy(context2.policy, granted);
+  } catch (error62) {
+    context2.logger.error(`Could not save the permissions to ${file2}`, error62);
+  }
+}
+
 // src/mcp/tools/start-run.ts
-var inputSchema9 = external_exports2.object({
+var inputSchema11 = external_exports2.object({
   flow: external_exports2.record(external_exports2.string(), external_exports2.unknown()).optional(),
   flowPath: external_exports2.string().optional(),
   input: external_exports2.string().optional()
 });
 var startRunTool = {
   name: "start_run",
-  description: "Start a flow asynchronously and return its run id. Poll get_run for status and outputs; use get_run_events for progress. Start only after the user has seen the diagram, each node's model and the minimum tokens, and agreed.",
-  inputSchema: inputSchema9,
-  async handle(input2, context2) {
-    const graph = await loadFlowReference(input2, context2);
-    const run2 = await context2.runManager.start(graph, input2.input ?? "");
-    return context2.results.json(run2);
+  description: `Start a flow asynchronously and return its run id. Poll get_run for status and outputs; use get_run_events for progress. Start only after the user has seen the diagram, each node's model and the minimum tokens, and agreed. If the flow needs a permission that is turned off, the server asks the user directly. The flow is saved under its name (replacing a saved flow with the same name) and "flowFile" is its path: list_flows finds it in a later conversation, and flowPath runs it again.`,
+  inputSchema: inputSchema11,
+  async handle(input2, context2, call3) {
+    const { graph, document } = await loadFlowDocument(input2, context2);
+    const granted = await requestPermissions(graph, context2, call3.ask);
+    const flowFile = await saveFlow(context2, graph.name, document);
+    const run2 = await context2.runManager.start(graph, input2.input ?? "", granted);
+    const warnings = lintParallelLimit(graph, context2.config.maxParallelNodes).map(({ message, hint }) => `${message} ${hint}`);
+    return context2.results.json({
+      ...run2,
+      ...flowFile !== void 0 ? { flowFile } : {},
+      ...warnings.length > 0 ? { warnings } : {}
+    });
   }
 };
+async function saveFlow(context2, name2, document) {
+  try {
+    return await context2.library.save(name2, document);
+  } catch (error62) {
+    context2.logger.error(`Could not save the flow "${name2}"`, error62);
+    return void 0;
+  }
+}
 
 // src/mcp/tools/validate-flow.ts
-var inputSchema10 = external_exports2.object({
+var inputSchema12 = external_exports2.object({
   flow: external_exports2.record(external_exports2.string(), external_exports2.unknown()).optional(),
   flowPath: external_exports2.string().optional()
 });
@@ -221013,7 +221248,7 @@ var DIAGRAM_REPLY = `Show "diagram" to the user every time you hand over or chan
 var validateFlowTool = {
   name: "validate_flow",
   description: "Check a flow for structural issues and design warnings without running it. The result includes the flow's diagram: put it in your reply whenever you hand over or change a flow.",
-  inputSchema: inputSchema10,
+  inputSchema: inputSchema12,
   annotations: { readOnlyHint: true },
   async handle(input2, context2) {
     const graph = await loadFlowReference(input2, context2);
@@ -221041,6 +221276,8 @@ var TOOLS = [
   renderFlowTool,
   listProvidersTool,
   startRunTool,
+  listFlowsTool,
+  getFlowTool,
   getRunTool,
   getRunEventsTool,
   cancelRunTool,
@@ -221086,6 +221323,7 @@ function registerResources(server) {
 }
 
 // src/mcp/server.ts
+var ASK_TIMEOUT_MS = 5 * 60 * 1e3;
 function createMcpServer(context2) {
   const server = new McpServer({ name: "agents-automations", version: VERSION2 });
   for (const tool2 of TOOLS) {
@@ -221096,11 +221334,17 @@ function createMcpServer(context2) {
         inputSchema: tool2.inputSchema,
         annotations: tool2.annotations
       },
-      async (input2) => withToolErrors(() => tool2.handle(input2, context2), context2)
+      async (input2, extra) => withToolErrors(() => tool2.handle(input2, context2, { ask: askPerson(server, extra.requestId) }), context2)
     );
   }
   registerResources(server);
   return server;
+}
+function askPerson(server, requestId) {
+  if (!server.server.getClientCapabilities()?.elicitation?.form) {
+    return void 0;
+  }
+  return (params) => server.server.elicitInput(params, { relatedRequestId: requestId, timeout: ASK_TIMEOUT_MS });
 }
 
 // node_modules/.pnpm/@modelcontextprotocol+sdk@1.32.1_@cfworker+json-schema@4.1.1_zod@4.6.7/node_modules/@modelcontextprotocol/sdk/dist/esm/server/stdio.js
@@ -221281,7 +221525,7 @@ ${HELP}`);
       process.stdout.write(HELP);
       return;
     }
-    process.exitCode = await runSetup({ envFile: init.envFile ? path26.resolve(process.cwd(), init.envFile) : void 0 });
+    process.exitCode = await runSetup({ envFile: init.envFile ? path27.resolve(process.cwd(), init.envFile) : void 0 });
     return;
   }
   if (argv[0] === "settings") {
@@ -221291,7 +221535,7 @@ ${HELP}`);
       return;
     }
     process.exitCode = await runSettings({
-      files: settings.envFile ? [{ envFile: path26.resolve(process.cwd(), settings.envFile), hermes: false }] : settingsFiles(),
+      files: settings.envFile ? [{ envFile: path27.resolve(process.cwd(), settings.envFile), hermes: false }] : settingsFiles(),
       allow: settings.allow,
       deny: settings.deny,
       json: settings.json
@@ -221308,18 +221552,16 @@ ${HELP}`);
 `);
     return;
   }
-  if (!args.noEnv) {
-    loadEnvironment({ envFile: args.envFile, dataDir: args.dataDir });
-  }
+  const settingsFile = args.noEnv ? void 0 : loadEnvironment({ envFile: args.envFile, dataDir: args.dataDir });
   disableImplicitTracing();
-  const context2 = buildContext2(args);
+  const context2 = buildContext2(args, settingsFile);
   const server = createMcpServer(context2);
   process.once("SIGINT", () => void shutdown(context2, server));
   process.once("SIGTERM", () => void shutdown(context2, server));
   context2.logger.info(`Starting stdio MCP server with data directory ${context2.config.dataDir}`);
   await serveStdio(server);
 }
-function buildContext2(args) {
+function buildContext2(args, settingsFile) {
   const config2 = new RuntimeConfig({ dataDir: args.dataDir });
   const logger2 = createStderrLogger();
   const store2 = new RunStore(config2);
@@ -221333,11 +221575,13 @@ function buildContext2(args) {
   return {
     config: config2,
     flows: new FlowService(),
+    library: new FlowLibrary(config2),
     runs,
     runManager: new RunManager(runs, store2, policy),
     store: store2,
     providers: new ProviderService(config2),
     policy,
+    ...settingsFile !== void 0 ? { settingsFile } : {},
     logger: logger2,
     results: createMcpResults(policy.maxResultBytes)
   };

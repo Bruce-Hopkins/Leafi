@@ -1,8 +1,10 @@
 import { cancelRunTool } from './tools/cancel-run';
 import { getExampleFlowTool } from './tools/get-example-flow';
+import { getFlowTool } from './tools/get-flow';
 import { getFlowSchemaTool } from './tools/get-flow-schema';
 import { getRunEventsTool } from './tools/get-run-events';
 import { getRunTool } from './tools/get-run';
+import { listFlowsTool } from './tools/list-flows';
 import { listProvidersTool } from './tools/list-providers';
 import { listRunsTool } from './tools/list-runs';
 import { renderFlowTool } from './tools/render-flow';
@@ -17,6 +19,8 @@ export const TOOLS = [
   renderFlowTool,
   listProvidersTool,
   startRunTool,
+  listFlowsTool,
+  getFlowTool,
   getRunTool,
   getRunEventsTool,
   cancelRunTool,

@@ -144,9 +144,11 @@ test("bundled MCP server serves inspection tools and rejects dangerous flows", {
       .map((tool) => tool.name);
     assert.deepEqual(readOnly.sort(), [
       "get_example_flow",
+      "get_flow",
       "get_flow_schema",
       "get_run",
       "get_run_events",
+      "list_flows",
       "list_providers",
       "list_runs",
       "render_flow",

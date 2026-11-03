@@ -17,7 +17,8 @@ Every time you hand over or change a flow, show the user its diagram: the
 diagram names each node's model, so it is also the node-to-model mapping. Before
 start_run, state that mapping and the minimum tokens the flow implies, and run
 only with the user's agreement. A flow the user never saw is a flow the user
-cannot correct.
+cannot correct. start_run saves the flow by name: call list_flows before
+designing one the user may already have.
 
 A flow is { name, nodes, edges }. Entry nodes (no incoming edges) run when the
 run starts and receive --input; a terminal node has no outgoing edges and ends
@@ -136,6 +137,8 @@ minLines/maxLines on it: that is what rigid-deliverable warns about.
 - downstream-reads-input — a non-entry node expecting the run input.
 - rigid-deliverable — a template or a line check on a person-facing node.
 - concurrent-write — two nodes that may run at once writing the same path.
+- parallel-limit-one — MAX_PARALLEL_NODES is 1 and two nodes can be ready at
+  once; such a run loses outputs. Ask the user to raise the setting.
 
 Fix the cause, not the wording. Warnings are the difference between a flow that
 beats a lone agent and one that loses to it; opt a node out only when the lint is

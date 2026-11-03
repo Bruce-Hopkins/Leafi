@@ -119,23 +119,18 @@ test('init marks a provider whose key is set, and Enter keeps every permission t
   assert.deepEqual(prompts.offered, { web: true, write: false, bash: true, email: false, browser: true, 'flow-paths': false });
 });
 
-test('init offers every unset permission ticked, and Enter allows them all', async () => {
+test('init offers the workspace permissions ticked and bash, email and browser unticked, and Enter keeps that', async () => {
   const dir = tempDir();
   const envFile = path.join(dir, '.env');
 
   const prompts = scripted(0, '');
   const result = await initHermesSettings(envFile, prompts);
 
-  assert.deepEqual(prompts.offered, { web: true, write: true, bash: true, email: true, browser: true, 'flow-paths': true });
-  // Flow paths are already allowed when unset, so only the other five are written.
-  assert.deepEqual(result.saved, [
-    'AGENTS_AUTOMATIONS_ALLOW_WEB=true',
-    'AGENTS_AUTOMATIONS_ALLOW_WRITE=true',
-    'AGENTS_AUTOMATIONS_ALLOW_BASH=true',
-    'AGENTS_AUTOMATIONS_ALLOW_EMAIL=true',
-    'AGENTS_AUTOMATIONS_ALLOW_BROWSER=true',
-  ]);
-  assert.equal(result.mailboxMissing, true);
+  assert.deepEqual(prompts.offered, { web: true, write: true, bash: false, email: false, browser: false, 'flow-paths': true });
+  // The server already denies bash, email and browser and allows flow paths
+  // when they are unset, so only web and write are written.
+  assert.deepEqual(result.saved, ['AGENTS_AUTOMATIONS_ALLOW_WEB=true', 'AGENTS_AUTOMATIONS_ALLOW_WRITE=true']);
+  assert.equal(result.mailboxMissing, false);
 });
 
 test('init writes an untick only where the server would otherwise allow it', async () => {

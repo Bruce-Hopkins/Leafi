@@ -29,9 +29,14 @@ model decides what to do with them.
 
 The MCP server refuses flows that request `bash`, `write`,
 `web`, `email_read` or `browser` unless the matching `AGENTS_AUTOMATIONS_ALLOW_*` setting is
-`true`. The installer's setup offers all of them ticked, so untick the ones a flow
-started by your agent should not have, `bash` above all. Its `flowPath` argument can open any file you can read, but only
-reports whether it exists and is a valid flow.
+`true`. The installer's setup offers `web` and `write` ticked and `bash`,
+`email_read` and `browser` unticked. When a flow needs a permission that is
+off, the server asks you through your MCP client before it starts, naming the
+nodes that want it; the agent cannot answer that question. You can allow it for
+that run, or always, which saves the setting. A client that cannot show the
+question gets a refusal naming the `settings --allow` command instead. Its
+`flowPath` argument can open any file you can read, but only reports whether it
+exists and is a valid flow.
 
 ### Untrusted content steers agents
 

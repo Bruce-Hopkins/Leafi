@@ -49,30 +49,62 @@ export function readMcpPolicy(config: RuntimeConfig): McpPolicy {
   };
 }
 
-/** Rejects a flow before any provider, mailbox or browser work begins. */
-export function assertFlowAllowed(graph: Graph, policy: McpPolicy): void {
-  const blocked: string[] = [];
-  for (const node of graph.nodes) {
-    if (node.permissions.bash && !policy.allowBash) {
-      blocked.push(`"${node.label}" requests bash`);
-    }
-    if (node.permissions.write && !policy.allowWrite) {
-      blocked.push(`"${node.label}" requests write`);
-    }
-    if (node.permissions.web && !policy.allowWeb) {
-      blocked.push(`"${node.label}" requests web`);
-    }
-    if (node.permissions.email_read && !policy.allowEmail) {
-      blocked.push(`"${node.label}" requests email_read`);
-    }
-    if (node.permissions.browser && !policy.allowBrowser) {
-      blocked.push(`"${node.label}" requests browser`);
+/** A node permission the policy gates: its setting, the id `settings --allow` takes, and its policy field. */
+interface GatedPermission {
+  permission: 'bash' | 'write' | 'web' | 'email_read' | 'browser';
+  setting: AllowSetting;
+  id: string;
+  field: 'allowBash' | 'allowWrite' | 'allowWeb' | 'allowEmail' | 'allowBrowser';
+}
+
+const GATED: readonly GatedPermission[] = [
+  { permission: 'web', setting: 'AGENTS_AUTOMATIONS_ALLOW_WEB', id: 'web', field: 'allowWeb' },
+  { permission: 'write', setting: 'AGENTS_AUTOMATIONS_ALLOW_WRITE', id: 'write', field: 'allowWrite' },
+  { permission: 'bash', setting: 'AGENTS_AUTOMATIONS_ALLOW_BASH', id: 'bash', field: 'allowBash' },
+  { permission: 'email_read', setting: 'AGENTS_AUTOMATIONS_ALLOW_EMAIL', id: 'email', field: 'allowEmail' },
+  { permission: 'browser', setting: 'AGENTS_AUTOMATIONS_ALLOW_BROWSER', id: 'browser', field: 'allowBrowser' },
+];
+
+/** A permission a flow requests that the policy denies, with the labels of the nodes requesting it. */
+export interface BlockedPermission extends GatedPermission {
+  nodes: string[];
+}
+
+/** What the flow requests and the policy denies, less what the person granted for this run. */
+export function blockedPermissions(
+  graph: Graph,
+  policy: McpPolicy,
+  granted: ReadonlySet<AllowSetting> = new Set(),
+): BlockedPermission[] {
+  return GATED.filter((gate) => !policy[gate.field] && !granted.has(gate.setting))
+    .map((gate) => ({ ...gate, nodes: graph.nodes.filter((node) => node.permissions[gate.permission]).map((node) => node.label) }))
+    .filter((blocked) => blocked.nodes.length > 0);
+}
+
+/** Allows the settings in this server's policy until it stops, the way a saved setting would on its next start. */
+export function allowInPolicy(policy: McpPolicy, settings: Iterable<AllowSetting>): void {
+  for (const setting of settings) {
+    const gate = GATED.find((entry) => entry.setting === setting);
+    if (gate) {
+      policy[gate.field] = true;
     }
   }
+}
 
+/** The refusal for a flow the policy denies, with the command that allows it. */
+export function policyDenied(blocked: readonly BlockedPermission[], lead = 'The MCP server policy denies this flow'): PolicyError {
+  const requests = blocked.flatMap((entry) => entry.nodes.map((label) => `"${label}" requests ${entry.permission}`));
+  const server = path.resolve(process.argv[1] ?? 'server.mjs');
+  return new PolicyError(
+    `${lead}: ${requests.join(', ')}. The person can allow it by running ` +
+      `\`node "${server}" settings --allow ${blocked.map((entry) => entry.id).join(',')}\`, then restarting the server.`,
+  );
+}
+
+/** Rejects a flow before any provider, mailbox or browser work begins, unless the person granted what it needs. */
+export function assertFlowAllowed(graph: Graph, policy: McpPolicy, granted?: ReadonlySet<AllowSetting>): void {
+  const blocked = blockedPermissions(graph, policy, granted);
   if (blocked.length > 0) {
-    throw new PolicyError(
-      `The MCP server policy denies this flow: ${blocked.join(', ')}. The person can allow it by running \`node "${path.resolve(process.argv[1] ?? 'server.mjs')}" settings\`, then restarting the server.`,
-    );
+    throw policyDenied(blocked);
   }
 }

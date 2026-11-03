@@ -67,8 +67,6 @@
     "dist",
     "!dist/**/*.map",
     "!dist/tsconfig.tsbuildinfo",
-    "docs",
-    "examples",
     "README.md",
     "AGENTS.md",
     "agents",
