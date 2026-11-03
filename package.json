@@ -45,11 +45,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Bruce-Hopkins/agents-automations.git"
+    "url": "git+https://github.com/Bruce-Hopkins/agent-automations.git"
   },
-  "homepage": "https://github.com/Bruce-Hopkins/agents-automations",
+  "homepage": "https://github.com/Bruce-Hopkins/agent-automations",
   "bugs": {
-    "url": "https://github.com/Bruce-Hopkins/agents-automations/issues"
+    "url": "https://github.com/Bruce-Hopkins/agent-automations/issues"
   },
   "license": "MIT",
   "keywords": [

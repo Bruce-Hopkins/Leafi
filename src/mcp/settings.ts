@@ -10,7 +10,7 @@ import { PRIVATE_DIR_MODE, PRIVATE_FILE_MODE } from '../runtime/run-store';
 import { hermesEnvFile, hermesPluginInstalled } from './hermes-home';
 import { ALLOW_DEFAULTS, type AllowSetting } from './policy';
 
-export const SETTINGS_URL = 'https://github.com/Bruce-Hopkins/agents-automations/blob/main/.env.example';
+export const SETTINGS_URL = 'https://github.com/Bruce-Hopkins/agent-automations/blob/main/.env.example';
 
 export const PERMISSIONS_QUESTION = 'Which permissions may flows use?';
 

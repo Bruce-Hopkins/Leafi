@@ -1,8 +1,7 @@
 # Configuration
 
-The installer's setup (`agents-automations init`) writes your provider key and
-permissions; from a clone, `node dist/main.js init` writes the whole settings
-file with safe defaults.
+The installer's setup writes your provider key and permissions; from a clone,
+`node dist/main.js init` writes the whole settings file with safe defaults.
 Read on to change a setting, move the data directory or grant a node more
 tools.
 

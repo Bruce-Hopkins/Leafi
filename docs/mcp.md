@@ -62,12 +62,11 @@ terminal; without one it exits `1`, installs nothing and writes nothing.
 3. A checklist of every `AGENTS_AUTOMATIONS_ALLOW_*` permission: web, write,
    bash, email, browser and flow paths. Each starts ticked unless a file
    already sets it, so pressing Enter allows them all.
-4. The answers are always saved to `~/.agents-automations/.env`, which the
-   `agents-automations` command and every client but Hermes read, and also to
-   Hermes's `.env` when Hermes is ticked (the plugin's `mcp.json` forwards
-   them by name). So with only Hermes ticked, the key is in both files, and
-   `agents-automations run` still finds it. A line is written only where the
-   answer differs from what that file's reader would read.
+4. The answers are saved where the chosen agents' servers read them: Hermes's
+   `.env` for the Hermes plugin (its `mcp.json` forwards them by name), and
+   `~/.agents-automations/.env` always, for the others and the
+   `agents-automations` command. A line is written only where the answer
+   differs from what that server would read.
 5. Then each ticked agent gets the server. Hermes installs and enables the
    plugin with its own commands. Claude Code gets `claude mcp add --scope
    user`. Claude Desktop and Cursor get an entry in their `mcpServers` file,

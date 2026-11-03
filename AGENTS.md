@@ -17,17 +17,17 @@ design guide shows the shapes a finished flow can take.
 # which takes every flow command below. Its init is the installer's setup and needs a terminal.
 agents-automations run --graph flow.json --json
 
-# From a clone, first time on a machine: writes ~/.agents-automations/.env and a
-# starter ./flow.json. Off a terminal it asks nothing; never overwrites an existing file.
+# First time on a machine: writes ~/.agents-automations/.env and a starter ./flow.json.
+# Off a terminal it asks nothing; never overwrites an existing file.
 node dist/main.js init --yes
 
-# From a clone, always works, no PATH assumptions:
+# Always works, no PATH assumptions:
 node /abs/path/to/agents-automations/dist/main.js run --graph flow.json --json
 
 # Inside the repo (builds first):
 pnpm cli run --graph flow.json --json
 
-# Optional: put the clone on your PATH instead of the installed command:
+# Optional real PATH entry:
 pnpm add -g "link:$PWD"                # then: agents-automations run --graph flow.json
 ```
 

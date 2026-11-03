@@ -214195,7 +214195,7 @@ function assertFlowAllowed(graph, policy) {
 }
 
 // src/mcp/settings.ts
-var SETTINGS_URL = "https://github.com/Bruce-Hopkins/agents-automations/blob/main/.env.example";
+var SETTINGS_URL = "https://github.com/Bruce-Hopkins/agent-automations/blob/main/.env.example";
 var PERMISSIONS_QUESTION = "Which permissions may flows use?";
 function permission(id2, name2, about) {
   return { id: id2, name: name2, label: `${id2.padEnd(11)} ${about}` };
@@ -214538,7 +214538,7 @@ import fs17 from "node:fs";
 import os5 from "node:os";
 import path24 from "node:path";
 var SERVER_NAME = "agents-automations";
-var DEFAULT_PLUGIN_SOURCE = "Bruce-Hopkins/agents-automations/hermes-plugin";
+var DEFAULT_PLUGIN_SOURCE = "Bruce-Hopkins/agent-automations/hermes-plugin";
 async function findAgents(pluginSource = process.env.AGENTS_AUTOMATIONS_PLUGIN_SOURCE?.trim() || DEFAULT_PLUGIN_SOURCE) {
   const agents = [];
   const hermes = findCommand("hermes");

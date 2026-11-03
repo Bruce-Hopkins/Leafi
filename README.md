@@ -6,16 +6,16 @@ This is a prototype, but new updates are coming soon. Star the project to receiv
 
 ## Install
 
-To install on Hermes, Claude Code, Claude Desktop or Cursor, you need Node.js 22 or newer. On macOS, Linux or WSL2:
+To install on Hermes, Claude Code, or Cursor, you need Node.js 22 or newer. On macOS, Linux or WSL2:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Bruce-Hopkins/agents-automations/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/Bruce-Hopkins/agent-automations/main/install.sh | sh
 ```
 
 On Windows, in PowerShell:
 
 ```powershell
-irm https://raw.githubusercontent.com/Bruce-Hopkins/agents-automations/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/Bruce-Hopkins/agent-automations/main/install.ps1 | iex
 ```
 
 It shows a checklist of the agents it finds (Hermes, Claude Code, Claude
@@ -48,7 +48,7 @@ Then ask your agent for the outcome rather than the flow:
 With Hermes:
 
 ```bash
-hermes plugins install Bruce-Hopkins/agents-automations/hermes-plugin --enable
+hermes plugins install Bruce-Hopkins/agent-automations/hermes-plugin --enable
 node ~/.hermes/plugins/agents-automations/dist/server.mjs init
 ```
 
@@ -56,13 +56,12 @@ On Windows, the second line is
 `node "$env:LOCALAPPDATA\hermes\plugins\agents-automations\dist\server.mjs" init`.
 Installing the plugin this way does not add the `agents-automations` command.
 
-For another MCP client, download the server (a single file), link the
-`agents-automations` command to it, and set it up:
+For another MCP client, download the server (a single file) and set it up:
 
 ```bash
 mkdir -p -m 700 ~/.agents-automations
 curl -fsSL -o ~/.agents-automations/server.mjs \
-  https://raw.githubusercontent.com/Bruce-Hopkins/agents-automations/main/hermes-plugin/dist/server.mjs
+  https://raw.githubusercontent.com/Bruce-Hopkins/agent-automations/main/hermes-plugin/dist/server.mjs
 chmod +x ~/.agents-automations/server.mjs
 mkdir -p ~/.local/bin
 ln -sf ~/.agents-automations/server.mjs ~/.local/bin/agents-automations
@@ -79,15 +78,15 @@ copy from [`.env.example`](.env.example).
 
 ### Changing permissions later
 
-Run `settings`, then restart Hermes or your client. It changes the permissions
-for every agent you installed into:
+Run the server with `settings`, then restart Hermes or your client. It changes
+the permissions for every agent you installed into:
 
 ```bash
 agents-automations settings
 ```
 
-If you installed only the Hermes plugin by hand, run
-`node ~/.hermes/plugins/agents-automations/dist/server.mjs settings` instead.
+If you installed only the Hermes plugin by hand, the server is
+`~/.hermes/plugins/agents-automations/dist/server.mjs`.
 
 [`hermes-plugin/README.md`](hermes-plugin/README.md) covers updating the plugin
 and what happens during a run.
@@ -106,19 +105,17 @@ did not write; it also explains how to report a vulnerability.
 To work from source, you also need pnpm:
 
 ```bash
-git clone https://github.com/Bruce-Hopkins/agents-automations.git
-cd agents-automations
+git clone https://github.com/Bruce-Hopkins/agent-automations.git
+cd agent-automations
 pnpm install
 pnpm build
 node dist/main.js --help     # or: pnpm cli --help, which builds first
 pnpm build:plugin            # bundles the CLI and the server into hermes-plugin/dist/server.mjs
-pnpm add -g "link:$PWD"      # optional: put this checkout on your PATH in place of the installed command
+pnpm add -g "link:$PWD"      # optional: put this checkout on your PATH
 ```
 
-`pnpm cli` and `pnpm dev` read the same settings as the installed command,
-`~/.agents-automations/.env`. From a clone, `node dist/main.js init --yes` writes
-that file and a starter `flow.json` instead of running the installer's setup.
-The checks:
+`pnpm cli` and `pnpm dev` read the same settings as the installed CLI,
+`~/.agents-automations/.env`. The checks:
 
 ```bash
 pnpm typecheck

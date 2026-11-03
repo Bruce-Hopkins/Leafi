@@ -53,7 +53,7 @@ After validation succeeds and the user approves:
 ```bash
 hermes plugins validate ./hermes-plugin --json
 hermes plugins install "file://$PWD#hermes-plugin" --enable                # from a clone
-hermes plugins install Bruce-Hopkins/agents-automations/hermes-plugin --enable   # once public
+hermes plugins install Bruce-Hopkins/agent-automations/hermes-plugin --enable   # once public
 ```
 
 The installer's setup runs the second form when Hermes is ticked, after saving

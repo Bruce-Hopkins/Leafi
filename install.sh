@@ -1,7 +1,7 @@
 #!/bin/sh
 # Installs agents-automations on macOS, Linux or WSL2:
 #
-#   curl -fsSL https://raw.githubusercontent.com/Bruce-Hopkins/agents-automations/main/install.sh | sh
+#   curl -fsSL https://raw.githubusercontent.com/Bruce-Hopkins/agent-automations/main/install.sh | sh
 #
 # It downloads the MCP server, a single file, to ~/.agents-automations, then
 # runs its setup. The setup shows a checklist of the agents it finds (Hermes,
@@ -20,7 +20,7 @@
 #   AGENTS_AUTOMATIONS_PLUGIN_SOURCE  what `hermes plugins install` is given
 set -eu
 
-repo=Bruce-Hopkins/agents-automations
+repo=Bruce-Hopkins/agent-automations
 server_url=${AGENTS_AUTOMATIONS_SERVER_URL:-https://raw.githubusercontent.com/$repo/main/hermes-plugin/dist/server.mjs}
 bin_dir=${AGENTS_AUTOMATIONS_BIN_DIR:-$HOME/.local/bin}
 command_path=$bin_dir/agents-automations

@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "description": "Validate, draw and run agents-automations flows from Hermes, with token and cost reporting.",
   "author": { "name": "Bruce Hopkins" },
-  "repository": "https://github.com/Bruce-Hopkins/agents-automations",
+  "repository": "https://github.com/Bruce-Hopkins/agent-automations",
   "license": "MIT",
   "keywords": ["agents", "workflows", "graph", "mcp"],
   "extensions": {

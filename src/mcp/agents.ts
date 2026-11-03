@@ -9,7 +9,7 @@ import { readIfPresent, writePrivate } from './settings';
 export const SERVER_NAME = 'agents-automations';
 
 /** Where Hermes installs the plugin from, unless AGENTS_AUTOMATIONS_PLUGIN_SOURCE says otherwise. */
-export const DEFAULT_PLUGIN_SOURCE = 'Bruce-Hopkins/agents-automations/hermes-plugin';
+export const DEFAULT_PLUGIN_SOURCE = 'Bruce-Hopkins/agent-automations/hermes-plugin';
 
 export type AgentId = 'hermes' | 'claude-code' | 'claude-desktop' | 'cursor';
 

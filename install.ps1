@@ -1,6 +1,6 @@
 # Installs agents-automations on Windows. In PowerShell:
 #
-#   irm https://raw.githubusercontent.com/Bruce-Hopkins/agents-automations/main/install.ps1 | iex
+#   irm https://raw.githubusercontent.com/Bruce-Hopkins/agent-automations/main/install.ps1 | iex
 #
 # It downloads the MCP server, a single file, to ~\.agents-automations, then
 # runs its setup. The setup shows a checklist of the agents it finds (Hermes,
@@ -22,7 +22,7 @@
   $ErrorActionPreference = 'Stop'
   [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 
-  $repo = 'Bruce-Hopkins/agents-automations'
+  $repo = 'Bruce-Hopkins/agent-automations'
   $serverUrl = if ($env:AGENTS_AUTOMATIONS_SERVER_URL) { $env:AGENTS_AUTOMATIONS_SERVER_URL } else { "https://raw.githubusercontent.com/$repo/main/hermes-plugin/dist/server.mjs" }
 
   if (-not (Get-Command node -ErrorAction SilentlyContinue)) { throw 'Node.js 22 or newer is required: https://nodejs.org' }
