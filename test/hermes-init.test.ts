@@ -78,7 +78,7 @@ function scripted(
   };
 }
 
-const NONE_BUT_FLOW_PATHS = { web: false, write: false, bash: false, email: false, browser: false };
+const NONE_BUT_FLOW_PATHS = { web: false, write: false, bash: false, email: false, mcp: false };
 
 test("init keeps Hermes's own lines and writes only the answers that change the file", async () => {
   const dir = tempDir();
@@ -86,7 +86,7 @@ test("init keeps Hermes's own lines and writes only the answers that change the 
   fs.writeFileSync(envFile, '# Hermes\nHERMES_MODEL=nous/hermes\nexport OPENROUTER_API_KEY=old\nAGENTS_AUTOMATIONS_ALLOW_WRITE=true\n', { mode: 0o644 });
 
   const openrouter = 3;
-  const result = await initHermesSettings(envFile, scripted(openrouter, 'sk-or-new', { bash: false, email: false, browser: false }));
+  const result = await initHermesSettings(envFile, scripted(openrouter, 'sk-or-new', { bash: false, email: false, mcp: false }));
 
   assert.deepEqual(result.saved, ['OPENROUTER_API_KEY', 'AGENTS_AUTOMATIONS_ALLOW_WEB=true']);
   assert.equal(result.keyConfigured, true);
@@ -105,7 +105,7 @@ test('init marks a provider whose key is set, and Enter keeps every permission t
   const envFile = path.join(dir, '.env');
   const original =
     'ANTHROPIC_API_KEY=sk-ant-mine\nAGENTS_AUTOMATIONS_ALLOW_BASH=yes\nAGENTS_AUTOMATIONS_ALLOW_WRITE=no\nAGENTS_AUTOMATIONS_ALLOW_WEB=true\n' +
-    'AGENTS_AUTOMATIONS_ALLOW_EMAIL=false\nAGENTS_AUTOMATIONS_ALLOW_BROWSER=1\nAGENTS_AUTOMATIONS_ALLOW_FLOW_PATHS=false\n';
+    'AGENTS_AUTOMATIONS_ALLOW_EMAIL=false\nAGENTS_AUTOMATIONS_ALLOW_MCP=1\nAGENTS_AUTOMATIONS_ALLOW_FLOW_PATHS=false\n';
   fs.writeFileSync(envFile, original);
 
   const prompts = scripted(1, '');
@@ -116,18 +116,18 @@ test('init marks a provider whose key is set, and Enter keeps every permission t
   assert.equal(fs.readFileSync(envFile, 'utf8'), original);
   assert.match(prompts.asked[0] ?? '', /Anthropic \(key already set\)/);
   assert.match(prompts.asked[1] ?? '', /ANTHROPIC_API_KEY .*Enter to keep the current key/);
-  assert.deepEqual(prompts.offered, { web: true, write: false, bash: true, email: false, browser: true, 'flow-paths': false });
+  assert.deepEqual(prompts.offered, { web: true, write: false, bash: true, email: false, mcp: true, 'flow-paths': false });
 });
 
-test('init offers the workspace permissions ticked and bash, email and browser unticked, and Enter keeps that', async () => {
+test('init offers the workspace permissions ticked and bash, email and mcp unticked, and Enter keeps that', async () => {
   const dir = tempDir();
   const envFile = path.join(dir, '.env');
 
   const prompts = scripted(0, '');
   const result = await initHermesSettings(envFile, prompts);
 
-  assert.deepEqual(prompts.offered, { web: true, write: true, bash: false, email: false, browser: false, 'flow-paths': true });
-  // The server already denies bash, email and browser and allows flow paths
+  assert.deepEqual(prompts.offered, { web: true, write: true, bash: false, email: false, mcp: false, 'flow-paths': true });
+  // The server already denies bash, email and mcp and allows flow paths
   // when they are unset, so only web and write are written.
   assert.deepEqual(result.saved, ['AGENTS_AUTOMATIONS_ALLOW_WEB=true', 'AGENTS_AUTOMATIONS_ALLOW_WRITE=true']);
   assert.equal(result.mailboxMissing, false);
@@ -185,7 +185,7 @@ test('init asks once and saves the key and permissions to every file, each under
   fs.mkdirSync(path.dirname(hermes.envFile));
   fs.writeFileSync(hermes.envFile, 'HERMES_MODEL=nous/hermes\n');
 
-  const prompts = scripted(0, 'sk-openai', { write: false, bash: false, email: false, browser: false });
+  const prompts = scripted(0, 'sk-openai', { write: false, bash: false, email: false, mcp: false });
   const results = await initSettings([hermes, data], prompts);
 
   assert.equal(prompts.asked.filter((question) => question.startsWith('Which provider')).length, 1);

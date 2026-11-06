@@ -38,7 +38,7 @@ const TOOL_SCHEMA_TOKENS: Record<keyof NodePermissions, number> = {
   bash: 150,
   web: 120,
   email_read: 280,
-  browser: 1400,
+  mcp: 1400,
 };
 const COMPLETE_TASK_TOKENS = 80;
 

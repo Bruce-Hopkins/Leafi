@@ -35,15 +35,15 @@ function permission(id: string, name: AllowSetting, about: string, offered: bool
 }
 
 /**
- * Every AGENTS_AUTOMATIONS_ALLOW_* setting, in checklist order. The mailbox login and browser
- * launcher need more than a tick, so they are left to the README.
+ * Every AGENTS_AUTOMATIONS_ALLOW_* setting, in checklist order. The mailbox login and MCP
+ * server launcher need more than a tick, so they are left to the README.
  */
 export const PERMISSIONS: readonly Permission[] = [
   permission('web', 'AGENTS_AUTOMATIONS_ALLOW_WEB', 'fetch web pages (web_fetch)', true),
   permission('write', 'AGENTS_AUTOMATIONS_ALLOW_WRITE', 'write files in the run workspace (write_file)', true),
   permission('bash', 'AGENTS_AUTOMATIONS_ALLOW_BASH', 'run shell commands (run_bash): any command you can', false),
   permission('email', 'AGENTS_AUTOMATIONS_ALLOW_EMAIL', 'read your mailbox, read-only (needs a mailbox login)', false),
-  permission('browser', 'AGENTS_AUTOMATIONS_ALLOW_BROWSER', 'drive a headless Chrome (chrome-devtools-mcp)', false),
+  permission('mcp', 'AGENTS_AUTOMATIONS_ALLOW_MCP', 'tools from an MCP server (default: headless Chrome)', false),
   permission('flow-paths', 'AGENTS_AUTOMATIONS_ALLOW_FLOW_PATHS', 'load a flow from a file path, not only inline JSON', true),
 ];
 

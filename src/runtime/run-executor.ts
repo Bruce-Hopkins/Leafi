@@ -16,7 +16,7 @@ import type { RunState } from '../graph/run-state';
 import { ModelFactory } from '../providers/model-factory';
 import { UsageMeter } from '../providers/usage-meter';
 import { createEmailToolkit, type EmailToolkit } from '../tools/email/email-toolkit';
-import { createBrowserToolkit, type BrowserToolkit } from '../tools/mcp/browser-toolkit';
+import { createMcpToolkit, type McpToolkit } from '../tools/mcp/mcp-toolkit';
 import { duration, JobRegistry, NodeJobs, type JobRecord } from '../tools/jobs';
 import { createNodeToolkit, createToolOutput } from '../tools/node-toolkit';
 import type { ToolOutput } from '../tools/tool-output';
@@ -291,8 +291,8 @@ export class RunExecutor {
     };
     const output = createToolOutput(node, workspace, limits);
     const email = await this.emailToolkit(node, output);
-    const browser = await this.browserToolkit(node, output, signal);
-    const toolkit = createNodeToolkit({ node, workspace, signal, email, browser, output, limits, jobs: nodeJobs });
+    const mcp = await this.mcpToolkit(node, output, signal);
+    const toolkit = createNodeToolkit({ node, workspace, signal, email, mcp, output, limits, jobs: nodeJobs });
 
     try {
       const result = await runAgentLoop({
@@ -381,9 +381,9 @@ export class RunExecutor {
         this.recordUsage(run, node, meter);
       }
       context.active.delete(node.id);
-      // The mailbox socket and the browser belong to this node run, not to the executor.
+      // The mailbox socket and the MCP server (and any browser it launched) belong to this node run, not to the executor.
       await email?.dispose();
-      await browser?.dispose();
+      await mcp?.dispose();
     }
   }
 
@@ -478,28 +478,28 @@ export class RunExecutor {
   }
 
   /**
-   * A browser node gets its own MCP server, and therefore its own Chrome: the
-   * pages it opens are its context, and a sibling running at the same time
-   * cannot navigate them out from under it.
+   * An mcp node gets its own MCP server. With the default browser server that
+   * means its own Chrome: the pages it opens are its context, and a sibling
+   * running at the same time cannot navigate them out from under it.
    */
-  private async browserToolkit(node: AgentNode, output: ToolOutput, signal: AbortSignal): Promise<BrowserToolkit | undefined> {
-    if (!node.permissions.browser) {
+  private async mcpToolkit(node: AgentNode, output: ToolOutput, signal: AbortSignal): Promise<McpToolkit | undefined> {
+    if (!node.permissions.mcp) {
       return undefined;
     }
 
     try {
-      return await createBrowserToolkit({
-        command: this.config.browserMcpCommand,
+      return await createMcpToolkit({
+        command: this.config.mcpCommand,
         dataDir: this.config.dataDir,
-        timeoutMs: this.config.browserTimeoutMs,
+        timeoutMs: this.config.mcpTimeoutMs,
         output,
-        allowlist: this.config.browserTools,
+        allowlist: this.config.mcpTools,
         signal,
       });
     } catch (error) {
       throw new NodeFailureError(
-        `Node "${node.label}" needs the browser, but the MCP server could not start. ${describeError(error)} ` +
-          `Set AGENTS_AUTOMATIONS_BROWSER_MCP_COMMAND in the environment to a chrome-devtools-mcp launcher (current: ${this.config.browserMcpCommand}).`,
+        `Node "${node.label}" needs the MCP server, but it could not start. ${describeError(error)} ` +
+          `Set AGENTS_AUTOMATIONS_MCP_COMMAND in the environment to an MCP server launcher, such as chrome-devtools-mcp for a browser (current: ${this.config.mcpCommand}).`,
         node.id,
       );
     }

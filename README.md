@@ -53,7 +53,7 @@ hand instead, copy from [`.env.example`](.env.example).
 
 ### Changing permissions later
 
-`bash`, `email` and `browser` start off. When a flow needs one, you're asked
+`bash`, `email` and `mcp` start off. When a flow needs one, you're asked
 before it runs, and can allow it once or always. To change them yourself, run
 the server with `settings`, then restart Hermes or your client. It changes the
 permissions for every agent you installed into:
@@ -71,8 +71,8 @@ and what happens during a run.
 
 ## Security
 
-A node with `bash` can run any command you can, and a `browser` node can reach
-your local network: neither is sandboxed. Text from web pages and emails can
+A node with `bash` can run any command you can, and an `mcp` node (a headless
+Chrome by default) can reach your local network: neither is sandboxed. Text from web pages and emails can
 steer an agent, so a node that reads untrusted content should not also hold
 `bash` or `write`. Read [`SECURITY.md`](SECURITY.md) before running a flow you
 did not write; it also explains how to report a vulnerability.

@@ -1,7 +1,7 @@
 import os from 'node:os';
 import path from 'node:path';
 import { PROVIDER_CATALOG, type ProviderDefinition } from '../providers/provider-catalog';
-import { DEFAULT_BROWSER_TOOLS } from '../tools/mcp/browser-toolkit';
+import { DEFAULT_MCP_TOOLS } from '../tools/mcp/mcp-toolkit';
 import type { EmailCredentials, ProviderId } from '../domain/types';
 
 const DEFAULT_IMAP_HOST = 'imap.gmail.com';
@@ -11,7 +11,7 @@ const DEFAULT_IMAP_PORT = 993;
  * Pinned to an exact version so a new release never runs unreviewed; to upgrade,
  * change it here, in `.env.example` and in the READMEs together.
  */
-export const DEFAULT_BROWSER_MCP_COMMAND = 'npx -y chrome-devtools-mcp@1.10.1 --headless --isolated';
+export const DEFAULT_MCP_COMMAND = 'npx -y chrome-devtools-mcp@1.10.1 --headless --isolated';
 /** An MCP host may forward `${VAR}` verbatim when the variable is unset. */
 const UNRESOLVED_ENV_PLACEHOLDER = /^\$\{[A-Za-z_][A-Za-z0-9_]*\}$/;
 
@@ -30,7 +30,7 @@ const DEFAULTS = {
   webFetchTimeoutMs: 20 * 1000,
   webFetchLimitBytes: 256 * 1024,
   emailTimeoutMs: 20 * 1000,
-  browserTimeoutMs: 120 * 1000,
+  mcpTimeoutMs: 120 * 1000,
   mcpMaxConcurrentRuns: 2,
   mcpMaxFlowBytes: 256 * 1024,
   mcpMaxResultBytes: 256 * 1024,
@@ -65,12 +65,12 @@ export class RuntimeConfig {
   readonly webFetchLimitBytes: number;
   /** How long one IMAP operation may take before it is abandoned. */
   readonly emailTimeoutMs: number;
-  /** Launcher for the browser MCP server a `browser` node talks to. */
-  readonly browserMcpCommand: string;
-  /** Budget for the MCP handshake and for any single browser tool call. */
-  readonly browserTimeoutMs: number;
-  /** The browser tools a node may hold, by name. */
-  readonly browserTools: readonly string[];
+  /** Launcher for the MCP server an `mcp` node talks to; a headless Chrome by default. */
+  readonly mcpCommand: string;
+  /** Budget for the MCP handshake and for any single MCP tool call. */
+  readonly mcpTimeoutMs: number;
+  /** The MCP server's tools a node may hold, by name. */
+  readonly mcpTools: readonly string[];
   readonly mcpMaxConcurrentRuns: number;
   readonly mcpMaxFlowBytes: number;
   readonly mcpMaxResultBytes: number;
@@ -93,9 +93,9 @@ export class RuntimeConfig {
     this.webFetchTimeoutMs = readInt('WEB_FETCH_TIMEOUT_MS', DEFAULTS.webFetchTimeoutMs);
     this.webFetchLimitBytes = readInt('WEB_FETCH_LIMIT_BYTES', DEFAULTS.webFetchLimitBytes);
     this.emailTimeoutMs = readInt('AGENTS_AUTOMATIONS_EMAIL_TIMEOUT_MS', DEFAULTS.emailTimeoutMs);
-    this.browserMcpCommand = readEnv('AGENTS_AUTOMATIONS_BROWSER_MCP_COMMAND') ?? DEFAULT_BROWSER_MCP_COMMAND;
-    this.browserTimeoutMs = readInt('AGENTS_AUTOMATIONS_BROWSER_MCP_TIMEOUT_MS', DEFAULTS.browserTimeoutMs);
-    this.browserTools = readList('AGENTS_AUTOMATIONS_BROWSER_MCP_TOOLS', DEFAULT_BROWSER_TOOLS);
+    this.mcpCommand = readEnv('AGENTS_AUTOMATIONS_MCP_COMMAND') ?? DEFAULT_MCP_COMMAND;
+    this.mcpTimeoutMs = readInt('AGENTS_AUTOMATIONS_MCP_TIMEOUT_MS', DEFAULTS.mcpTimeoutMs);
+    this.mcpTools = readList('AGENTS_AUTOMATIONS_MCP_TOOLS', DEFAULT_MCP_TOOLS);
     this.mcpMaxConcurrentRuns = readInt('MCP_MAX_CONCURRENT_RUNS', DEFAULTS.mcpMaxConcurrentRuns);
     this.mcpMaxFlowBytes = readInt('MCP_MAX_FLOW_BYTES', DEFAULTS.mcpMaxFlowBytes);
     this.mcpMaxResultBytes = readInt('MCP_MAX_RESULT_BYTES', DEFAULTS.mcpMaxResultBytes);

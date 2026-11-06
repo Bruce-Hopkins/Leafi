@@ -119,7 +119,7 @@ must have no outgoing edges, and it changes how the runtime frames the node and
 how the lint treats it. See *Writing for a person* below.
 
 A node's `permissions` object gates its tools. `read`, `write`, `bash`, `web`
-and `browser` work on any machine. `email_read` additionally needs a mailbox credential in the
+and `mcp` work on any machine. `email_read` additionally needs a mailbox credential in the
 environment, which is per-machine state rather than part of the flow:
 
 ```bash
@@ -135,9 +135,12 @@ AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD=xxxxxxxxxxxxxxxx
 login is rejected; the pre-flight performs one real IMAP login. Mail is
 read-only: there is no send tool.
 
-`browser` gives a node tools from a browser MCP server. Configure its launcher,
-timeout and allowed tools with `AGENTS_AUTOMATIONS_BROWSER_MCP_COMMAND`,
-`AGENTS_AUTOMATIONS_BROWSER_MCP_TIMEOUT_MS` and `AGENTS_AUTOMATIONS_BROWSER_MCP_TOOLS`; a flow requesting `browser`
+`mcp` gives a node tools from an MCP server, started per node over stdio. By
+default the server is chrome-devtools-mcp driving a headless Chrome, so an `mcp`
+node is a browser node unless you point it elsewhere. Configure its launcher,
+timeout and allowed tools with `AGENTS_AUTOMATIONS_MCP_COMMAND`,
+`AGENTS_AUTOMATIONS_MCP_TIMEOUT_MS` and `AGENTS_AUTOMATIONS_MCP_TOOLS`; to use another
+server, set the command and its tool names together. A flow requesting `mcp`
 fails pre-flight if the launcher cannot start or offers none of those tools.
 
 `position` and `viewport` are optional and default to zero, so a headless author
@@ -379,7 +382,7 @@ Branch on the exit code:
 | `1` | the flow ran but failed or was cancelled — check `error`/`failedNodeId` |
 | `2` | malformed JSON or validation issues — fix the flow |
 | `3` | usage error — fix the command |
-| `4` | pre-flight failure — a missing provider key, a rejected mailbox login, or a browser launcher/tool problem; fix the environment |
+| `4` | pre-flight failure — a missing provider key, a rejected mailbox login, or an MCP server launcher/tool problem; fix the environment |
 
 Pass `--events none` to suppress the event stream, `--events pretty` for human
 progress on stderr, or `--events ndjson` (the default off a TTY) for the raw
@@ -422,7 +425,7 @@ have, and run a saved one with `flowPath`.
 
 Dangerous permissions are denied unless the server environment grants the
 matching `AGENTS_AUTOMATIONS_ALLOW_*` setting; `init` offers `web` and `write`
-on and `bash`, `email` and `browser` off. When a flow requests a denied one,
+on and `bash`, `email` and `mcp` off. When a flow requests a denied one,
 `start_run` asks the person through the client (MCP elicitation), naming the
 nodes; the agent cannot answer. Accepting allows it for that run; "always"
 also saves it to the settings file the server read. A refusal, or a client that

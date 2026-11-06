@@ -54,7 +54,7 @@ to its folder first), not the CLI's `~/.agents-automations/.env`.
 
 
 Both commands show a checklist: arrow keys, space to tick, Enter to save. `web`
-and `write` start ticked; `bash`, `email` and `browser` start unticked, and a
+and `write` start ticked; `bash`, `email` and `mcp` start unticked, and a
 flow that needs one asks you for it when it starts. After any change, start a
 new Hermes session.
 

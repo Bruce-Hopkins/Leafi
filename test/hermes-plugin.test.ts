@@ -120,7 +120,7 @@ test("bundled MCP server serves inspection tools and rejects dangerous flows", {
   delete env.AGENTS_AUTOMATIONS_ALLOW_WRITE;
   delete env.AGENTS_AUTOMATIONS_ALLOW_WEB;
   delete env.AGENTS_AUTOMATIONS_ALLOW_EMAIL;
-  delete env.AGENTS_AUTOMATIONS_ALLOW_BROWSER;
+  delete env.AGENTS_AUTOMATIONS_ALLOW_MCP;
   env.AGENTS_AUTOMATIONS_HOME = dataDir;
 
   const transport = new StdioClientTransport({

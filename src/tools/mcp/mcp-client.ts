@@ -117,7 +117,7 @@ class StdioMcpClient implements McpClient {
     this.child = spawn(command, args, {
       stdio: ['pipe', 'pipe', 'pipe'],
       env,
-      // Its own process group, so closing it also stops the browser it launched.
+      // Its own process group, so closing it also stops anything it launched, such as a browser.
       detached: OWN_PROCESS_GROUP,
     });
 
@@ -175,7 +175,7 @@ class StdioMcpClient implements McpClient {
     this.rejectPending('The MCP server was closed.');
     this.child.stdin.end();
     killProcessTree(this.child, 'SIGTERM');
-    // Anything that ignores SIGTERM is killed once the server has had time to stop its browser.
+    // Anything that ignores SIGTERM is killed once the server has had time to stop what it launched.
     setTimeout(() => killProcessTree(this.child, 'SIGKILL'), CLOSE_GRACE_MS).unref();
   }
 

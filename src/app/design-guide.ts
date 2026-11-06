@@ -116,7 +116,7 @@ unless you can name what it gets wrong.
 - Name the exact endpoint, query and fields. State the exact output path and
   shape. Say what to do when data is missing ("note it; never invent").
 - Grant the minimum permissions per node: read, write, bash, web, email_read,
-  browser.
+  mcp (by default a headless Chrome through chrome-devtools-mcp).
 - outputSchema (minLines, maxLines, linePattern, linePatternHint, mustContain,
   mustNotContain) enforces a handoff a machine consumes; on a mismatch the output
   is rejected back to the node for up to three attempts.

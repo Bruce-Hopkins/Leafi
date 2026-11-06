@@ -3,7 +3,7 @@ import { validateGraph } from '../domain/graph-validation';
 import type { Graph } from '../domain/types';
 import { emailPreflight } from '../email/email-preflight';
 import type { EmailService } from '../email/email-service';
-import { browserPreflight } from '../tools/mcp/browser-preflight';
+import { mcpPreflight } from '../tools/mcp/mcp-preflight';
 
 /** A run blocked before its first model call. `exitCode` matches the CLI contract. */
 export class PreflightError extends Error {
@@ -37,13 +37,13 @@ export async function preflightGraph(graph: Graph, config: RuntimeConfig, email:
     throw new PreflightError(mailbox.errors.join(' '), 4);
   }
 
-  const browser = await browserPreflight(graph.nodes, {
-    command: config.browserMcpCommand,
+  const mcp = await mcpPreflight(graph.nodes, {
+    command: config.mcpCommand,
     dataDir: config.dataDir,
-    timeoutMs: config.browserTimeoutMs,
-    allowlist: config.browserTools,
+    timeoutMs: config.mcpTimeoutMs,
+    allowlist: config.mcpTools,
   });
-  if (browser.length > 0) {
-    throw new PreflightError(browser.join(' '), 4);
+  if (mcp.length > 0) {
+    throw new PreflightError(mcp.join(' '), 4);
   }
 }

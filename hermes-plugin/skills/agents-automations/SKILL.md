@@ -60,13 +60,17 @@ the task. Run a saved flow again with `start_run` and `flowPath`; `get_flow`
 returns its document when it needs changing.
 
 If a flow needs a permission that is turned off (`bash`, `email_read` and
-`browser` are off by default), `start_run` asks the user for it directly, and
+`mcp` are off by default), `start_run` asks the user for it directly, and
 Hermes shows that as an approval. If they decline, the error names the
 permission: explain why the flow needs it, and that they can allow it with
 `node ~/.hermes/plugins/agents-automations/dist/server.mjs settings --allow <permission>`
 and a new Hermes session. Do not try to work around the policy.
 
 ## Browser nodes
+
+The `mcp` permission gives a node the tools of one MCP server. By default that
+server is chrome-devtools-mcp driving a headless Chrome, so an `mcp` node is a
+browser node unless `AGENTS_AUTOMATIONS_MCP_COMMAND` names another server.
 
 - Prefer `evaluate_script` returning a small array over `take_snapshot`. A
   snapshot can be tens of thousands of tokens and exhaust the node's budget.

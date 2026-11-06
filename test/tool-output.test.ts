@@ -33,7 +33,7 @@ function node(permissions: Partial<AgentNode['permissions']>, id = 'n'): AgentNo
     model: 'test-model',
     prompt: 'test',
     position: { x: 0, y: 0 },
-    permissions: { read: false, write: false, bash: false, web: false, email_read: false, browser: false, ...permissions },
+    permissions: { read: false, write: false, bash: false, web: false, email_read: false, mcp: false, ...permissions },
   };
 }
 

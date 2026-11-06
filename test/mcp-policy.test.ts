@@ -8,7 +8,7 @@ const DENY_ALL: McpPolicy = {
   allowWrite: false,
   allowWeb: false,
   allowEmail: false,
-  allowBrowser: false,
+  allowMcp: false,
   allowFlowPaths: true,
   maxConcurrentRuns: 1,
   maxFlowBytes: 1024,
@@ -48,8 +48,8 @@ test('an explicit allow lets the permission through', () => {
 
 test('the refusal names the exact command that allows every denied permission', () => {
   assert.throws(
-    () => assertFlowAllowed(graphWith({ bash: true, email_read: true, browser: true }), DENY_ALL),
-    (error: unknown) => error instanceof PolicyError && /settings --allow bash,email,browser`/.test(error.message),
+    () => assertFlowAllowed(graphWith({ bash: true, email_read: true, mcp: true }), DENY_ALL),
+    (error: unknown) => error instanceof PolicyError && /settings --allow bash,email,mcp`/.test(error.message),
   );
 });
 

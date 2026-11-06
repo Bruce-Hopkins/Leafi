@@ -21,13 +21,14 @@ OPENROUTER_API_KEY=
 #   write       write_file, inside the run workspace
 #   bash        run_bash: any command you can run
 #   email       the read-only mailbox tools (needs the mailbox below)
-#   browser     a headless Chrome (the launcher below)
+#   mcp         tools from an MCP server (the launcher below; a headless Chrome
+#               by default)
 #   flow-paths  passing a flow as a file path instead of inline JSON
 # AGENTS_AUTOMATIONS_ALLOW_WEB=false
 # AGENTS_AUTOMATIONS_ALLOW_WRITE=false
 # AGENTS_AUTOMATIONS_ALLOW_BASH=false
 # AGENTS_AUTOMATIONS_ALLOW_EMAIL=false
-# AGENTS_AUTOMATIONS_ALLOW_BROWSER=false
+# AGENTS_AUTOMATIONS_ALLOW_MCP=false
 # AGENTS_AUTOMATIONS_ALLOW_FLOW_PATHS=true
 
 # Mailbox, for email nodes: read-only, over IMAP, with an app password. Gmail
@@ -39,15 +40,18 @@ AGENTS_AUTOMATIONS_EMAIL_IMAP_HOST=imap.gmail.com
 AGENTS_AUTOMATIONS_EMAIL_IMAP_PORT=993
 # AGENTS_AUTOMATIONS_EMAIL_TIMEOUT_MS=20000
 
-# Browser nodes start this launcher and may call only the tools listed. It is
-# pinned to an exact version: upgrade it on purpose, after reading its notes.
-# AGENTS_AUTOMATIONS_BROWSER_MCP_COMMAND=npx -y chrome-devtools-mcp@1.10.1 --headless --isolated
-# AGENTS_AUTOMATIONS_BROWSER_MCP_TOOLS=new_page,navigate_page,take_snapshot,evaluate_script,list_pages,wait_for,click,type_text,press_key
-# AGENTS_AUTOMATIONS_BROWSER_MCP_TIMEOUT_MS=120000
+# Nodes holding the mcp permission start this MCP server launcher and may call
+# only the tools listed. The default is a headless Chrome (chrome-devtools-mcp)
+# with its read-and-navigate tools; to use another MCP server, set both the
+# command and its tool names. Pin an exact version: upgrade it on purpose, after
+# reading its notes.
+# AGENTS_AUTOMATIONS_MCP_COMMAND=npx -y chrome-devtools-mcp@1.10.1 --headless --isolated
+# AGENTS_AUTOMATIONS_MCP_TOOLS=new_page,navigate_page,take_snapshot,evaluate_script,list_pages,wait_for,click,type_text,press_key
+# AGENTS_AUTOMATIONS_MCP_TIMEOUT_MS=120000
 
 # ---- Everything below is for ~/.agents-automations/.env only; Hermes ignores it. ----
 
-# Extra environment variables to forward to \`run_bash\` and browser MCP servers.
+# Extra environment variables to forward to \`run_bash\` and MCP servers.
 # Everything else is filtered out, so list only names a tool genuinely needs.
 # AGENT_ENV_PASSTHROUGH=HTTP_PROXY,HTTPS_PROXY
 

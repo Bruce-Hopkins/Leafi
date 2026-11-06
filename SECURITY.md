@@ -25,12 +25,12 @@ model decides what to do with them.
 | `bash` | `run_bash`: any command you could run yourself. It starts in the workspace but can read and change any file you can, and reach any network address. Child processes get an allowlist environment, so provider keys and the mailbox password are not passed on, but nothing stops a command from reading files that contain them. A word check rejects commands that name `sudo`, `su` or `doas`; it is a speed bump, and quoting (`s''udo`) gets past it. On timeout or cancellation the whole process group is killed. |
 | `web` | `web_fetch` of http(s) URLs. Loopback, private, link-local (including the `169.254.169.254` cloud metadata address), carrier-grade NAT, multicast and other reserved ranges are refused, in IPv4, IPv6, IPv4-mapped IPv6 (`::ffff:127.0.0.1`), NAT64, 6to4 and Teredo forms. The check runs on the address the connection actually uses, so DNS rebinding does not get around it, and a name that does not resolve is refused. |
 | `email_read` | Searching and reading the one configured mailbox over IMAP with TLS. The mailbox is opened read-only (`EXAMINE`) and messages are fetched with `BODY.PEEK`, so nothing is changed or marked as read. There is no send tool. |
-| `browser` | A real headless Chrome driven through a browser MCP server. This CLI does not sandbox it, and it **can** reach local and private addresses that `web_fetch` refuses. The server runs with a private home at `<data dir>/mcp-home`, which must be owned by you and closed to other accounts. |
+| `mcp` | The tools of the MCP server set by `AGENTS_AUTOMATIONS_MCP_COMMAND`, limited to `AGENTS_AUTOMATIONS_MCP_TOOLS`. By default that is a real headless Chrome driven through chrome-devtools-mcp. This CLI does not sandbox the server, and the default browser **can** reach local and private addresses that `web_fetch` refuses; another server can do whatever its program does. The server runs with a private home at `<data dir>/mcp-home`, which must be owned by you and closed to other accounts. |
 
 The MCP server refuses flows that request `bash`, `write`,
-`web`, `email_read` or `browser` unless the matching `AGENTS_AUTOMATIONS_ALLOW_*` setting is
+`web`, `email_read` or `mcp` unless the matching `AGENTS_AUTOMATIONS_ALLOW_*` setting is
 `true`. The installer's setup offers `web` and `write` ticked and `bash`,
-`email_read` and `browser` unticked. When a flow needs a permission that is
+`email_read` and `mcp` unticked. When a flow needs a permission that is
 off, the server asks you through your MCP client before it starts, naming the
 nodes that want it; the agent cannot answer that question. You can allow it for
 that run, or always, which saves the setting. A client that cannot show the
@@ -47,7 +47,7 @@ node that reads untrusted content as untrusted:
 - Do not give it `bash` or `write` as well. Split the flow so the reading node
   hands a summary to a node that holds the dangerous permission, or leave that
   permission out.
-- Be careful combining `email_read` with `web` or `browser`: an email could ask
+- Be careful combining `email_read` with `web` or `mcp`: an email could ask
   the agent to send what it read to an outside address.
 - Read flows you did not write before running them, and check each node's
   permissions in the drawing your agent shows you (the `render_flow` tool), or
@@ -66,7 +66,7 @@ node that reads untrusted content as untrusted:
 - LangChain/LangSmith tracing is switched off unless
   `AGENTS_AUTOMATIONS_LANGSMITH_TRACING=true`, because a trace uploads every prompt,
   tool result and email excerpt.
-- `AGENTS_AUTOMATIONS_BROWSER_MCP_COMMAND` is a program that runs whenever a browser node starts.
+- `AGENTS_AUTOMATIONS_MCP_COMMAND` is a program that runs whenever an `mcp` node starts.
   The default is pinned to an exact `chrome-devtools-mcp` version; if you
   change it, pin a version too.
 - A value that is still an unexpanded `${VAR}` placeholder counts as unset.

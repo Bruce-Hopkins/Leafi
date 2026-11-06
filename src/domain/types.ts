@@ -14,8 +14,11 @@ export interface NodePermissions {
   bash: boolean;
   web: boolean;
   email_read: boolean;
-  /** Tools from the browser MCP server, launched per node that holds this. */
-  browser: boolean;
+  /**
+   * Tools from the configured MCP server (by default chrome-devtools-mcp, a
+   * headless Chrome), launched per node that holds this.
+   */
+  mcp: boolean;
 }
 
 /**

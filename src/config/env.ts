@@ -12,7 +12,7 @@ export interface EnvOptions {
 /**
  * Loads the env file once, before anything reads process.env. The default is
  * `<data dir>/.env`, never the current directory: a downloaded project's `.env`
- * could otherwise redirect provider traffic or choose the browser launcher.
+ * could otherwise redirect provider traffic or choose the MCP server launcher.
  */
 export function loadEnvironment(options: EnvOptions = {}): string {
   const file = options.envFile

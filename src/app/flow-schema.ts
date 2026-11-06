@@ -34,7 +34,7 @@ export const FLOW_SCHEMA = {
           permissions: {
             type: 'object',
             description:
-              'Tools the agent may use. All default to false. email_read needs a mailbox credential (AGENTS_AUTOMATIONS_EMAIL_ADDRESS and AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD). browser launches a chrome-devtools-mcp server for this node, configured with AGENTS_AUTOMATIONS_BROWSER_MCP_COMMAND and AGENTS_AUTOMATIONS_BROWSER_MCP_TOOLS.',
+              'Tools the agent may use. All default to false. email_read needs a mailbox credential (AGENTS_AUTOMATIONS_EMAIL_ADDRESS and AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD). mcp launches the configured MCP server for this node (by default chrome-devtools-mcp, a headless Chrome), configured with AGENTS_AUTOMATIONS_MCP_COMMAND and AGENTS_AUTOMATIONS_MCP_TOOLS.',
             properties: {
               read: { type: 'boolean', default: false },
               write: { type: 'boolean', default: false },
@@ -45,11 +45,11 @@ export const FLOW_SCHEMA = {
                 default: false,
                 description: 'email_search and email_get_message — read the mailbox. Read-only: there is no send tool.',
               },
-              browser: {
+              mcp: {
                 type: 'boolean',
                 default: false,
                 description:
-                  'A real Chrome through the chrome-devtools-mcp server: new_page, navigate_page, take_snapshot, evaluate_script and the rest of AGENTS_AUTOMATIONS_BROWSER_MCP_TOOLS. Use it for pages that block plain HTTP fetches.',
+                  'The tools of the MCP server set by AGENTS_AUTOMATIONS_MCP_COMMAND, limited to AGENTS_AUTOMATIONS_MCP_TOOLS. By default that is a real Chrome through the chrome-devtools-mcp server: new_page, navigate_page, take_snapshot, evaluate_script and the rest. Use the browser for pages that block plain HTTP fetches.',
               },
             },
           },

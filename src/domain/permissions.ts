@@ -7,7 +7,7 @@ export const PERMISSION_KEYS = [
   'bash',
   'web',
   'email_read',
-  'browser',
+  'mcp',
 ] as const satisfies readonly (keyof NodePermissions)[];
 
 /** The permissions that need a mailbox credential before they can do anything. */
@@ -32,7 +32,7 @@ export function emptyPermissions(): NodePermissions {
     bash: false,
     web: false,
     email_read: false,
-    browser: false,
+    mcp: false,
   };
 }
 

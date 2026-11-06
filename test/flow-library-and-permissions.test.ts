@@ -47,7 +47,7 @@ const DENY_ALL: McpPolicy = {
   allowWrite: false,
   allowWeb: false,
   allowEmail: false,
-  allowBrowser: false,
+  allowMcp: false,
   allowFlowPaths: true,
   maxConcurrentRuns: 1,
   maxFlowBytes: 100_000,
@@ -123,16 +123,16 @@ test('without a way to ask, the refusal names the command that allows it', async
 test('the question names each permission and its nodes, and accepting allows them for this run only', async () => {
   const settingsFile = path.join(tempDir(), '.env');
   const policy = { ...DENY_ALL };
-  const graph = new FlowService().loadPayload(flow([node('a', { bash: true }), node('b', { bash: true, browser: true })]));
+  const graph = new FlowService().loadPayload(flow([node('a', { bash: true }), node('b', { bash: true, mcp: true })]));
   // Hermes accepts with no fields at all.
   const ask = answering({ action: 'accept', content: {} });
 
   const granted = await requestPermissions(graph, { policy, settingsFile, logger: quietLogger }, ask);
 
-  assert.deepEqual([...granted].sort(), ['AGENTS_AUTOMATIONS_ALLOW_BASH', 'AGENTS_AUTOMATIONS_ALLOW_BROWSER']);
+  assert.deepEqual([...granted].sort(), ['AGENTS_AUTOMATIONS_ALLOW_BASH', 'AGENTS_AUTOMATIONS_ALLOW_MCP']);
   const message = ask.questions[0]?.message ?? '';
   assert.match(message, /- bash: run shell commands .*Nodes: "A", "B"\./);
-  assert.match(message, /- browser: .*Nodes: "B"\./);
+  assert.match(message, /- mcp: .*Nodes: "B"\./);
   assert.ok(ask.questions[0]?.requestedSchema.properties.always, 'a server with a settings file offers "always"');
   assert.equal(policy.allowBash, false);
   assert.equal(fs.existsSync(settingsFile), false);
@@ -153,11 +153,11 @@ test('"always" saves the permission to the settings file and allows it for the r
 });
 
 test('a server that read no settings file offers no "always", and says how to stop being asked', async () => {
-  const graph = new FlowService().loadPayload(flow([node('a', { browser: true })]));
+  const graph = new FlowService().loadPayload(flow([node('a', { mcp: true })]));
   const ask = answering({ action: 'accept', content: {} });
   await requestPermissions(graph, { policy: { ...DENY_ALL }, logger: quietLogger }, ask);
   assert.deepEqual(ask.questions[0]?.requestedSchema.properties, {});
-  assert.match(ask.questions[0]?.message ?? '', /To stop being asked, run: .* settings --allow browser/);
+  assert.match(ask.questions[0]?.message ?? '', /To stop being asked, run: .* settings --allow mcp/);
 });
 
 test('declining, cancelling or a failed question refuses the flow', async () => {
@@ -268,9 +268,9 @@ test('over MCP, a client that cannot ask gets the refusal and nothing is saved',
   const dataDir = tempDir();
   const { client } = await connect(dataDir);
   try {
-    const started = await client.callTool({ name: 'start_run', arguments: { flow: flow([node('a', { browser: true })]) } });
+    const started = await client.callTool({ name: 'start_run', arguments: { flow: flow([node('a', { mcp: true })]) } });
     assert.equal(started.isError, true);
-    assert.match(textOf(started), /settings --allow browser`/);
+    assert.match(textOf(started), /settings --allow mcp`/);
     assert.equal(fs.existsSync(path.join(dataDir, 'flows')), false);
   } finally {
     await client.close();

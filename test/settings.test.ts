@@ -69,14 +69,14 @@ test('settings --deny wins over --allow, so "--allow all --deny bash" allows eve
 
   assert.equal(result.status, 0, result.stderr);
   const report = JSON.parse(result.stdout).files[0];
-  assert.deepEqual(report.permissions, { web: true, write: true, bash: false, email: true, browser: true, 'flow-paths': true });
+  assert.deepEqual(report.permissions, { web: true, write: true, bash: false, email: true, mcp: true, 'flow-paths': true });
   // Flow paths are allowed when unset, so no line is written for them.
   assert.deepEqual(report.saved, [
     'AGENTS_AUTOMATIONS_ALLOW_WEB=true',
     'AGENTS_AUTOMATIONS_ALLOW_WRITE=true',
     'AGENTS_AUTOMATIONS_ALLOW_BASH=false',
     'AGENTS_AUTOMATIONS_ALLOW_EMAIL=true',
-    'AGENTS_AUTOMATIONS_ALLOW_BROWSER=true',
+    'AGENTS_AUTOMATIONS_ALLOW_MCP=true',
   ]);
   assert.equal(report.mailboxMissing, true);
   assert.match(result.stderr, /Email is allowed, but .* has no AGENTS_AUTOMATIONS_EMAIL_ADDRESS/);
@@ -93,7 +93,7 @@ test('settings off a terminal with no flags prints the permissions and writes no
     write: false,
     bash: false,
     email: false,
-    browser: false,
+    mcp: false,
     'flow-paths': false,
   });
   assert.match(result.stderr, /web {9}allowed/);
@@ -185,7 +185,7 @@ test('the settings checklist starts from what the server reads now, not ticked l
     AGENTS_AUTOMATIONS_ALLOW_WRITE: false,
     AGENTS_AUTOMATIONS_ALLOW_BASH: false,
     AGENTS_AUTOMATIONS_ALLOW_EMAIL: true,
-    AGENTS_AUTOMATIONS_ALLOW_BROWSER: false,
+    AGENTS_AUTOMATIONS_ALLOW_MCP: false,
     AGENTS_AUTOMATIONS_ALLOW_FLOW_PATHS: true,
   });
   assert.deepEqual(result?.saved, []);

@@ -122,7 +122,7 @@ function jsonViaWebFetch({ node }: LintContextInternal): LintWarning[] {
 
 function noExactEndpoint({ node }: LintContextInternal): LintWarning[] {
   const fetches =
-    node.permissions.web || node.permissions.browser || (node.permissions.bash && FETCH_PATTERN.test(node.prompt));
+    node.permissions.web || node.permissions.mcp || (node.permissions.bash && FETCH_PATTERN.test(node.prompt));
   if (!fetches || URL_PATTERN.test(node.prompt)) {
     return [];
   }

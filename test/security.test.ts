@@ -8,7 +8,7 @@ import test from 'node:test';
 import { Agent, fetch } from 'undici';
 import type { RunService, StartedRun } from '../src/app/run-service';
 import { disableImplicitTracing, loadEnvironment, TRACING_OPT_IN } from '../src/config/env';
-import { DEFAULT_BROWSER_MCP_COMMAND, RuntimeConfig } from '../src/config/runtime-config';
+import { DEFAULT_MCP_COMMAND, RuntimeConfig } from '../src/config/runtime-config';
 import type { AgentNode, Graph, Run } from '../src/domain/types';
 import type { McpPolicy } from '../src/mcp/policy';
 import { RunManager } from '../src/mcp/run-manager';
@@ -68,7 +68,7 @@ function node(permissions: Partial<AgentNode['permissions']>, provider: AgentNod
     model: 'test-model',
     prompt: 'test',
     position: { x: 0, y: 0 },
-    permissions: { read: false, write: false, bash: false, web: false, email_read: false, browser: false, ...permissions },
+    permissions: { read: false, write: false, bash: false, web: false, email_read: false, mcp: false, ...permissions },
   };
 }
 
@@ -274,7 +274,7 @@ test('LangSmith tracing is switched off unless agents-automations opts in', () =
   });
 });
 
-// --- 3. browser MCP home --------------------------------------------------------
+// --- 3. MCP server home ---------------------------------------------------------
 
 test('the MCP home is created owner-only', { skip: !POSIX }, async () => {
   const home = path.join(tempRoot(), 'mcp-home');
@@ -289,12 +289,12 @@ test('an MCP home open to other accounts is refused', { skip: !POSIX }, async ()
   await assert.rejects(privateHome(home), /other accounts can access it/);
 });
 
-// --- 4. pinned browser launcher -------------------------------------------------
+// --- 4. pinned MCP launcher ---------------------------------------------------
 
-test('the default browser launcher names an exact version', () => {
-  assert.match(DEFAULT_BROWSER_MCP_COMMAND, /chrome-devtools-mcp@\d+\.\d+\.\d+\s/);
-  withEnv({ AGENTS_AUTOMATIONS_BROWSER_MCP_COMMAND: undefined }, () => {
-    assert.equal(new RuntimeConfig({ dataDir: tempRoot() }).browserMcpCommand, DEFAULT_BROWSER_MCP_COMMAND);
+test('the default MCP launcher names an exact version', () => {
+  assert.match(DEFAULT_MCP_COMMAND, /chrome-devtools-mcp@\d+\.\d+\.\d+\s/);
+  withEnv({ AGENTS_AUTOMATIONS_MCP_COMMAND: undefined }, () => {
+    assert.equal(new RuntimeConfig({ dataDir: tempRoot() }).mcpCommand, DEFAULT_MCP_COMMAND);
   });
 });
 
@@ -344,7 +344,7 @@ function slowRuns(started: { count: number }, fail = false): RunService {
   } as unknown as RunService;
 }
 
-const POLICY = { maxConcurrentRuns: 2, allowBash: true, allowWrite: true, allowWeb: true, allowEmail: true, allowBrowser: true } as McpPolicy;
+const POLICY = { maxConcurrentRuns: 2, allowBash: true, allowWrite: true, allowWeb: true, allowEmail: true, allowMcp: true } as McpPolicy;
 const EMPTY_GRAPH = { id: 'g', name: 'g', nodes: [], edges: [] } as unknown as Graph;
 
 test('simultaneous start_run calls cannot exceed the concurrent-run limit', async () => {
@@ -444,16 +444,16 @@ test('unexpanded ${VAR} placeholders count as unset in every setting', () => {
     {
       AGENTS_AUTOMATIONS_EMAIL_ADDRESS: '${AGENTS_AUTOMATIONS_EMAIL_ADDRESS}',
       AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD: '${AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD}',
-      AGENTS_AUTOMATIONS_BROWSER_MCP_COMMAND: '${AGENTS_AUTOMATIONS_BROWSER_MCP_COMMAND}',
-      AGENTS_AUTOMATIONS_BROWSER_MCP_TOOLS: '${AGENTS_AUTOMATIONS_BROWSER_MCP_TOOLS}',
+      AGENTS_AUTOMATIONS_MCP_COMMAND: '${AGENTS_AUTOMATIONS_MCP_COMMAND}',
+      AGENTS_AUTOMATIONS_MCP_TOOLS: '${AGENTS_AUTOMATIONS_MCP_TOOLS}',
       DATA_DIR: '${DATA_DIR}',
       AGENTS_AUTOMATIONS_HOME: '${PLUGIN_DATA}',
     },
     () => {
       const config = new RuntimeConfig();
       assert.equal(config.emailCredentials(), undefined);
-      assert.equal(config.browserMcpCommand, DEFAULT_BROWSER_MCP_COMMAND);
-      assert.ok(!config.browserTools.includes('${AGENTS_AUTOMATIONS_BROWSER_MCP_TOOLS}'));
+      assert.equal(config.mcpCommand, DEFAULT_MCP_COMMAND);
+      assert.ok(!config.mcpTools.includes('${AGENTS_AUTOMATIONS_MCP_TOOLS}'));
       assert.equal(config.dataDir, path.join(os.homedir(), '.agents-automations'));
     },
   );

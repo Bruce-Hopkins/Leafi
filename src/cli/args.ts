@@ -184,7 +184,7 @@ const EXIT_CODES = `Exit codes:
   3  usage error    Unknown flag, missing or conflicting flags.
   4  environment    Pre-flight failed before any tokens were spent: a missing
                     provider API key or mailbox credential, a rejected mailbox
-                    login, or a browser MCP launcher that will not start or
+                    login, or an MCP server launcher that will not start or
                     offers none of the configured tools.`;
 
 const OUTPUT_CONTRACT = `Output:
@@ -255,7 +255,7 @@ In a terminal, with neither --allow nor --deny, it shows a checklist of the
 permissions as the server reads them now: move with up/down, tick or untick
 with space, save with Enter. Off a terminal it only prints them.
 
-Permissions: web, write, bash, email, browser, flow-paths, or all.
+Permissions: web, write, bash, email, mcp, flow-paths, or all.
 Only lines that change what the server reads are written; every other line is
 kept. The server reads them when it starts, so restart your MCP client, or start
 a new Hermes session, afterwards.

@@ -9,7 +9,7 @@ import { childEnvironment } from './environment';
 import { htmlToText, requireString } from './text';
 import { pieceEnd, readerFor, ToolOutput } from './tool-output';
 import type { EmailToolkit } from './email/email-toolkit';
-import type { BrowserToolkit } from './mcp/browser-toolkit';
+import type { McpToolkit } from './mcp/mcp-toolkit';
 import { duration, groupAlive, type NodeJobs } from './jobs';
 import { killProcessTree, OWN_PROCESS_GROUP } from './process-tree';
 import { assertPublicHost, BlockedAddressError, publicWebDispatcher } from './public-address';
@@ -51,15 +51,15 @@ export interface NodeToolkitOptions {
   signal: AbortSignal;
   /** The node's mailbox tools, present only when it holds the email permission. */
   email?: EmailToolkit;
-  /** The node's browser tools, present only when it holds the browser permission. */
-  browser?: BrowserToolkit;
-  /** Shared with the node's mail and browser tools, so every result obeys one budget. */
+  /** The node's MCP server tools, present only when it holds the mcp permission. */
+  mcp?: McpToolkit;
+  /** Shared with the node's mail and MCP tools, so every result obeys one budget. */
   output?: ToolOutput;
   /** The run's background jobs this node can see; without it, `run_bash` has no background mode. */
   jobs?: NodeJobs;
 }
 
-export function createNodeToolkit({ node, workspace, limits, signal, email, browser, output: shared, jobs }: NodeToolkitOptions): NodeToolkit {
+export function createNodeToolkit({ node, workspace, limits, signal, email, mcp, output: shared, jobs }: NodeToolkitOptions): NodeToolkit {
   const output = shared ?? createToolOutput(node, workspace, limits);
   const handlers = new Map<string, (args: Record<string, unknown>) => Promise<string>>();
 
@@ -85,7 +85,7 @@ export function createNodeToolkit({ node, workspace, limits, signal, email, brow
     completeTaskTool(node),
     ...permittedToolSchemas(node, output, limits, jobs),
     ...(email?.schemas ?? []),
-    ...(browser?.schemas ?? []),
+    ...(mcp?.schemas ?? []),
   ];
 
   return {
@@ -97,9 +97,9 @@ export function createNodeToolkit({ node, workspace, limits, signal, email, brow
         if (emailResult !== undefined) {
           return emailResult;
         }
-        const browserResult = await browser?.execute(name, args);
-        if (browserResult !== undefined) {
-          return browserResult;
+        const mcpResult = await mcp?.execute(name, args);
+        if (mcpResult !== undefined) {
+          return mcpResult;
         }
         return `Error: "${name}" is not available to this agent.`;
       }

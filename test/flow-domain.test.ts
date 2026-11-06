@@ -53,7 +53,7 @@ test('permissions and coordinates default safely', () => {
     bash: false,
     web: false,
     email_read: false,
-    browser: false,
+    mcp: false,
   });
   assert.deepEqual(payload.nodes[0]?.position, { x: 0, y: 0 });
 });

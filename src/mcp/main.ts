@@ -65,7 +65,7 @@ settings changes only the permissions, so nobody has to edit a file by hand. It
 changes every file in use: Hermes's when the plugin is installed, and
 ~/.agents-automations/.env when it exists or Hermes has no plugin. In a terminal it
 shows a checklist of what flows may use now; with --allow or --deny (web,
-write, bash, email, browser, flow-paths, or all) it asks nothing, and --deny
+write, bash, email, mcp, flow-paths, or all) it asks nothing, and --deny
 wins over --allow. Off a terminal with neither flag it only prints the
 permissions. Restart the server afterwards: start a new Hermes session, or
 restart your MCP client.

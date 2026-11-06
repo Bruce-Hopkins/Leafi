@@ -87062,7 +87062,7 @@ var PERMISSION_KEYS = [
   "bash",
   "web",
   "email_read",
-  "browser"
+  "mcp"
 ];
 var EMAIL_PERMISSION_KEYS = ["email_read"];
 var RENAMED_PERMISSIONS = {
@@ -87076,7 +87076,7 @@ function emptyPermissions() {
     bash: false,
     web: false,
     email_read: false,
-    browser: false
+    mcp: false
   };
 }
 function readPermissions(source) {
@@ -137638,7 +137638,7 @@ var StdioMcpClient = class {
     this.child = spawn(command2, args, {
       stdio: ["pipe", "pipe", "pipe"],
       env,
-      // Its own process group, so closing it also stops the browser it launched.
+      // Its own process group, so closing it also stops anything it launched, such as a browser.
       detached: OWN_PROCESS_GROUP
     });
     this.child.stdout.setEncoding("utf8");
@@ -137806,8 +137806,8 @@ function splitCommand(command2) {
   return { command: first, args: rest };
 }
 
-// src/tools/mcp/browser-toolkit.ts
-var DEFAULT_BROWSER_TOOLS = [
+// src/tools/mcp/mcp-toolkit.ts
+var DEFAULT_MCP_TOOLS = [
   "new_page",
   "navigate_page",
   "take_snapshot",
@@ -137821,7 +137821,7 @@ var DEFAULT_BROWSER_TOOLS = [
 var DESCRIPTION_LIMIT = 600;
 var LONG_RESULT_TOOLS = /* @__PURE__ */ new Set(["take_snapshot", "evaluate_script"]);
 var COMPACT_HINT = "next time extract less, e.g. with evaluate_script returning a compact array";
-async function createBrowserToolkit(options) {
+async function createMcpToolkit(options) {
   const client2 = await connectMcpClient({
     command: options.command,
     dataDir: options.dataDir,
@@ -137847,7 +137847,7 @@ async function createBrowserToolkit(options) {
     dispose: () => client2.close()
   };
 }
-async function listBrowserTools(options) {
+async function listMcpTools(options) {
   const client2 = await connectMcpClient(options);
   try {
     return client2.tools;
@@ -137921,16 +137921,16 @@ function clip(text) {
   return trimmed.length > DESCRIPTION_LIMIT ? `${trimmed.slice(0, DESCRIPTION_LIMIT)}\u2026` : trimmed;
 }
 
-// src/tools/mcp/browser-preflight.ts
-async function browserPreflight(nodes, options) {
-  const needing = nodes.filter((node2) => node2.permissions.browser);
+// src/tools/mcp/mcp-preflight.ts
+async function mcpPreflight(nodes, options) {
+  const needing = nodes.filter((node2) => node2.permissions.mcp);
   if (needing.length === 0) {
     return [];
   }
   const labels = needing.map((node2) => `"${node2.label}"`).join(", ");
-  const repair = `Set AGENTS_AUTOMATIONS_BROWSER_MCP_COMMAND in the environment to a chrome-devtools-mcp launcher (current: ${options.command}).`;
+  const repair = `Set AGENTS_AUTOMATIONS_MCP_COMMAND in the environment to an MCP server launcher, such as chrome-devtools-mcp for a browser (current: ${options.command}).`;
   try {
-    const tools3 = await listBrowserTools({
+    const tools3 = await listMcpTools({
       command: options.command,
       dataDir: options.dataDir,
       timeoutMs: options.timeoutMs
@@ -137939,13 +137939,13 @@ async function browserPreflight(nodes, options) {
     if (!options.allowlist.some((name2) => offered.has(name2))) {
       const available = tools3.map((tool2) => tool2.name).join(", ");
       return [
-        `${labels} need the browser, but the MCP server offers none of the tools they may use (${options.allowlist.join(", ")}). Set AGENTS_AUTOMATIONS_BROWSER_MCP_TOOLS to a subset of: ${available}.`
+        `${labels} need the MCP server, but it offers none of the tools they may use (${options.allowlist.join(", ")}). Set AGENTS_AUTOMATIONS_MCP_TOOLS to a subset of: ${available}.`
       ];
     }
     return [];
   } catch (error62) {
     const reason = error62 instanceof Error ? error62.message : String(error62);
-    return [`${labels} need the browser, but the MCP server could not start. ${reason}
+    return [`${labels} need the MCP server, but it could not start. ${reason}
 ${repair}`];
   }
 }
@@ -137976,14 +137976,14 @@ async function preflightGraph(graph, config2, email3) {
   if (mailbox.errors.length > 0) {
     throw new PreflightError(mailbox.errors.join(" "), 4);
   }
-  const browser = await browserPreflight(graph.nodes, {
-    command: config2.browserMcpCommand,
+  const mcp2 = await mcpPreflight(graph.nodes, {
+    command: config2.mcpCommand,
     dataDir: config2.dataDir,
-    timeoutMs: config2.browserTimeoutMs,
-    allowlist: config2.browserTools
+    timeoutMs: config2.mcpTimeoutMs,
+    allowlist: config2.mcpTools
   });
-  if (browser.length > 0) {
-    throw new PreflightError(browser.join(" "), 4);
+  if (mcp2.length > 0) {
+    throw new PreflightError(mcp2.join(" "), 4);
   }
 }
 
@@ -138072,7 +138072,7 @@ var PROVIDER_CATALOG = [
 // src/config/runtime-config.ts
 var DEFAULT_IMAP_HOST = "imap.gmail.com";
 var DEFAULT_IMAP_PORT = 993;
-var DEFAULT_BROWSER_MCP_COMMAND = "npx -y chrome-devtools-mcp@1.10.1 --headless --isolated";
+var DEFAULT_MCP_COMMAND = "npx -y chrome-devtools-mcp@1.10.1 --headless --isolated";
 var UNRESOLVED_ENV_PLACEHOLDER = /^\$\{[A-Za-z_][A-Za-z0-9_]*\}$/;
 var DEFAULTS = {
   maxNodeIterations: 25,
@@ -138089,7 +138089,7 @@ var DEFAULTS = {
   webFetchTimeoutMs: 20 * 1e3,
   webFetchLimitBytes: 256 * 1024,
   emailTimeoutMs: 20 * 1e3,
-  browserTimeoutMs: 120 * 1e3,
+  mcpTimeoutMs: 120 * 1e3,
   mcpMaxConcurrentRuns: 2,
   mcpMaxFlowBytes: 256 * 1024,
   mcpMaxResultBytes: 256 * 1024
@@ -138118,12 +138118,12 @@ var RuntimeConfig = class {
   webFetchLimitBytes;
   /** How long one IMAP operation may take before it is abandoned. */
   emailTimeoutMs;
-  /** Launcher for the browser MCP server a `browser` node talks to. */
-  browserMcpCommand;
-  /** Budget for the MCP handshake and for any single browser tool call. */
-  browserTimeoutMs;
-  /** The browser tools a node may hold, by name. */
-  browserTools;
+  /** Launcher for the MCP server an `mcp` node talks to; a headless Chrome by default. */
+  mcpCommand;
+  /** Budget for the MCP handshake and for any single MCP tool call. */
+  mcpTimeoutMs;
+  /** The MCP server's tools a node may hold, by name. */
+  mcpTools;
   mcpMaxConcurrentRuns;
   mcpMaxFlowBytes;
   mcpMaxResultBytes;
@@ -138144,9 +138144,9 @@ var RuntimeConfig = class {
     this.webFetchTimeoutMs = readInt("WEB_FETCH_TIMEOUT_MS", DEFAULTS.webFetchTimeoutMs);
     this.webFetchLimitBytes = readInt("WEB_FETCH_LIMIT_BYTES", DEFAULTS.webFetchLimitBytes);
     this.emailTimeoutMs = readInt("AGENTS_AUTOMATIONS_EMAIL_TIMEOUT_MS", DEFAULTS.emailTimeoutMs);
-    this.browserMcpCommand = readEnv2("AGENTS_AUTOMATIONS_BROWSER_MCP_COMMAND") ?? DEFAULT_BROWSER_MCP_COMMAND;
-    this.browserTimeoutMs = readInt("AGENTS_AUTOMATIONS_BROWSER_MCP_TIMEOUT_MS", DEFAULTS.browserTimeoutMs);
-    this.browserTools = readList("AGENTS_AUTOMATIONS_BROWSER_MCP_TOOLS", DEFAULT_BROWSER_TOOLS);
+    this.mcpCommand = readEnv2("AGENTS_AUTOMATIONS_MCP_COMMAND") ?? DEFAULT_MCP_COMMAND;
+    this.mcpTimeoutMs = readInt("AGENTS_AUTOMATIONS_MCP_TIMEOUT_MS", DEFAULTS.mcpTimeoutMs);
+    this.mcpTools = readList("AGENTS_AUTOMATIONS_MCP_TOOLS", DEFAULT_MCP_TOOLS);
     this.mcpMaxConcurrentRuns = readInt("MCP_MAX_CONCURRENT_RUNS", DEFAULTS.mcpMaxConcurrentRuns);
     this.mcpMaxFlowBytes = readInt("MCP_MAX_FLOW_BYTES", DEFAULTS.mcpMaxFlowBytes);
     this.mcpMaxResultBytes = readInt("MCP_MAX_RESULT_BYTES", DEFAULTS.mcpMaxResultBytes);
@@ -194642,7 +194642,7 @@ var DENIED_COMMANDS = /* @__PURE__ */ new Set(["sudo", "su", "doas"]);
 var SHELL_SEPARATORS = /[\s;&|(){}<>`$=]+/;
 var WEB_FETCH_USER_AGENT = `agents-automations/${VERSION2} (local agent runtime)`;
 var MAX_REDIRECTS = 3;
-function createNodeToolkit({ node: node2, workspace, limits, signal, email: email3, browser, output: shared, jobs }) {
+function createNodeToolkit({ node: node2, workspace, limits, signal, email: email3, mcp: mcp2, output: shared, jobs }) {
   const output2 = shared ?? createToolOutput(node2, workspace, limits);
   const handlers = /* @__PURE__ */ new Map();
   if (node2.permissions.read) {
@@ -194666,7 +194666,7 @@ function createNodeToolkit({ node: node2, workspace, limits, signal, email: emai
     completeTaskTool(node2),
     ...permittedToolSchemas(node2, output2, limits, jobs),
     ...email3?.schemas ?? [],
-    ...browser?.schemas ?? []
+    ...mcp2?.schemas ?? []
   ];
   return {
     schemas,
@@ -194677,9 +194677,9 @@ function createNodeToolkit({ node: node2, workspace, limits, signal, email: emai
         if (emailResult !== void 0) {
           return emailResult;
         }
-        const browserResult = await browser?.execute(name2, args);
-        if (browserResult !== void 0) {
-          return browserResult;
+        const mcpResult = await mcp2?.execute(name2, args);
+        if (mcpResult !== void 0) {
+          return mcpResult;
         }
         return `Error: "${name2}" is not available to this agent.`;
       }
@@ -195416,13 +195416,13 @@ function textOfBlock(block) {
   return "";
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/node.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/node.js
 import { AsyncLocalStorage } from "node:async_hooks";
 function initializeAsyncLocalStorageSingleton() {
   AsyncLocalStorageProviderSingleton2.initializeGlobalInstance(new AsyncLocalStorage());
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/pregel/utils/timeout.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/pregel/utils/timeout.js
 function _coerceTimeoutMs(value, field) {
   if (value === void 0 || value === null) return;
   if (typeof value !== "number" || Number.isNaN(value) || value <= 0) throw new Error(`${field} must be greater than 0`);
@@ -195443,7 +195443,7 @@ function coerceTimeoutPolicy(value) {
   };
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/constants.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/constants.js
 var START = "__start__";
 var END = "__end__";
 var INPUT = "__input__";
@@ -195692,7 +195692,7 @@ function _deserializeCommandSendObjectGraph(x, seen = /* @__PURE__ */ new Map())
   return x;
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/errors.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/errors.js
 var BaseLangGraphError = class extends Error {
   lc_error_code;
   constructor(message, fields) {
@@ -202013,7 +202013,7 @@ var BaseCache2 = class {
   }
 };
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/channels/base.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/channels/base.js
 var STRUCTURED_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 function isDeltaChannel(channel) {
   return channel != null && channel.lc_graph_name === "DeltaChannel";
@@ -202248,7 +202248,7 @@ async function channelsFromCheckpoint(specs, checkpoint, options) {
   return channels;
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/channels/binop.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/channels/binop.js
 var isBinaryOperatorAggregate = (value) => {
   return value != null && value.lc_graph_name === "BinaryOperatorAggregate";
 };
@@ -202311,7 +202311,7 @@ var BinaryOperatorAggregate = class BinaryOperatorAggregate2 extends BaseChannel
   }
 };
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/channels/last_value.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/channels/last_value.js
 var LastValue = class LastValue2 extends BaseChannel {
   lc_graph_name = "LastValue";
   value = [];
@@ -202390,7 +202390,7 @@ var LastValueAfterFinish = class LastValueAfterFinish2 extends BaseChannel {
   }
 };
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/graph/annotation.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/graph/annotation.js
 var AnnotationRoot = class {
   lc_graph_name = "AnnotationRoot";
   spec;
@@ -202412,7 +202412,7 @@ function getChannel(reducer) {
   return new LastValue();
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/pregel/utils/config.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/pregel/utils/config.js
 var COPIABLE_KEYS = [
   "tags",
   "metadata",
@@ -202565,7 +202565,7 @@ function getParentCheckpointNamespace(namespace2) {
   return parts.slice(0, -1).join("|");
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/callbacks.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/callbacks.js
 var GRAPH_CALLBACK_HANDLER = /* @__PURE__ */ Symbol.for("langgraph.graph_callback_handler");
 var GraphCallbackHandler = class extends BaseCallbackHandler {
   name = "GraphCallbackHandler";
@@ -202575,7 +202575,7 @@ var GraphCallbackHandler = class extends BaseCallbackHandler {
   }
 };
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/pregel/runtime.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/pregel/runtime.js
 var RunControl = class {
   #drainReason = void 0;
   /**
@@ -202598,7 +202598,7 @@ var RunControl = class {
   }
 };
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/graph/messages_reducer.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/graph/messages_reducer.js
 var MESSAGE_CLASS_BY_TYPE = {
   human: HumanMessage,
   ai: AIMessage,
@@ -202688,7 +202688,7 @@ function isMessagesDeltaReducer(reducer) {
   return typeof reducer === "function" && reducer[MESSAGES_DELTA_REDUCER] === true;
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/stream/convert.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/stream/convert.js
 var STREAM_EVENTS_V3_MODES = [
   "values",
   "updates",
@@ -202866,7 +202866,7 @@ function convertUpdatesPayload(payload) {
   };
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/stream/stream-channel.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/stream/stream-channel.js
 var STREAM_CHANNEL_BRAND = /* @__PURE__ */ Symbol.for("langgraph.stream_channel");
 var StreamChannel = class StreamChannel2 {
   /** @internal Brand used by {@link StreamChannel.isInstance}. */
@@ -203030,7 +203030,7 @@ function isStreamChannel(value) {
   return StreamChannel.isInstance(value);
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/stream/mux.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/stream/mux.js
 var EXTENSION_CHANNEL_PREFIX = "custom:";
 function extensionChannelMethod(channelName) {
   return `${EXTENSION_CHANNEL_PREFIX}${channelName}`;
@@ -203327,7 +203327,7 @@ function hasPrefix(ns3, prefix) {
   return true;
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/stream/transformers/lifecycle.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/stream/transformers/lifecycle.js
 function filterLifecycleEntries(log, path28, startAt = 0) {
   return { [Symbol.asyncIterator]() {
     const base = log.iterate(startAt);
@@ -203655,7 +203655,7 @@ function createLifecycleTransformer(options = {}) {
   };
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/stream/transformers/messages.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/stream/transformers/messages.js
 function getMessageStreamKey(data) {
   const record2 = data;
   if (typeof record2.run_id === "string") return `run:${record2.run_id}`;
@@ -203738,7 +203738,7 @@ function createMessagesTransformer(path28, nodeFilter) {
   };
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/stream/transformers/subgraphs.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/stream/transformers/subgraphs.js
 function filterSubgraphHandles(log, path28, startAt = 0) {
   const targetDepth = path28.length + 1;
   return { [Symbol.asyncIterator]() {
@@ -203788,7 +203788,7 @@ function createSubgraphDiscoveryTransformer(mux, options) {
   };
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/stream/transformers/values.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/stream/transformers/values.js
 function createValuesTransformer(path28) {
   const valuesLog = StreamChannel.local();
   return {
@@ -203809,12 +203809,12 @@ function createValuesTransformer(path28) {
   };
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/stream/types.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/stream/types.js
 function isNativeTransformer(t) {
   return "__native" in t && t.__native === true;
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/stream/run-stream.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/stream/run-stream.js
 var SET_VALUES_LOG = /* @__PURE__ */ Symbol("setValuesLog");
 var SET_MESSAGES_ITERABLE = /* @__PURE__ */ Symbol("setMessagesIterable");
 var SET_LIFECYCLE_ITERABLE = /* @__PURE__ */ Symbol("setLifecycleIterable");
@@ -204169,7 +204169,7 @@ function createGraphRunStream(source, transformers = [], optionsOrAbortControlle
   return root;
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/hash.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/hash.js
 var n2 = (n3) => BigInt(n3);
 var view = (data, offset = 0) => new DataView(data.buffer, data.byteOffset + offset, data.byteLength - offset);
 var PRIME32_12 = n2("0x9E3779B1");
@@ -204429,7 +204429,7 @@ function isXXH3(value) {
   return /^[0-9a-f]{32}$/.test(value);
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/interrupt.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/interrupt.js
 function interrupt(value, options) {
   const config2 = AsyncLocalStorageProviderSingleton2.getRunnableConfig();
   if (!config2) throw new Error("Called interrupt() outside the context of a graph.");
@@ -204471,7 +204471,7 @@ function interrupt(value, options) {
   throw new GraphInterrupt([pending]);
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/utils.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/utils.js
 var RunnableCallable = class extends Runnable {
   lc_namespace = ["langgraph"];
   func;
@@ -204546,7 +204546,7 @@ function isGeneratorFunction(val) {
   }).constructor;
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/pregel/write.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/pregel/write.js
 function _isSkipWrite(x) {
   return typeof x === "object" && x?.[/* @__PURE__ */ Symbol.for("LG_SKIP_WRITE")] !== void 0;
 }
@@ -204629,7 +204629,7 @@ function _isChannelWriteTupleEntry(x) {
   return x !== void 0 && !_isChannelWriteEntry(x) && Runnable.isRunnable(x.mapper);
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/pregel/read.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/pregel/read.js
 var ChannelRead = class ChannelRead2 extends RunnableCallable {
   lc_graph_name = "ChannelRead";
   channel;
@@ -204784,7 +204784,7 @@ var PregelNode = class PregelNode2 extends RunnableBinding {
   }
 };
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/pregel/utils/subgraph.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/pregel/utils/subgraph.js
 function isRunnableSequence(x) {
   return "steps" in x && Array.isArray(x.steps);
 }
@@ -204797,7 +204797,7 @@ function findSubgraphPregel(candidate) {
   else if (isRunnableSequence(candidate2)) candidates.push(...candidate2.steps);
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/pregel/callbacks.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/pregel/callbacks.js
 function getGraphCallbackDispatcher(manager) {
   const handlers = manager?.handlers.filter(GraphCallbackHandler.isInstance);
   if (!handlers?.length) return void 0;
@@ -204818,7 +204818,7 @@ function getGraphCallbackDispatcher(manager) {
   };
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/pregel/checkpoint.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/pregel/checkpoint.js
 function advanceDeltaCounters(channels, updatedChannels, counters) {
   const next = {};
   for (const name2 in channels) {
@@ -204861,7 +204861,7 @@ async function checkpointSuperseded(saver, config2, saved) {
   return latest !== void 0 && latest.checkpoint.id !== saved.checkpoint.id;
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/pregel/io.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/pregel/io.js
 function readChannel(channels, chan, catchErrors = true, returnException = false) {
   try {
     return channels[chan].get();
@@ -204970,7 +204970,7 @@ function* mapOutputUpdates(outputChannels, tasks, cached2) {
   yield flattened;
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/pregel/utils/index.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/pregel/utils/index.js
 function getNullChannelVersion(currentVersions) {
   const startVersion = typeof currentVersions[START];
   if (startVersion === "number") return 0;
@@ -205041,7 +205041,7 @@ function combineAbortSignals(...x) {
   };
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/pregel/types.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/pregel/types.js
 var Call = class {
   func;
   name;
@@ -205065,7 +205065,7 @@ function isCall(value) {
   return typeof value === "object" && value !== null && "__lg_type" in value && value.__lg_type === "call";
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/pregel/call.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/pregel/call.js
 function getRunnableForFunc(name2, func) {
   return new RunnableSequence({
     name: name2,
@@ -205092,7 +205092,7 @@ function getRunnableForEntrypoint(name2, func) {
   });
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/pregel/algo.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/pregel/algo.js
 var increment = (current) => {
   return current !== void 0 ? current + 1 : 1;
 };
@@ -205813,7 +205813,7 @@ function _scratchpad({ pendingWrites, taskId, currentTaskInput, resumeMap, names
   return scratchpad;
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/pregel/debug.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/pregel/debug.js
 var COLORS_MAP = {
   blue: {
     start: "\x1B[34m",
@@ -205985,7 +205985,7 @@ function printStepWrites(step, writes, whitelist) {
   ].join(""));
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/pregel/stream.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/pregel/stream.js
 var IterableReadableStreamWithAbortSignal = class extends IterableReadableStream {
   _abortController;
   _innerReader;
@@ -206265,7 +206265,7 @@ function createDuplexStream(...streams) {
   });
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/pregel/replay.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/pregel/replay.js
 var ReplayState = class {
   /** Parent checkpoint ID used as the `before` cursor for subgraph lookups. */
   checkpointId;
@@ -206315,7 +206315,7 @@ var ReplayState = class {
   }
 };
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/pregel/loop.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/pregel/loop.js
 var INPUT_DONE = /* @__PURE__ */ Symbol.for("INPUT_DONE");
 var INPUT_RESUMING = /* @__PURE__ */ Symbol.for("INPUT_RESUMING");
 var DEFAULT_LOOP_LIMIT = 25;
@@ -207451,7 +207451,7 @@ var PregelLoop = class PregelLoop2 {
   }
 };
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/pregel/messages.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/pregel/messages.js
 function isChatGenerationChunk2(x) {
   return isBaseMessage(x?.message);
 }
@@ -207551,7 +207551,7 @@ var StreamMessagesHandler = class extends BaseCallbackHandler {
   }
 };
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/pregel/messages-v2.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/pregel/messages-v2.js
 function getResponseMetadata(message) {
   if ("response_metadata" in message && typeof message.response_metadata === "object" && message.response_metadata != null) return message.response_metadata;
 }
@@ -207782,7 +207782,7 @@ var StreamProtocolMessagesHandler = class extends BaseCallbackHandler {
   }
 };
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/pregel/timeout.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/pregel/timeout.js
 var TimedAttemptScope = class {
   active = true;
   lastProgress = Date.now();
@@ -207953,7 +207953,7 @@ async function runAttemptWithTimeout(task2, config2, policy, invoke) {
   });
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/pregel/retry.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/pregel/retry.js
 var DEFAULT_STATUS_NO_RETRY = [
   400,
   401,
@@ -208043,7 +208043,7 @@ async function _runWithRetry(pregelTask, retryPolicy, configurable, signal) {
   };
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/pregel/runner.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/pregel/runner.js
 var PROMISE_ADDED_SYMBOL = /* @__PURE__ */ Symbol.for("promiseAdded");
 function createPromiseBarrier() {
   const barrier = {
@@ -208300,7 +208300,7 @@ async function call(runner, task2, func, name2, input2, options = {}) {
   }
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/pregel/validate.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/pregel/validate.js
 var GraphValidationError = class extends Error {
   constructor(message) {
     super(message);
@@ -208338,7 +208338,7 @@ function validateKeys(keys, channels) {
   } else if (!(keys in channels)) throw new Error(`Key ${String(keys)} not found in channels`);
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/channels/topic.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/channels/topic.js
 function isUniqueTopicCheckpoint(checkpoint) {
   return Array.isArray(checkpoint) && checkpoint.length === 2 && Array.isArray(checkpoint[0]) && Array.isArray(checkpoint[1]);
 }
@@ -208413,7 +208413,7 @@ var Topic = class Topic2 extends BaseChannel {
   }
 };
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/pregel/index.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/pregel/index.js
 function protocolEventsToEventStream(run2) {
   const encoder3 = new TextEncoder();
   return new ReadableStream({ async start(controller) {
@@ -209708,7 +209708,7 @@ function _getTracingMetadataDefaults(config2) {
   return Object.keys(metadata).length > 0 ? metadata : void 0;
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/channels/ephemeral_value.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/channels/ephemeral_value.js
 var EphemeralValue = class EphemeralValue2 extends BaseChannel {
   lc_graph_name = "EphemeralValue";
   guard;
@@ -209745,7 +209745,7 @@ var EphemeralValue = class EphemeralValue2 extends BaseChannel {
   }
 };
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/graph/graph.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/graph/graph.js
 var Branch = class {
   path;
   ends;
@@ -210177,7 +210177,7 @@ function addImplicitTerminalEndEdges(nodes, discovered, addEdge) {
   }
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/state/types.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/state/types.js
 function isStandardSchema2(schema) {
   return typeof schema === "object" && schema !== null && "~standard" in schema && typeof schema["~standard"] === "object" && schema["~standard"] !== null && "validate" in schema["~standard"];
 }
@@ -210185,7 +210185,7 @@ function isStandardJSONSchema(schema) {
   return typeof schema === "object" && schema !== null && "~standard" in schema && typeof schema["~standard"] === "object" && schema["~standard"] !== null && "jsonSchema" in schema["~standard"];
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/state/adapter.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/state/adapter.js
 function getJsonSchemaFromSchema(schema) {
   if (isStandardJSONSchema(schema)) try {
     return schema["~standard"].jsonSchema.input({ target: "draft-07" });
@@ -210209,7 +210209,7 @@ function getSchemaDefaultGetter(schema) {
   }
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/channels/delta.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/channels/delta.js
 var isDeltaChannel2 = (value) => {
   return value != null && value.lc_graph_name === "DeltaChannel";
 };
@@ -210303,7 +210303,7 @@ var DeltaChannel = class DeltaChannel2 extends BaseChannel {
   }
 };
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/channels/untracked_value.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/channels/untracked_value.js
 var MISSING = /* @__PURE__ */ Symbol.for("langgraph.channel.missing");
 var UntrackedValueChannel = class UntrackedValueChannel2 extends BaseChannel {
   lc_graph_name = "UntrackedValue";
@@ -210367,7 +210367,7 @@ var UntrackedValueChannel = class UntrackedValueChannel2 extends BaseChannel {
   }
 };
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/state/values/reduced.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/state/values/reduced.js
 var REDUCED_VALUE_SYMBOL = /* @__PURE__ */ Symbol.for("langgraph.state.reduced_value");
 var ReducedValue = class {
   /**
@@ -210406,7 +210406,7 @@ var ReducedValue = class {
   }
 };
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/state/values/untracked.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/state/values/untracked.js
 var UNTRACKED_VALUE_SYMBOL = /* @__PURE__ */ Symbol.for("langgraph.state.untracked_value");
 var UntrackedValue = class {
   /**
@@ -210444,7 +210444,7 @@ var UntrackedValue = class {
   }
 };
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/state/values/delta.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/state/values/delta.js
 var DELTA_VALUE_SYMBOL = /* @__PURE__ */ Symbol.for("langgraph.state.delta_value");
 var DeltaValue = class {
   /**
@@ -210487,7 +210487,7 @@ var DeltaValue = class {
   }
 };
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/channels/named_barrier_value.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/channels/named_barrier_value.js
 var areSetsEqual = (a, b) => a.size === b.size && [...a].every((value) => b.has(value));
 var NamedBarrierValue = class NamedBarrierValue2 extends BaseChannel {
   lc_graph_name = "NamedBarrierValue";
@@ -210584,7 +210584,7 @@ var NamedBarrierValueAfterFinish = class NamedBarrierValueAfterFinish2 extends B
   }
 };
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/state/schema.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/state/schema.js
 var STATE_SCHEMA_SYMBOL = /* @__PURE__ */ Symbol.for("langgraph.state.state_schema");
 var StateSchema = class {
   /**
@@ -210729,7 +210729,7 @@ var StateSchema = class {
   }
 };
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/state/prebuilt/messages.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/state/prebuilt/messages.js
 var messagesValueSchema = external_exports2.custom().default(() => []);
 var messagesInputSchema = external_exports2.custom();
 var MessagesValue = new ReducedValue(messagesValueSchema, {
@@ -210749,7 +210749,7 @@ var MessagesDeltaValue = new DeltaValue(messagesValueSchema, {
   }
 });
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/graph/zod/meta.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/graph/zod/meta.js
 var SchemaMetaRegistry = class {
   /**
   * Internal map storing schema metadata.
@@ -210878,7 +210878,7 @@ function withLangGraph(schema, meta3) {
   }
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/graph/types.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/graph/types.js
 function isStateDefinitionInit(value) {
   if (value == null) return false;
   if (StateSchema.isInstance(value)) return true;
@@ -210899,7 +210899,7 @@ function isStateGraphInit(value) {
   return true;
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/graph/state.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/graph/state.js
 var ROOT = "__root__";
 var DEFAULT_ERROR_HANDLER_NODE = "__default_error_handler__";
 var PartialStateSchema = /* @__PURE__ */ Symbol.for("langgraph.state.partial");
@@ -211527,7 +211527,7 @@ function _getControlBranch() {
   }) });
 }
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/func/index.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/func/index.js
 var entrypoint = function entrypoint2(optionsOrName, func) {
   const { name: name2, checkpointer, store: store2, cache: cache2 } = typeof optionsOrName === "string" ? {
     name: optionsOrName,
@@ -211593,7 +211593,7 @@ entrypoint.final = function final({ value, save: save2 }) {
   };
 };
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/graph/messages_annotation.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/graph/messages_annotation.js
 var MessagesAnnotation = Annotation.Root({ messages: Annotation({
   reducer: messagesStateReducer,
   default: () => []
@@ -211605,7 +211605,7 @@ var MessagesZodMeta = {
 };
 var MessagesZodState = external_exports.object({ messages: withLangGraph(external_exports.custom(), MessagesZodMeta) });
 
-// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7___zod@4.6.7/node_modules/@langchain/langgraph/dist/index.js
+// node_modules/.pnpm/@langchain+langgraph@1.5.2_@langchain+core@1.2.20_openai@7.42.0_undici@7.30.1_zod@4.6.7_46a4444fe857ae6a805df55ad2feec2d/node_modules/@langchain/langgraph/dist/index.js
 initializeAsyncLocalStorageSingleton();
 
 // src/graph/routing.ts
@@ -212367,8 +212367,8 @@ var RunExecutor = class {
     };
     const output2 = createToolOutput(node2, workspace, limits);
     const email3 = await this.emailToolkit(node2, output2);
-    const browser = await this.browserToolkit(node2, output2, signal);
-    const toolkit = createNodeToolkit({ node: node2, workspace, signal, email: email3, browser, output: output2, limits, jobs: nodeJobs });
+    const mcp2 = await this.mcpToolkit(node2, output2, signal);
+    const toolkit = createNodeToolkit({ node: node2, workspace, signal, email: email3, mcp: mcp2, output: output2, limits, jobs: nodeJobs });
     try {
       const result = await runAgentLoop({
         nodeId: node2.id,
@@ -212455,7 +212455,7 @@ var RunExecutor = class {
       }
       context2.active.delete(node2.id);
       await email3?.dispose();
-      await browser?.dispose();
+      await mcp2?.dispose();
     }
   }
   /**
@@ -212536,26 +212536,26 @@ var RunExecutor = class {
     }
   }
   /**
-   * A browser node gets its own MCP server, and therefore its own Chrome: the
-   * pages it opens are its context, and a sibling running at the same time
-   * cannot navigate them out from under it.
+   * An mcp node gets its own MCP server. With the default browser server that
+   * means its own Chrome: the pages it opens are its context, and a sibling
+   * running at the same time cannot navigate them out from under it.
    */
-  async browserToolkit(node2, output2, signal) {
-    if (!node2.permissions.browser) {
+  async mcpToolkit(node2, output2, signal) {
+    if (!node2.permissions.mcp) {
       return void 0;
     }
     try {
-      return await createBrowserToolkit({
-        command: this.config.browserMcpCommand,
+      return await createMcpToolkit({
+        command: this.config.mcpCommand,
         dataDir: this.config.dataDir,
-        timeoutMs: this.config.browserTimeoutMs,
+        timeoutMs: this.config.mcpTimeoutMs,
         output: output2,
-        allowlist: this.config.browserTools,
+        allowlist: this.config.mcpTools,
         signal
       });
     } catch (error62) {
       throw new NodeFailureError(
-        `Node "${node2.label}" needs the browser, but the MCP server could not start. ${describeError2(error62)} Set AGENTS_AUTOMATIONS_BROWSER_MCP_COMMAND in the environment to a chrome-devtools-mcp launcher (current: ${this.config.browserMcpCommand}).`,
+        `Node "${node2.label}" needs the MCP server, but it could not start. ${describeError2(error62)} Set AGENTS_AUTOMATIONS_MCP_COMMAND in the environment to an MCP server launcher, such as chrome-devtools-mcp for a browser (current: ${this.config.mcpCommand}).`,
         node2.id
       );
     }
@@ -212777,7 +212777,7 @@ var EXIT_CODES = `Exit codes:
   3  usage error    Unknown flag, missing or conflicting flags.
   4  environment    Pre-flight failed before any tokens were spent: a missing
                     provider API key or mailbox credential, a rejected mailbox
-                    login, or a browser MCP launcher that will not start or
+                    login, or an MCP server launcher that will not start or
                     offers none of the configured tools.`;
 var OUTPUT_CONTRACT = `Output:
   stdout carries data only (JSON); stderr carries progress and errors.
@@ -212855,7 +212855,7 @@ In a terminal, with neither --allow nor --deny, it shows a checklist of the
 permissions as the server reads them now: move with up/down, tick or untick
 with space, save with Enter. Off a terminal it only prints them.
 
-Permissions: web, write, bash, email, browser, flow-paths, or all.
+Permissions: web, write, bash, email, mcp, flow-paths, or all.
 Only lines that change what the server reads are written; every other line is
 kept. The server reads them when it starts, so restart your MCP client, or start
 a new Hermes session, afterwards.
@@ -213169,13 +213169,14 @@ OPENROUTER_API_KEY=
 #   write       write_file, inside the run workspace
 #   bash        run_bash: any command you can run
 #   email       the read-only mailbox tools (needs the mailbox below)
-#   browser     a headless Chrome (the launcher below)
+#   mcp         tools from an MCP server (the launcher below; a headless Chrome
+#               by default)
 #   flow-paths  passing a flow as a file path instead of inline JSON
 # AGENTS_AUTOMATIONS_ALLOW_WEB=false
 # AGENTS_AUTOMATIONS_ALLOW_WRITE=false
 # AGENTS_AUTOMATIONS_ALLOW_BASH=false
 # AGENTS_AUTOMATIONS_ALLOW_EMAIL=false
-# AGENTS_AUTOMATIONS_ALLOW_BROWSER=false
+# AGENTS_AUTOMATIONS_ALLOW_MCP=false
 # AGENTS_AUTOMATIONS_ALLOW_FLOW_PATHS=true
 
 # Mailbox, for email nodes: read-only, over IMAP, with an app password. Gmail
@@ -213187,15 +213188,18 @@ AGENTS_AUTOMATIONS_EMAIL_IMAP_HOST=imap.gmail.com
 AGENTS_AUTOMATIONS_EMAIL_IMAP_PORT=993
 # AGENTS_AUTOMATIONS_EMAIL_TIMEOUT_MS=20000
 
-# Browser nodes start this launcher and may call only the tools listed. It is
-# pinned to an exact version: upgrade it on purpose, after reading its notes.
-# AGENTS_AUTOMATIONS_BROWSER_MCP_COMMAND=npx -y chrome-devtools-mcp@1.10.1 --headless --isolated
-# AGENTS_AUTOMATIONS_BROWSER_MCP_TOOLS=new_page,navigate_page,take_snapshot,evaluate_script,list_pages,wait_for,click,type_text,press_key
-# AGENTS_AUTOMATIONS_BROWSER_MCP_TIMEOUT_MS=120000
+# Nodes holding the mcp permission start this MCP server launcher and may call
+# only the tools listed. The default is a headless Chrome (chrome-devtools-mcp)
+# with its read-and-navigate tools; to use another MCP server, set both the
+# command and its tool names. Pin an exact version: upgrade it on purpose, after
+# reading its notes.
+# AGENTS_AUTOMATIONS_MCP_COMMAND=npx -y chrome-devtools-mcp@1.10.1 --headless --isolated
+# AGENTS_AUTOMATIONS_MCP_TOOLS=new_page,navigate_page,take_snapshot,evaluate_script,list_pages,wait_for,click,type_text,press_key
+# AGENTS_AUTOMATIONS_MCP_TIMEOUT_MS=120000
 
 # ---- Everything below is for ~/.agents-automations/.env only; Hermes ignores it. ----
 
-# Extra environment variables to forward to \`run_bash\` and browser MCP servers.
+# Extra environment variables to forward to \`run_bash\` and MCP servers.
 # Everything else is filtered out, so list only names a tool genuinely needs.
 # AGENT_ENV_PASSTHROUGH=HTTP_PROXY,HTTPS_PROXY
 
@@ -213465,7 +213469,7 @@ var TOOL_SCHEMA_TOKENS = {
   bash: 150,
   web: 120,
   email_read: 280,
-  browser: 1400
+  mcp: 1400
 };
 var COMPLETE_TASK_TOKENS = 80;
 var CHARS_PER_TOKEN = 4;
@@ -213646,7 +213650,7 @@ function jsonViaWebFetch({ node: node2 }) {
   ];
 }
 function noExactEndpoint({ node: node2 }) {
-  const fetches = node2.permissions.web || node2.permissions.browser || node2.permissions.bash && FETCH_PATTERN.test(node2.prompt);
+  const fetches = node2.permissions.web || node2.permissions.mcp || node2.permissions.bash && FETCH_PATTERN.test(node2.prompt);
   if (!fetches || URL_PATTERN.test(node2.prompt)) {
     return [];
   }
@@ -214048,7 +214052,7 @@ var FLOW_SCHEMA = {
           prompt: { type: "string", minLength: 1, description: "Required by validation." },
           permissions: {
             type: "object",
-            description: "Tools the agent may use. All default to false. email_read needs a mailbox credential (AGENTS_AUTOMATIONS_EMAIL_ADDRESS and AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD). browser launches a chrome-devtools-mcp server for this node, configured with AGENTS_AUTOMATIONS_BROWSER_MCP_COMMAND and AGENTS_AUTOMATIONS_BROWSER_MCP_TOOLS.",
+            description: "Tools the agent may use. All default to false. email_read needs a mailbox credential (AGENTS_AUTOMATIONS_EMAIL_ADDRESS and AGENTS_AUTOMATIONS_EMAIL_APP_PASSWORD). mcp launches the configured MCP server for this node (by default chrome-devtools-mcp, a headless Chrome), configured with AGENTS_AUTOMATIONS_MCP_COMMAND and AGENTS_AUTOMATIONS_MCP_TOOLS.",
             properties: {
               read: { type: "boolean", default: false },
               write: { type: "boolean", default: false },
@@ -214059,10 +214063,10 @@ var FLOW_SCHEMA = {
                 default: false,
                 description: "email_search and email_get_message \u2014 read the mailbox. Read-only: there is no send tool."
               },
-              browser: {
+              mcp: {
                 type: "boolean",
                 default: false,
-                description: "A real Chrome through the chrome-devtools-mcp server: new_page, navigate_page, take_snapshot, evaluate_script and the rest of AGENTS_AUTOMATIONS_BROWSER_MCP_TOOLS. Use it for pages that block plain HTTP fetches."
+                description: "The tools of the MCP server set by AGENTS_AUTOMATIONS_MCP_COMMAND, limited to AGENTS_AUTOMATIONS_MCP_TOOLS. By default that is a real Chrome through the chrome-devtools-mcp server: new_page, navigate_page, take_snapshot, evaluate_script and the rest. Use the browser for pages that block plain HTTP fetches."
               }
             }
           },
@@ -214248,7 +214252,7 @@ var ALLOW_DEFAULTS = {
   AGENTS_AUTOMATIONS_ALLOW_WRITE: false,
   AGENTS_AUTOMATIONS_ALLOW_WEB: false,
   AGENTS_AUTOMATIONS_ALLOW_EMAIL: false,
-  AGENTS_AUTOMATIONS_ALLOW_BROWSER: false,
+  AGENTS_AUTOMATIONS_ALLOW_MCP: false,
   AGENTS_AUTOMATIONS_ALLOW_FLOW_PATHS: true
 };
 function readMcpPolicy(config2) {
@@ -214258,7 +214262,7 @@ function readMcpPolicy(config2) {
     allowWrite: allowed("AGENTS_AUTOMATIONS_ALLOW_WRITE"),
     allowWeb: allowed("AGENTS_AUTOMATIONS_ALLOW_WEB"),
     allowEmail: allowed("AGENTS_AUTOMATIONS_ALLOW_EMAIL"),
-    allowBrowser: allowed("AGENTS_AUTOMATIONS_ALLOW_BROWSER"),
+    allowMcp: allowed("AGENTS_AUTOMATIONS_ALLOW_MCP"),
     allowFlowPaths: allowed("AGENTS_AUTOMATIONS_ALLOW_FLOW_PATHS"),
     maxConcurrentRuns: config2.mcpMaxConcurrentRuns,
     maxFlowBytes: config2.mcpMaxFlowBytes,
@@ -214270,7 +214274,7 @@ var GATED = [
   { permission: "write", setting: "AGENTS_AUTOMATIONS_ALLOW_WRITE", id: "write", field: "allowWrite" },
   { permission: "bash", setting: "AGENTS_AUTOMATIONS_ALLOW_BASH", id: "bash", field: "allowBash" },
   { permission: "email_read", setting: "AGENTS_AUTOMATIONS_ALLOW_EMAIL", id: "email", field: "allowEmail" },
-  { permission: "browser", setting: "AGENTS_AUTOMATIONS_ALLOW_BROWSER", id: "browser", field: "allowBrowser" }
+  { permission: "mcp", setting: "AGENTS_AUTOMATIONS_ALLOW_MCP", id: "mcp", field: "allowMcp" }
 ];
 function blockedPermissions(graph, policy, granted = /* @__PURE__ */ new Set()) {
   return GATED.filter((gate) => !policy[gate.field] && !granted.has(gate.setting)).map((gate) => ({ ...gate, nodes: graph.nodes.filter((node2) => node2.permissions[gate.permission]).map((node2) => node2.label) })).filter((blocked) => blocked.nodes.length > 0);
@@ -214308,7 +214312,7 @@ var PERMISSIONS = [
   permission("write", "AGENTS_AUTOMATIONS_ALLOW_WRITE", "write files in the run workspace (write_file)", true),
   permission("bash", "AGENTS_AUTOMATIONS_ALLOW_BASH", "run shell commands (run_bash): any command you can", false),
   permission("email", "AGENTS_AUTOMATIONS_ALLOW_EMAIL", "read your mailbox, read-only (needs a mailbox login)", false),
-  permission("browser", "AGENTS_AUTOMATIONS_ALLOW_BROWSER", "drive a headless Chrome (chrome-devtools-mcp)", false),
+  permission("mcp", "AGENTS_AUTOMATIONS_ALLOW_MCP", "tools from an MCP server (default: headless Chrome)", false),
   permission("flow-paths", "AGENTS_AUTOMATIONS_ALLOW_FLOW_PATHS", "load a flow from a file path, not only inline JSON", true)
 ];
 function isSet(values, name2) {
@@ -220949,7 +220953,7 @@ unless you can name what it gets wrong.
 - Name the exact endpoint, query and fields. State the exact output path and
   shape. Say what to do when data is missing ("note it; never invent").
 - Grant the minimum permissions per node: read, write, bash, web, email_read,
-  browser.
+  mcp (by default a headless Chrome through chrome-devtools-mcp).
 - outputSchema (minLines, maxLines, linePattern, linePatternHint, mustContain,
   mustNotContain) enforces a handoff a machine consumes; on a mismatch the output
   is rejected back to the node for up to three attempts.
@@ -221493,7 +221497,7 @@ settings changes only the permissions, so nobody has to edit a file by hand. It
 changes every file in use: Hermes's when the plugin is installed, and
 ~/.agents-automations/.env when it exists or Hermes has no plugin. In a terminal it
 shows a checklist of what flows may use now; with --allow or --deny (web,
-write, bash, email, browser, flow-paths, or all) it asks nothing, and --deny
+write, bash, email, mcp, flow-paths, or all) it asks nothing, and --deny
 wins over --allow. Off a terminal with neither flag it only prints the
 permissions. Restart the server afterwards: start a new Hermes session, or
 restart your MCP client.

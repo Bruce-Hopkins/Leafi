@@ -8,7 +8,7 @@ export interface McpPolicy {
   allowWrite: boolean;
   allowWeb: boolean;
   allowEmail: boolean;
-  allowBrowser: boolean;
+  allowMcp: boolean;
   allowFlowPaths: boolean;
   maxConcurrentRuns: number;
   maxFlowBytes: number;
@@ -28,7 +28,7 @@ export const ALLOW_DEFAULTS = {
   AGENTS_AUTOMATIONS_ALLOW_WRITE: false,
   AGENTS_AUTOMATIONS_ALLOW_WEB: false,
   AGENTS_AUTOMATIONS_ALLOW_EMAIL: false,
-  AGENTS_AUTOMATIONS_ALLOW_BROWSER: false,
+  AGENTS_AUTOMATIONS_ALLOW_MCP: false,
   AGENTS_AUTOMATIONS_ALLOW_FLOW_PATHS: true,
 } as const;
 
@@ -41,7 +41,7 @@ export function readMcpPolicy(config: RuntimeConfig): McpPolicy {
     allowWrite: allowed('AGENTS_AUTOMATIONS_ALLOW_WRITE'),
     allowWeb: allowed('AGENTS_AUTOMATIONS_ALLOW_WEB'),
     allowEmail: allowed('AGENTS_AUTOMATIONS_ALLOW_EMAIL'),
-    allowBrowser: allowed('AGENTS_AUTOMATIONS_ALLOW_BROWSER'),
+    allowMcp: allowed('AGENTS_AUTOMATIONS_ALLOW_MCP'),
     allowFlowPaths: allowed('AGENTS_AUTOMATIONS_ALLOW_FLOW_PATHS'),
     maxConcurrentRuns: config.mcpMaxConcurrentRuns,
     maxFlowBytes: config.mcpMaxFlowBytes,
@@ -51,10 +51,10 @@ export function readMcpPolicy(config: RuntimeConfig): McpPolicy {
 
 /** A node permission the policy gates: its setting, the id `settings --allow` takes, and its policy field. */
 interface GatedPermission {
-  permission: 'bash' | 'write' | 'web' | 'email_read' | 'browser';
+  permission: 'bash' | 'write' | 'web' | 'email_read' | 'mcp';
   setting: AllowSetting;
   id: string;
-  field: 'allowBash' | 'allowWrite' | 'allowWeb' | 'allowEmail' | 'allowBrowser';
+  field: 'allowBash' | 'allowWrite' | 'allowWeb' | 'allowEmail' | 'allowMcp';
 }
 
 const GATED: readonly GatedPermission[] = [
@@ -62,7 +62,7 @@ const GATED: readonly GatedPermission[] = [
   { permission: 'write', setting: 'AGENTS_AUTOMATIONS_ALLOW_WRITE', id: 'write', field: 'allowWrite' },
   { permission: 'bash', setting: 'AGENTS_AUTOMATIONS_ALLOW_BASH', id: 'bash', field: 'allowBash' },
   { permission: 'email_read', setting: 'AGENTS_AUTOMATIONS_ALLOW_EMAIL', id: 'email', field: 'allowEmail' },
-  { permission: 'browser', setting: 'AGENTS_AUTOMATIONS_ALLOW_BROWSER', id: 'browser', field: 'allowBrowser' },
+  { permission: 'mcp', setting: 'AGENTS_AUTOMATIONS_ALLOW_MCP', id: 'mcp', field: 'allowMcp' },
 ];
 
 /** A permission a flow requests that the policy denies, with the labels of the nodes requesting it. */
@@ -101,7 +101,7 @@ export function policyDenied(blocked: readonly BlockedPermission[], lead = 'The 
   );
 }
 
-/** Rejects a flow before any provider, mailbox or browser work begins, unless the person granted what it needs. */
+/** Rejects a flow before any provider, mailbox or MCP server work begins, unless the person granted what it needs. */
 export function assertFlowAllowed(graph: Graph, policy: McpPolicy, granted?: ReadonlySet<AllowSetting>): void {
   const blocked = blockedPermissions(graph, policy, granted);
   if (blocked.length > 0) {

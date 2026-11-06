@@ -4,12 +4,12 @@ import type { ToolOutput } from '../tool-output';
 import { connectMcpClient, isRecord, type McpToolInfo } from './mcp-client';
 
 /**
- * The browser tools a node can hold by default. They are the read-and-navigate
- * set: enough to open a feed, extract its posts, and dismiss a consent banner,
+ * The MCP tools a node can hold by default. They suit the default server,
+ * chrome-devtools-mcp, and are its read-and-navigate set: enough to open a feed, extract its posts, and dismiss a consent banner,
  * without paying for the console, network, performance and memory tools' schemas
  * on every iteration.
  */
-export const DEFAULT_BROWSER_TOOLS = [
+export const DEFAULT_MCP_TOOLS = [
   'new_page',
   'navigate_page',
   'take_snapshot',
@@ -21,7 +21,7 @@ export const DEFAULT_BROWSER_TOOLS = [
   'press_key',
 ] as const;
 
-export interface BrowserToolkitOptions {
+export interface McpToolkitOptions {
   /** The MCP launcher command, e.g. `npx -y chrome-devtools-mcp@1.10.1 --headless`. */
   command: string;
   /** The data directory that holds the server's private home. */
@@ -34,25 +34,25 @@ export interface BrowserToolkitOptions {
   signal?: AbortSignal;
 }
 
-export interface BrowserToolkit {
+export interface McpToolkit {
   schemas: StructuredToolInterface[];
-  /** Runs a browser tool, or returns undefined when `name` is not one of ours. */
+  /** Runs an MCP tool, or returns undefined when `name` is not one of ours. */
   execute(name: string, args: Record<string, unknown>): Promise<string | undefined>;
-  /** Stops the MCP server and the browser it launched. Safe when no tool ran. */
+  /** Stops the MCP server and anything it launched, such as a browser. Safe when no tool ran. */
   dispose(): Promise<void>;
 }
 
 const DESCRIPTION_LIMIT = 600;
-/** The tools whose results run long; only they carry the output-budget sentence. */
+/** chrome-devtools-mcp's tools whose results run long; only they carry the output-budget sentence. */
 const LONG_RESULT_TOOLS = new Set(['take_snapshot', 'evaluate_script']);
 const COMPACT_HINT = 'next time extract less, e.g. with evaluate_script returning a compact array';
 
 /**
- * Binds a browser MCP server's tools to a node. The permission decides whether
+ * Binds an MCP server's tools to a node. The permission decides whether
  * this exists at all; the allowlist decides which of the server's tools the
  * model ever sees, so a node cannot reach past its own contract.
  */
-export async function createBrowserToolkit(options: BrowserToolkitOptions): Promise<BrowserToolkit> {
+export async function createMcpToolkit(options: McpToolkitOptions): Promise<McpToolkit> {
   const client = await connectMcpClient({
     command: options.command,
     dataDir: options.dataDir,
@@ -82,7 +82,7 @@ export async function createBrowserToolkit(options: BrowserToolkitOptions): Prom
 }
 
 /** The server's tools, named, so a flow can be checked against what it offers. */
-export async function listBrowserTools(options: {
+export async function listMcpTools(options: {
   command: string;
   dataDir: string;
   timeoutMs: number;

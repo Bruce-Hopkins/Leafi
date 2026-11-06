@@ -45,7 +45,7 @@ const bashNode: AgentNode = {
   model: 'gpt-4o-mini',
   prompt: 'p',
   position: { x: 0, y: 0 },
-  permissions: { read: false, write: false, bash: true, web: false, email_read: false, browser: false },
+  permissions: { read: false, write: false, bash: true, web: false, email_read: false, mcp: false },
 };
 
 async function jobToolkit(options: { jobTimeoutMs?: number; runTimeLeftMs?: number } = {}) {
