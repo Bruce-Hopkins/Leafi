@@ -34,19 +34,11 @@ export function Hero() {
         <div className="wrap">
           <span className="eyebrow"><span className="pulse-dot" />Open source · MIT · early prototype</span>
           <h1>Automations built from <em>linked LLM&nbsp;agents</em>.</h1>
-          <p className="lead">
-            Ask Hermes, or Claude Code, Cursor or any MCP client, for a multi-step task. It designs a small flow of
-            agents, checks it for free, shows you the diagram, and runs it once you agree. The flow is saved, so
-            next time it's one call.
-          </p>
           <InstallTabs />
-          <p className="install-note">
-            Needs Node.js 22 or newer. The installer finds Hermes, Claude Code, Claude Desktop and Cursor, and sets
-            up only the ones you tick.
-          </p>
+          <p className="install-note">Needs Node.js 22 or newer. The installer finds Hermes and sets it up there.</p>
           <div className="cta-row">
             <GitHubStar />
-            <a className="btn ghost" href="#how">See how it works</a>
+            <a className="btn ghost" href="#goals">Why use it</a>
           </div>
         </div>
       </div>

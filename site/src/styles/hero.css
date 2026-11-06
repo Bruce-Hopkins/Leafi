@@ -160,7 +160,6 @@
 .pulse-dot { width: 7px; height: 7px; border-radius: 50%; background: #6cc897; box-shadow: 0 0 0 3px rgba(108, 200, 151, .22); }
 .hero h1 { font-size: clamp(34px, 5.2vw, 60px); font-weight: 700; max-width: 20ch; margin: 0 auto; }
 .hero h1 em { font-style: normal; color: var(--h-accent); }
-.hero .lead { font-size: clamp(16.5px, 1.8vw, 19px); color: var(--h-ink-2); margin: 18px auto 0; max-width: 62ch; }
 .hero .install-note { font-size: 14px; color: var(--h-ink-3); margin: 12px auto 0; max-width: 600px; }
 .hero .cta-row { justify-content: center; }
 .hero .btn.primary { background: var(--h-ink); border-color: var(--h-ink); color: var(--h-bg); }

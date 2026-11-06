@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Icon, REPO } from "./components";
 import { Hero } from "./hero/Hero";
-import { FinalCta, Features, Footer, HowItWorks, Install, WorksWith } from "./sections/Sections";
+import { Footer, Goals, Prototype } from "./sections/Sections";
 
 const BASE = import.meta.env.BASE_URL;
 
@@ -11,11 +11,8 @@ export function App() {
       <Nav />
       <main>
         <Hero />
-        <WorksWith />
-        <HowItWorks />
-        <Features />
-        <Install />
-        <FinalCta />
+        <Goals />
+        <Prototype />
       </main>
       <Footer />
     </>
@@ -53,9 +50,7 @@ function Nav() {
           agents-automations
         </a>
         <nav className="nav-links" aria-label="Main">
-          <a className="hide-sm" href="#how">How it works</a>
-          <a className="hide-sm" href="#features">Features</a>
-          <a className="hide-sm" href="#install">Install</a>
+          <a className="hide-sm" href="#goals">Goals</a>
           <a className="btn btn-sm" href={REPO}>
             {Icon.github}
             GitHub
