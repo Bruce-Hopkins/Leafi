@@ -2,9 +2,10 @@
 // drawing scales with the screen and nothing here is in pixels.
 //
 // Every node names its parent and the corner points of the line that reaches it,
-// from the parent's anchor to the node's centre. Lines from the same parent
-// start together and grow at the same speed, so a stretch two routes share is
-// drawn as one line that then forks: repeat the shared corners exactly.
+// from the parent's centre to the node's centre. A line only ever splits at a
+// node, never part-way along, as in a real flow: an agent decides where work
+// goes next. So routes from one parent must leave it in different directions
+// and share no stretch.
 
 export type Pt = readonly [x: number, y: number];
 
@@ -40,8 +41,8 @@ export interface Layout {
   font: { label: number; sub: number; hub: number; hubSub: number };
 }
 
-// Traced from the sketch: Hermes on top, one trunk down to a bus that splits
-// left and right; the left-middle node is itself a hub with two children.
+// Hermes on top starts one planning agent. Every split after that is an agent
+// too: Plan hands work left and right, and each of those hands it on again.
 export const desktop: Layout = {
   viewBox: { w: 1600, h: 600 },
   hub: { label: "Hermes", sub: "designs & runs your flow", box: { x: 600, y: 24, w: 400, h: 100, r: 20 } },
@@ -51,33 +52,45 @@ export const desktop: Layout = {
   font: { label: 26, sub: 17, hub: 40, hubSub: 17 },
   nodes: [
     {
-      id: "inbox", label: "Inbox", sub: "claude-haiku-5-5", parent: "hermes", labelSide: "below",
-      route: [[800, 124], [800, 204], [520, 204], [520, 126], [250, 126]],
+      id: "plan", label: "Plan", sub: "glm-5.3-flash", parent: "hermes", labelSide: "below",
+      route: [[800, 124], [800, 214]],
     },
     {
-      id: "research", label: "Research", sub: "gpt-4o-mini", parent: "hermes", labelSide: "left",
-      route: [[800, 124], [800, 204], [520, 204], [520, 288], [370, 288]],
+      id: "triage", label: "Triage", sub: "gpt-6-luna", parent: "plan", labelSide: "left",
+      route: [[800, 214], [520, 214]],
     },
     {
-      id: "arxiv", label: "arXiv", sub: "gemini-2.5-flash", parent: "research", labelSide: "below",
-      route: [[370, 288], [370, 372], [660, 372], [660, 470]],
+      id: "inbox", label: "Inbox", sub: "claude-haiku-5-5", parent: "triage", labelSide: "left",
+      route: [[520, 214], [520, 126], [260, 126]],
+    },
+    {
+      id: "research", label: "Research", sub: "deepseek-v4.1-flash", parent: "triage", labelSide: "below",
+      route: [[520, 214], [520, 340]],
+    },
+    {
+      id: "arxiv", label: "arXiv", sub: "gemini-3.8-flash", parent: "research", labelSide: "below",
+      route: [[520, 340], [720, 340], [720, 480]],
     },
     {
       id: "summarise", label: "Summarise", sub: "claude-haiku-5-5", parent: "research", labelSide: "below",
-      route: [[370, 288], [370, 372], [370, 420], [200, 420], [200, 500]],
+      route: [[520, 340], [320, 340], [320, 480]],
     },
     {
-      id: "weather", label: "Weather", sub: "gpt-4o-mini", parent: "hermes", labelSide: "right",
-      route: [[800, 124], [800, 204], [1100, 204], [1100, 160], [1310, 160], [1310, 84]],
+      id: "calendar", label: "Calendar", sub: "gpt-6-luna", parent: "plan", labelSide: "right",
+      route: [[800, 214], [1080, 214]],
     },
     {
-      id: "briefing", label: "Briefing", sub: "for you to read", parent: "hermes", labelSide: "below", person: true,
-      route: [[800, 124], [800, 204], [1100, 204], [1100, 288], [1420, 288], [1420, 470]],
+      id: "weather", label: "Weather", sub: "deepseek-v4.1-flash", parent: "calendar", labelSide: "right",
+      route: [[1080, 214], [1080, 126], [1320, 126]],
+    },
+    {
+      id: "briefing", label: "Briefing", sub: "for you to read", parent: "calendar", labelSide: "below", person: true,
+      route: [[1080, 214], [1080, 340], [1300, 340], [1300, 480]],
     },
   ],
 };
 
-// Phones: the same idea, taller than wide, with one node fewer.
+// Phones: the same idea, taller than wide, with fewer nodes.
 export const mobile: Layout = {
   viewBox: { w: 600, h: 660 },
   hub: { label: "Hermes", sub: "designs & runs your flow", box: { x: 140, y: 24, w: 320, h: 96, r: 18 } },
@@ -87,24 +100,24 @@ export const mobile: Layout = {
   font: { label: 26, sub: 17, hub: 36, hubSub: 17 },
   nodes: [
     {
-      id: "inbox", label: "Inbox", sub: "claude-haiku-5-5", parent: "hermes", labelSide: "below",
-      route: [[300, 120], [300, 200], [120, 200], [120, 290]],
+      id: "plan", label: "Plan", sub: "glm-5.3-flash", parent: "hermes", labelSide: "right",
+      route: [[300, 120], [300, 210]],
     },
     {
-      id: "weather", label: "Weather", sub: "gpt-4o-mini", parent: "hermes", labelSide: "below",
-      route: [[300, 120], [300, 200], [480, 200], [480, 290]],
+      id: "inbox", label: "Inbox", sub: "claude-haiku-5-5", parent: "plan", labelSide: "below",
+      route: [[300, 210], [110, 210]],
     },
     {
-      id: "research", label: "Research", sub: "gpt-4o-mini", parent: "hermes", labelSide: "right",
-      route: [[300, 120], [300, 200], [300, 410]],
+      id: "research", label: "Research", sub: "deepseek-v4.1-flash", parent: "plan", labelSide: "below",
+      route: [[300, 210], [300, 390]],
     },
     {
-      id: "arxiv", label: "arXiv", sub: "gemini-2.5-flash", parent: "research", labelSide: "below",
-      route: [[300, 410], [300, 470], [120, 470], [120, 550]],
+      id: "arxiv", label: "arXiv", sub: "gemini-3.8-flash", parent: "research", labelSide: "below",
+      route: [[300, 390], [120, 390], [120, 530]],
     },
     {
       id: "briefing", label: "Briefing", sub: "for you to read", parent: "research", labelSide: "below", person: true,
-      route: [[300, 410], [300, 470], [480, 470], [480, 550]],
+      route: [[300, 390], [480, 390], [480, 530]],
     },
   ],
 };

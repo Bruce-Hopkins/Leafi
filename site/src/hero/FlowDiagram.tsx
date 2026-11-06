@@ -82,12 +82,6 @@ export function FlowDiagram({ layout, live }: Props) {
         ))}
       </g>
 
-      <g className="junctions">
-        {t.junctions.map((j) => (
-          <circle key={`${j.at[0]},${j.at[1]}`} className="junction" cx={j.at[0]} cy={j.at[1]} r={5.5} style={cssVars({ "--at": sec(j.time) })} />
-        ))}
-      </g>
-
       <g className="nodes">
         {t.edges.map((e) => <NodeMark key={e.node.id} edge={e} layout={layout} />)}
       </g>
@@ -141,10 +135,13 @@ function drawVars(e: TimedEdge) {
 }
 
 function describe(layout: Layout) {
-  const names = (parent: string) => layout.nodes.filter((n) => n.parent === parent);
-  const parts = names("hermes").map((n) => {
-    const kids = names(n.id);
-    return kids.length ? `${n.label} (which hands work on to ${kids.map((k) => k.label).join(" and ")})` : n.label;
-  });
-  return `${layout.hub.label} at the centre, connected by lines to agent nodes: ${parts.join(", ")}.`;
+  const children = (parent: string) => layout.nodes.filter((n) => n.parent === parent);
+  const tell = (parent: string): string =>
+    children(parent)
+      .map((n) => {
+        const next = tell(n.id);
+        return next ? `${n.label} (which hands work on to ${next})` : n.label;
+      })
+      .join(" and ");
+  return `${layout.hub.label} starts a flow of agent nodes: ${tell("hermes")}.`;
 }

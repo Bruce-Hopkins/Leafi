@@ -1,8 +1,8 @@
 // Turns a Layout into SVG paths and the moment each piece appears.
 //
 // Every line is drawn at one constant speed, starting when its parent node
-// appears, so lines that share a stretch overlap exactly and read as one line
-// that forks. That only holds with linear timing: never ease the draw.
+// appears, so the lines leaving one node grow together. Keep the timing
+// linear: never ease the draw.
 
 import type { FlowNode, Layout, Pt } from "./layout";
 
@@ -37,15 +37,9 @@ export interface TimedEdge {
   pulse: { dash: number; gap: number; from: number; to: number; delay: number };
 }
 
-export interface Junction {
-  at: Pt;
-  time: number;
-}
-
 export interface Timeline {
   hub: { left: string; right: string };
   edges: TimedEdge[];
-  junctions: Junction[];
   /** When the last node has finished popping in. */
   end: number;
   pulsePeriod: number;
@@ -56,7 +50,6 @@ type MutPt = [number, number];
 const dist = (a: Pt, b: Pt) => Math.hypot(b[0] - a[0], b[1] - a[1]);
 const n2 = (v: number) => Math.round(v * 100) / 100;
 const n2Fine = (v: number) => Math.round(v * 10000) / 10000;
-const key = (p: Pt) => `${p[0]},${p[1]}`;
 
 function at(points: readonly Pt[], i: number): Pt {
   const p = points[i];
@@ -128,8 +121,6 @@ export function buildTimeline(layout: Layout): Timeline {
   const { nodes, nodeRadius: R, cornerRadius } = layout;
   const byId = new Map(nodes.map((n) => [n.id, n]));
   const timed = new Map<string, TimedEdge>();
-  const drawStart = new Map<string, number>(); // parent id → when its lines start
-  const pulseStart = new Map<string, number>(); // parent id → offset in the pulse cycle
 
   const visit = (node: FlowNode): TimedEdge => {
     const done = timed.get(node.id);
@@ -146,8 +137,6 @@ export function buildTimeline(layout: Layout): Timeline {
       // The pulse runs the parent's line, then crosses the parent node (two radii).
       pStart = pe.pulse.delay + (pe.length + 2 * R) / TIMING.pulseSpeed;
     }
-    drawStart.set(node.parent, start);
-    pulseStart.set(node.parent, pStart);
 
     const center = at(node.route, node.route.length - 1);
     const { d, length } = roundedPath(trim(node.route, fromHub ? 0 : R, R), cornerRadius);
@@ -172,7 +161,7 @@ export function buildTimeline(layout: Layout): Timeline {
   const end = Math.max(...edges.map((e) => e.arrive)) + 0.5;
 
   // One period for every pulse, long enough for the farthest leaf, so a round
-  // of pulses leaves Hermes together and splits at the same forks as the lines.
+  // of pulses leaves Hermes together and splits at the same nodes as the lines.
   const travel = Math.max(...edges.map((e) => e.pulse.delay + (e.length + TIMING.pulseLength) / TIMING.pulseSpeed));
   const pulsePeriod = travel + TIMING.pulseRest;
   const pulsesBegin = end + 0.6;
@@ -188,35 +177,5 @@ export function buildTimeline(layout: Layout): Timeline {
     };
   }
 
-  return { hub: hubHalves(layout.hub.box), edges, junctions: junctions(layout, drawStart), end, pulsePeriod: n2(pulsePeriod) };
-}
-
-/** Points where routes from one parent fork, timed for when the line first reaches them. */
-function junctions(layout: Layout, drawStart: Map<string, number>): Junction[] {
-  const R = layout.nodeRadius;
-  const groups = new Map<string, FlowNode[]>();
-  for (const n of layout.nodes) groups.set(n.parent, [...(groups.get(n.parent) ?? []), n]);
-
-  const out: Junction[] = [];
-  for (const [parent, members] of groups) {
-    if (members.length < 2) continue;
-    const nexts = new Map<string, Set<string>>();
-    const reach = new Map<string, { at: Pt; along: number }>();
-    for (const n of members) {
-      let along = parent === "hermes" ? 0 : -R;
-      for (let i = 0; i < n.route.length - 1; i++) {
-        const p = at(n.route, i);
-        const q = at(n.route, i + 1);
-        if (i > 0 && !reach.has(key(p))) reach.set(key(p), { at: p, along });
-        nexts.set(key(p), (nexts.get(key(p)) ?? new Set()).add(key(q)));
-        along += dist(p, q);
-      }
-    }
-    const start = drawStart.get(parent) ?? TIMING.linesStart;
-    for (const [k, set] of nexts) {
-      const r = reach.get(k);
-      if (set.size > 1 && r) out.push({ at: r.at, time: n2(start + r.along / TIMING.speed) });
-    }
-  }
-  return out;
+  return { hub: hubHalves(layout.hub.box), edges, end, pulsePeriod: n2(pulsePeriod) };
 }

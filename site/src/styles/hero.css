@@ -87,8 +87,7 @@
   stroke-dashoffset: var(--pf);
 }
 
-.junction, .node-core, .node-ripple { transform-box: fill-box; transform-origin: center; }
-.junction { fill: var(--h-line); transform: scale(0); }
+.node-core, .node-ripple { transform-box: fill-box; transform-origin: center; }
 
 .node-core { transform: scale(0); }
 .node-ring { fill: var(--h-bg); stroke: var(--h-line); stroke-width: 2.4; transition: stroke .2s; }
@@ -110,7 +109,6 @@
 .is-live .hub-fill,
 .is-live .hub-label,
 .is-live .hub-sub { animation: fade-in .5s ease var(--at) forwards; }
-.is-live .junction { animation: grow .28s ease-out var(--at) forwards; }
 .is-live .node-core { animation: grow .5s cubic-bezier(.34, 1.56, .64, 1) var(--at) forwards; }
 .is-live .node-ripple { animation: ripple 1s ease-out var(--at) forwards; }
 .is-live .node-text { animation: rise .5s ease calc(var(--at) + .12s) forwards; }
@@ -136,7 +134,7 @@
   .ambient { opacity: 1; }
   .hub-stroke, .edge, .edge-glow { stroke-dashoffset: 0; }
   .hub-fill, .hub-label, .hub-sub, .node-text { opacity: 1; transform: none; }
-  .junction, .node-core { transform: none; }
+  .node-core { transform: none; }
   .pulse, .node-ripple { display: none; }
 }
 
