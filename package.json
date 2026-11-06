@@ -20,7 +20,10 @@
     "build:plugin": "pnpm build && node scripts/build-hermes-plugin.mjs",
     "test:plugin": "pnpm build:plugin && tsx --test test/hermes-plugin.test.ts",
     "test:pack": "node scripts/pack-test.mjs",
-    "bench": "tsx bench/node-bench.ts"
+    "bench": "tsx bench/node-bench.ts",
+    "site:dev": "pnpm --filter agents-automations-site dev",
+    "site:build": "pnpm --filter agents-automations-site build",
+    "site:gif": "node site/scripts/record-gif.mjs"
   },
   "dependencies": {
     "@langchain/anthropic": "^1.5.12",

@@ -1,0 +1,91 @@
+section:not(.hero) { padding: 72px 0; }
+@media (min-width: 980px) { section:not(.hero) { padding: 96px 0; } }
+.band { background: var(--surface); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.kicker { font: 500 13px/1 var(--mono); color: var(--accent); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 14px; }
+.section-head { max-width: 680px; margin-bottom: 44px; }
+.section-head h2 { font-size: clamp(28px, 4vw, 40px); font-weight: 700; }
+.section-head p { color: var(--ink-2); margin-top: 14px; font-size: 18px; }
+
+/* Grid children default to min-width:auto, so a long <pre> would widen the page. */
+.steps > *, .install-grid > *, .features > * { min-width: 0; }
+
+/* Works with */
+.works { padding: 28px 0; border-bottom: 1px solid var(--line); background: var(--surface); }
+.works .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; }
+.works .label { font: 500 13px/1 var(--mono); color: var(--ink-3); }
+.works ul { display: flex; flex-wrap: wrap; gap: 10px; list-style: none; margin: 0; padding: 0; }
+.works li { font-size: 15px; font-weight: 500; color: var(--ink-2); padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); }
+
+/* How it works */
+.steps { display: grid; gap: 40px; }
+@media (min-width: 980px) { .steps { grid-template-columns: .9fr 1.1fr; gap: 56px; align-items: start; } }
+.step-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; counter-reset: step; }
+.step-list li { position: relative; padding: 18px 0 18px 56px; border-bottom: 1px solid var(--line); counter-increment: step; }
+.step-list li:last-child { border-bottom: 0; }
+.step-list li::before {
+  content: counter(step); position: absolute; left: 0; top: 16px; width: 34px; height: 34px;
+  border-radius: 10px; display: grid; place-items: center; font: 500 14px/1 var(--mono);
+  background: var(--accent-soft); color: var(--accent);
+}
+.step-list h3 { font-size: 18px; font-weight: 600; }
+.step-list p { color: var(--ink-2); margin-top: 6px; font-size: 16px; }
+blockquote.ask { margin: 12px 0 0; padding: 12px 16px; border-left: 3px solid var(--accent); background: var(--bg); border-radius: 0 10px 10px 0; color: var(--ink); font-size: 15.5px; }
+
+.terminal { background: var(--term-bg); border: 1px solid var(--term-line); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+.terminal-bar { display: flex; align-items: center; gap: 6px; padding: 12px 14px; border-bottom: 1px solid var(--term-line); }
+.terminal-bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--term-line); }
+.terminal-bar span { margin-left: 8px; font: 400 12.5px/1 var(--mono); color: var(--term-dim); }
+.terminal pre { margin: 0; padding: 18px; overflow-x: auto; color: var(--term-ink); font-size: 13px; line-height: 1.65; }
+.terminal .p { color: var(--term-dim); user-select: none; }
+.terminal .c { color: var(--term-dim); }
+.terminal .k { color: var(--term-accent); }
+.terminal .g { color: var(--term-ok); }
+details.flow-json { margin-top: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+details.flow-json summary { cursor: pointer; padding: 14px 18px; font: 500 14px/1.3 var(--mono); color: var(--ink-2); list-style: none; display: flex; align-items: center; gap: 10px; }
+details.flow-json summary::-webkit-details-marker { display: none; }
+details.flow-json summary::before { content: ""; width: 8px; height: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg); transition: transform .15s; }
+details.flow-json[open] summary::before { transform: rotate(45deg); }
+details.flow-json pre { margin: 0; padding: 0 18px 18px; overflow-x: auto; font-size: 12.5px; line-height: 1.6; color: var(--ink-2); }
+
+/* Features */
+.features { display: grid; gap: 16px; }
+@media (min-width: 680px) { .features { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1000px) { .features { grid-template-columns: repeat(3, 1fr); } }
+.feature { background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; }
+.feature .icon { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); margin-bottom: 18px; }
+.feature .icon svg { width: 20px; height: 20px; }
+.feature h3 { font-size: 18px; font-weight: 600; }
+.feature p { color: var(--ink-2); margin-top: 8px; font-size: 15.5px; }
+.providers { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 28px; color: var(--ink-3); font-size: 15px; }
+.providers strong { color: var(--ink-2); font-weight: 500; }
+
+/* Install */
+.install-grid { display: grid; gap: 16px; }
+@media (min-width: 860px) { .install-grid { grid-template-columns: repeat(2, 1fr); } }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; }
+.card h3 { font-size: 18px; font-weight: 600; }
+.card > p { color: var(--ink-2); margin-top: 8px; font-size: 15.5px; }
+.card pre { margin: 16px 0 0; padding: 14px 16px; background: var(--term-bg); color: var(--term-ink); border-radius: 10px; overflow-x: auto; font-size: 13px; line-height: 1.6; }
+.card pre .c { color: var(--term-dim); }
+
+.callout {
+  display: grid; gap: 14px; grid-template-columns: auto 1fr; align-items: start; margin-top: 24px;
+  background: var(--warn-bg); border: 1px solid var(--warn-line); color: var(--warn-ink);
+  border-radius: var(--radius); padding: 22px 24px;
+}
+.callout > svg { width: 22px; height: 22px; margin-top: 2px; }
+.callout h3 { font-size: 17px; font-weight: 600; color: inherit; }
+.callout p { margin-top: 6px; font-size: 15.5px; }
+.callout a { color: inherit; font-weight: 500; }
+
+/* Final call to action and footer */
+.final { text-align: center; }
+.final h2 { font-size: clamp(28px, 4vw, 40px); font-weight: 700; }
+.final p { color: var(--ink-2); margin: 14px auto 0; max-width: 52ch; font-size: 18px; }
+.final .cta-row { justify-content: center; }
+footer { border-top: 1px solid var(--line); padding: 28px 0 40px; font-size: 14px; color: var(--ink-3); }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; }
+footer nav { display: flex; flex-wrap: wrap; gap: 8px 20px; }
+@media (min-width: 720px) { footer nav { margin-left: auto; } }
+footer a { color: var(--ink-2); text-decoration: none; }
+footer a:hover { color: var(--ink); text-decoration: underline; }
