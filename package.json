@@ -1,6 +1,6 @@
 {
   "name": "agents-automations",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "description": "Build, check and run automations made of linked LLM agents, from the terminal or from your agent",
   "packageManager": "pnpm@12.8.1",
@@ -22,8 +22,7 @@
     "test:pack": "node scripts/pack-test.mjs",
     "bench": "tsx bench/node-bench.ts",
     "site:dev": "pnpm --filter agents-automations-site dev",
-    "site:build": "pnpm --filter agents-automations-site build",
-    "site:gif": "node site/scripts/record-gif.mjs"
+    "site:build": "pnpm --filter agents-automations-site build"
   },
   "dependencies": {
     "@langchain/anthropic": "^1.5.12",

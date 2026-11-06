@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "agents-automations",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Validate, draw and run agents-automations flows from Hermes, with token and cost reporting.",
   "author": { "name": "Bruce Hopkins" },
   "repository": "https://github.com/Bruce-Hopkins/agent-automations",
