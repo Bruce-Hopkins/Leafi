@@ -1,7 +1,8 @@
 import { useId, useMemo } from "react";
 import { cssVars, sec } from "../hooks";
 import type { Layout, Pt } from "./layout";
-import { buildTimeline, TIMING, type TimedEdge } from "./timeline";
+import type { Hub } from "./layout";
+import { buildTimeline, type TimedBox, type TimedEdge } from "./timeline";
 
 interface Props {
   layout: Layout;
@@ -15,8 +16,7 @@ export function FlowDiagram({ layout, live }: Props) {
   const titleId = `${ids}-title`;
   const glowId = `${ids}-glow`;
   const { w, h } = layout.viewBox;
-  const { box } = layout.hub;
-  const cx = box.x + box.w / 2;
+  const lines = [{ id: "link", ...t.link }, ...t.edges.map((e) => ({ id: e.node.id, ...e }))];
 
   return (
     <svg
@@ -37,42 +37,19 @@ export function FlowDiagram({ layout, live }: Props) {
         </filter>
       </defs>
 
-      {/* Hermes: the border draws from the top and closes at the bottom, where the trunk leaves. */}
-      <g className="hub">
-        <rect
-          className="hub-fill"
-          x={box.x} y={box.y} width={box.w} height={box.h} rx={box.r}
-          style={cssVars({ "--at": sec(TIMING.hubStart + 0.25) })}
-        />
-        {[t.hub.left, t.hub.right].map((d, i) => (
-          <path
-            key={i} className="hub-stroke" d={d} pathLength={1}
-            style={cssVars({ "--delay": sec(TIMING.hubStart), "--dur": sec(TIMING.hubDraw) })}
-          />
-        ))}
-        <text
-          className="hub-label" x={cx} y={box.y + box.h / 2 + 4} fontSize={layout.font.hub}
-          style={cssVars({ "--at": sec(TIMING.hubStart + 0.35) })}
-        >
-          {layout.hub.label}
-        </text>
-        <text
-          className="hub-sub" x={cx} y={box.y + box.h / 2 + 4 + layout.font.hubSub + 11} fontSize={layout.font.hubSub}
-          style={cssVars({ "--at": sec(TIMING.hubStart + 0.5) })}
-        >
-          {layout.hub.sub}
-        </text>
-      </g>
+      {/* Hermes, then leafi below it: each border draws from the top and closes at the bottom, where its line leaves. */}
+      <HubBox hub={layout.caller} timing={t.caller} />
+      <HubBox hub={layout.hub} timing={t.hub} />
 
       <g className="edges">
-        {t.edges.map((e) => <path key={`g-${e.node.id}`} className="edge-glow" d={e.d} pathLength={1} style={drawVars(e)} />)}
-        {t.edges.map((e) => <path key={`l-${e.node.id}`} className="edge" d={e.d} pathLength={1} style={drawVars(e)} />)}
+        {lines.map((e) => <path key={`g-${e.id}`} className="edge-glow" d={e.d} pathLength={1} style={drawVars(e)} />)}
+        {lines.map((e) => <path key={`l-${e.id}`} className="edge" d={e.d} pathLength={1} style={drawVars(e)} />)}
       </g>
 
       <g className="pulses" filter={`url(#${glowId})`}>
-        {t.edges.map((e) => (
+        {lines.map((e) => (
           <path
-            key={`p-${e.node.id}`} className="pulse" d={e.d} pathLength={1}
+            key={`p-${e.id}`} className="pulse" d={e.d} pathLength={1}
             style={cssVars({
               "--pd": e.pulse.dash, "--pg": e.pulse.gap,
               "--pf": e.pulse.from, "--pt": e.pulse.to,
@@ -86,6 +63,38 @@ export function FlowDiagram({ layout, live }: Props) {
         {t.edges.map((e) => <NodeMark key={e.node.id} edge={e} layout={layout} />)}
       </g>
     </svg>
+  );
+}
+
+/** A rounded box with a bold label and a mono line under it, the pair centred in the box. */
+function HubBox({ hub, timing }: { hub: Hub; timing: TimedBox }) {
+  const { box, font } = hub;
+  const cx = box.x + box.w / 2;
+  const cap = (size: number) => size * 0.7;
+  const gap = Math.max(8, font.sub * 0.7);
+  const top = box.y + (box.h - (cap(font.label) + gap + cap(font.sub))) / 2;
+  const labelY = top + cap(font.label);
+  const subY = labelY + gap + cap(font.sub);
+  return (
+    <g className="hub">
+      <rect
+        className="hub-fill"
+        x={box.x} y={box.y} width={box.w} height={box.h} rx={box.r}
+        style={cssVars({ "--at": sec(timing.start + 0.25) })}
+      />
+      {[timing.left, timing.right].map((d, i) => (
+        <path
+          key={i} className="hub-stroke" d={d} pathLength={1}
+          style={cssVars({ "--delay": sec(timing.start), "--dur": sec(timing.draw) })}
+        />
+      ))}
+      <text className="hub-label" x={cx} y={labelY} fontSize={font.label} style={cssVars({ "--at": sec(timing.start + 0.35) })}>
+        {hub.label}
+      </text>
+      <text className="hub-sub" x={cx} y={subY} fontSize={font.sub} style={cssVars({ "--at": sec(timing.start + 0.5) })}>
+        {hub.sub}
+      </text>
+    </g>
   );
 }
 
@@ -130,7 +139,7 @@ function labelPlacement(
   };
 }
 
-function drawVars(e: TimedEdge) {
+function drawVars(e: { delay: number; duration: number }) {
   return cssVars({ "--delay": sec(e.delay), "--dur": sec(e.duration) });
 }
 
@@ -143,5 +152,5 @@ function describe(layout: Layout) {
         return next ? `${n.label} (which hands work on to ${next})` : n.label;
       })
       .join(" and ");
-  return `${layout.hub.label} starts a flow of agent nodes: ${tell("hermes")}.`;
+  return `${layout.caller.label} hands a task to ${layout.hub.label}, which starts a flow of agent nodes: ${tell("leafi")}.`;
 }

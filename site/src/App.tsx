@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Icon, REPO } from "./components";
 import { Hero } from "./hero/Hero";
 import { Footer, Goals, Prototype } from "./sections/Sections";
 
@@ -19,7 +18,7 @@ export function App() {
   );
 }
 
-/** Light-on-dark while it sits over the hero; the page's own theme after that. */
+/** Just the logo. Clear while it sits over the hero; the page's own theme after that. */
 function Nav() {
   const [onHero, setOnHero] = useState(true);
   useEffect(() => {
@@ -45,17 +44,9 @@ function Nav() {
   return (
     <header className={`nav${onHero ? " on-hero" : ""}`}>
       <div className="wrap">
-        <a className="brand" href="#top">
-          <img src={`${BASE}favicon.svg`} alt="" width={26} height={26} />
-          agents-automations
+        <a className="logo" href="#top" aria-label="leafi, back to top">
+          <img src={`${BASE}leaf.svg`} alt="" width={34} height={34} />
         </a>
-        <nav className="nav-links" aria-label="Main">
-          <a className="hide-sm" href="#goals">Goals</a>
-          <a className="btn btn-sm" href={REPO}>
-            {Icon.github}
-            GitHub
-          </a>
-        </nav>
       </div>
     </header>
   );
