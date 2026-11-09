@@ -1,0 +1,47 @@
+{
+  "name": "pi-leafi",
+  "version": "0.0.3",
+  "description": "Design, validate, draw and run leafi flows of linked LLM agents from Pi",
+  "keywords": [
+    "pi-package",
+    "pi-extension",
+    "leafi",
+    "agents",
+    "workflows",
+    "mcp"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "Bruce Hopkins"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bruce-Hopkins/leafi.git",
+    "directory": "pi-extension"
+  },
+  "homepage": "https://github.com/Bruce-Hopkins/leafi",
+  "bugs": {
+    "url": "https://github.com/Bruce-Hopkins/leafi/issues"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "files": [
+    "dist",
+    "skills",
+    "README.md",
+    "LICENSE"
+  ],
+  "peerDependencies": {
+    "typebox": "*"
+  },
+  "pi": {
+    "extensions": [
+      "./dist/index.js"
+    ],
+    "skills": [
+      "./skills"
+    ]
+  }
+}
