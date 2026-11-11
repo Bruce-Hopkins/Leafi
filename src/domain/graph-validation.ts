@@ -1,4 +1,4 @@
-import { ancestors, findNode, predecessorIds } from './graph-utils';
+import { ancestors, closesCycle, entryNodes, findNode, isLoopEdge } from './graph-utils';
 import { findInvalidOutputSchema } from './output-schema';
 import { PROVIDER_IDS, type AgentNode, type Graph, type ValidationIssue } from './types';
 
@@ -17,12 +17,13 @@ export function validateGraph(graph: Graph): ValidationIssue[] {
   issues.push(...validateBranchNames(graph));
   issues.push(...validateInputs(graph));
   issues.push(...validateAudience(graph));
+  issues.push(...validateEdgeLimits(graph));
 
   const cycle = findCycle(graph);
   if (cycle) {
     issues.push({
       code: 'cycle',
-      message: `The graph contains a cycle: ${cycle.join(' → ')}. Automations must be acyclic.`,
+      message: `The graph contains a cycle: ${cycle.join(' → ')}. A cycle is only allowed when an edge in it has maxTraversals (an edge limit): add one to the edge that loops back, so recursion cannot run away.`,
       nodeId: cycle[0],
     });
   }
@@ -106,10 +107,10 @@ function validateEdges(graph: Graph): ValidationIssue[] {
       }
     }
 
-    if (edge.source === edge.target) {
+    if (edge.source === edge.target && !isLoopEdge(edge)) {
       issues.push({
         code: 'self-loop',
-        message: `Edge "${edge.id}" connects a node to itself.`,
+        message: `Edge "${edge.id}" connects a node to itself without an edge limit. Add maxTraversals to allow bounded recursion.`,
         edgeId: edge.id,
         nodeId: edge.source,
       });
@@ -177,7 +178,7 @@ function validateInputs(graph: Graph): ValidationIssue[] {
       if (input === '$input') {
         continue;
       }
-      if (input === node.id || !findNode(graph, input) || !reachable.has(input)) {
+      if (!findNode(graph, input) || !reachable.has(input)) {
         issues.push({
           code: 'unknown-input',
           message: `Node "${node.label}" declares input "${input}", which is not an ancestor of it.`,
@@ -236,6 +237,48 @@ function validateBranchNames(graph: Graph): ValidationIssue[] {
   return issues;
 }
 
+function validateEdgeLimits(graph: Graph): ValidationIssue[] {
+  const issues: ValidationIssue[] = [];
+
+  for (const edge of graph.edges) {
+    if (!isLoopEdge(edge)) {
+      continue;
+    }
+    const limit = edge.maxTraversals;
+    if (typeof limit !== 'number' || !Number.isInteger(limit) || limit < 1) {
+      issues.push({
+        code: 'invalid-edge-limit',
+        message: `Edge "${edge.id}" has maxTraversals ${String(limit)}; it must be a whole number of at least 1.`,
+        edgeId: edge.id,
+      });
+      continue;
+    }
+    if (!closesCycle(graph, edge)) {
+      issues.push({
+        code: 'limit-not-recursive',
+        message: `Edge "${edge.id}" has maxTraversals but is not part of a cycle, so it can only ever be taken once. Edge limits exist to bound recursion; remove it or loop the edge back.`,
+        edgeId: edge.id,
+      });
+    }
+  }
+
+  for (const node of graph.nodes) {
+    const outgoing = graph.edges.filter((edge) => edge.source === node.id);
+    if (outgoing.length <= 1 || node.fanout === 'parallel') {
+      continue;
+    }
+    if (outgoing.some(isLoopEdge) && outgoing.every(isLoopEdge)) {
+      issues.push({
+        code: 'no-exit-edge',
+        message: `Node "${node.label}" chooses between edges that all have limits, so once they are used up it has no way out. Leave at least one edge without maxTraversals as the exit.`,
+        nodeId: node.id,
+      });
+    }
+  }
+
+  return issues;
+}
+
 function validateAudience(graph: Graph): ValidationIssue[] {
   const issues: ValidationIssue[] = [];
 
@@ -261,8 +304,7 @@ function validateAudience(graph: Graph): ValidationIssue[] {
 
 function validateEntryAndReachability(graph: Graph): ValidationIssue[] {
   const issues: ValidationIssue[] = [];
-  const targets = new Set(graph.edges.map((edge) => edge.target));
-  const entries = graph.nodes.filter((node) => !targets.has(node.id));
+  const entries = entryNodes(graph);
 
   if (graph.nodes.length > 0 && entries.length === 0) {
     issues.push({
@@ -362,13 +404,13 @@ function reachableFrom(graph: Graph, startId: string): Set<string> {
   return seen;
 }
 
-/** Kahn's algorithm: a leftover node means the remaining subgraph is cyclic. */
+/** Kahn's algorithm over the unlimited edges: a leftover node means an unbounded cycle. */
 function findCycle(graph: Graph): string[] | null {
   const inDegree = new Map<string, number>(graph.nodes.map((node) => [node.id, 0]));
   const adjacency = new Map<string, string[]>();
 
   for (const edge of graph.edges) {
-    if (!inDegree.has(edge.source) || !inDegree.has(edge.target)) {
+    if (isLoopEdge(edge) || !inDegree.has(edge.source) || !inDegree.has(edge.target)) {
       continue;
     }
     inDegree.set(edge.target, (inDegree.get(edge.target) ?? 0) + 1);

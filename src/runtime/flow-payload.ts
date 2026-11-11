@@ -156,6 +156,9 @@ function parseEdge(value: unknown, index: number): GraphEdge {
     target: expectString(record.target, `${path}.target`),
     branch: optionalString(record.branch),
     condition: optionalString(record.condition) ?? '',
+    ...(record.maxTraversals !== undefined && record.maxTraversals !== null
+      ? { maxTraversals: expectNumber(record.maxTraversals, `${path}.maxTraversals`) }
+      : {}),
   };
 }
 

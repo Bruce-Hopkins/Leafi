@@ -8,7 +8,7 @@ import { usesEmail } from '../domain/permissions';
 import type { AgentNode, Graph, NodeUsage, Run } from '../domain/types';
 import { EmailService } from '../email/email-service';
 import { runAgentLoop } from '../graph/agent-loop';
-import { compileGraph, type GraphRuntime, type NodeResult } from '../graph/graph-compiler';
+import { runGraph, type GraphRuntime, type NodeResult } from '../graph/graph-compiler';
 import { findNodeFailure, NodeFailureError, describeError } from '../graph/node-failure';
 import { buildNodeInput, buildSystemPrompt } from '../graph/prompt';
 import { takenIncoming } from '../graph/routing';
@@ -176,10 +176,10 @@ export class RunExecutor {
 
       const runtime: GraphRuntime = {
         runNode: (node, state, signal) => this.runNode(context, node, state, signal),
-        onEdgeTaken: async (sourceId, targetId, branch) => {
+        onEdgeTaken: async (sourceId, targetId, branch, use) => {
           await sink.record('edge_taken', {
             nodeId: sourceId,
-            payload: { sourceId, targetId, branch },
+            payload: { sourceId, targetId, branch, ...(use ? { count: use.count, limit: use.limit } : {}) },
           });
         },
         onNodeSkipped: async (node) => {
@@ -187,15 +187,10 @@ export class RunExecutor {
         },
       };
 
-      const compiled = compileGraph(graph, runtime, controller.signal);
-      const finalState = await compiled.invoke(
-        { input },
-        {
-          signal: controller.signal,
-          recursionLimit: graph.nodes.length + 1,
-          maxConcurrency: this.config.maxParallelNodes,
-        },
-      );
+      const finalState = await runGraph(graph, runtime, controller.signal, {
+        input,
+        maxConcurrency: this.config.maxParallelNodes,
+      });
 
       await settleWithin(context.inFlight, DRAIN_TIMEOUT_MS);
       // No node is left to hand a job to, so whatever still runs is stopped with the run.
@@ -203,7 +198,7 @@ export class RunExecutor {
       if (stopped.length > 0) {
         this.logger.info(`Stopped ${stopped.length} background job(s) still running at the end: ${stopped.map((job) => job.id).join(', ')}.`);
       }
-      run.outputs = finalState.outputs ?? run.outputs;
+      run.outputs = finalState.outputs;
       run.status = 'completed';
       run.finishedAt = new Date().toISOString();
       await sink.record('run_completed', {
@@ -260,11 +255,16 @@ export class RunExecutor {
     signal: AbortSignal,
   ): Promise<NodeResult> {
     const { graph, run, workspace, budget } = context;
-    const branches = branchNames(graph, node.id);
+    const branches = branchNames(graph, node.id, state.edgeCounts);
     const meter = new UsageMeter(node.provider, node.model);
+    // A node that runs again adds to what it spent on earlier passes.
+    const earlier = run.usage?.[node.id];
 
     context.active.add(node.id);
-    await context.sink.record('node_started', { nodeId: node.id, payload: { label: node.label } });
+    await context.sink.record('node_started', {
+      nodeId: node.id,
+      payload: { label: node.label, ...((state.passes[node.id] ?? 1) > 1 ? { pass: state.passes[node.id] } : {}) },
+    });
 
     const labelOf = (id: string): string => graph.nodes.find((candidate) => candidate.id === id)?.label ?? id;
     const received = takenIncoming(graph, node.id, state).flatMap((edge) => state.jobs?.[edge.source] ?? []);
@@ -299,7 +299,7 @@ export class RunExecutor {
         nodeId: node.id,
         model: this.models.create(node),
         toolkit,
-        systemPrompt: buildSystemPrompt(graph, node, handoffs(graph, node.id), {
+        systemPrompt: buildSystemPrompt(graph, node, handoffs(graph, node.id, state.edgeCounts), {
           workspaceRoot: workspace.root,
           platform: `${os.platform()} ${os.release()} (${os.arch()})`,
         }),
@@ -356,7 +356,7 @@ export class RunExecutor {
         run.stoppedEarlyNodes = [...new Set([...(run.stoppedEarlyNodes ?? []), node.id])];
         this.logger.info(`"${node.label}" ran out of model calls and handed over a partial result.`);
       }
-      const recorded = this.recordUsage(run, node, meter);
+      const recorded = this.recordUsage(run, node, meter, earlier);
       await context.sink.record('node_completed', {
         nodeId: node.id,
         payload: {
@@ -378,7 +378,7 @@ export class RunExecutor {
       throw error;
     } finally {
       if (meter.iterations > 0) {
-        this.recordUsage(run, node, meter);
+        this.recordUsage(run, node, meter, earlier);
       }
       context.active.delete(node.id);
       // The mailbox socket and the MCP server (and any browser it launched) belong to this node run, not to the executor.
@@ -393,9 +393,9 @@ export class RunExecutor {
    * `costUsd` instead of quietly understating it: the run names what it could
    * not price.
    */
-  private recordUsage(run: Run, node: AgentNode, meter: UsageMeter): NodeUsage {
+  private recordUsage(run: Run, node: AgentNode, meter: UsageMeter, earlier?: NodeUsage): NodeUsage {
     const spent = meter.summary();
-    const entry: NodeUsage = {
+    const pass: NodeUsage = {
       input: spent.input,
       output: spent.output,
       total: spent.total,
@@ -408,6 +408,7 @@ export class RunExecutor {
       ...(spent.upstreamUsd !== undefined ? { upstreamUsd: spent.upstreamUsd } : {}),
       ...(spent.usd === undefined ? { unpriced: spent.unpriced ?? node.model } : {}),
     };
+    const entry = earlier ? addUsage(earlier, pass) : pass;
     run.usage ??= {};
     run.usage[node.id] = entry;
 
@@ -572,6 +573,32 @@ async function handedJobsSection(node: AgentNode, jobs: NodeJobs): Promise<strin
     }
   }
   return lines.join('\n');
+}
+
+/** What a node that ran again has spent in all: this pass added to the earlier ones. */
+function addUsage(earlier: NodeUsage, pass: NodeUsage): NodeUsage {
+  const sum = (a?: number, b?: number): number | undefined => (a === undefined && b === undefined ? undefined : (a ?? 0) + (b ?? 0));
+  const priced = earlier.usd !== undefined && pass.usd !== undefined;
+  const merged: NodeUsage = {
+    input: earlier.input + pass.input,
+    output: earlier.output + pass.output,
+    total: earlier.total + pass.total,
+    iterations: earlier.iterations + pass.iterations,
+    model: pass.model,
+  };
+  for (const key of ['cacheRead', 'cacheWrite', 'reasoning', 'upstreamUsd'] as const) {
+    const value = sum(earlier[key], pass[key]);
+    if (value !== undefined) {
+      merged[key] = value;
+    }
+  }
+  if (priced) {
+    merged.usd = (earlier.usd ?? 0) + (pass.usd ?? 0);
+    merged.costSource = earlier.costSource === 'list-price' || pass.costSource === 'list-price' ? 'list-price' : 'billed';
+  } else {
+    merged.unpriced = pass.unpriced ?? earlier.unpriced ?? pass.model;
+  }
+  return merged;
 }
 
 function personOutputOf(

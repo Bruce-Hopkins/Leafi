@@ -109,6 +109,30 @@ The branch shape: one producer, two outcomes, each worth its own context.
 What it looks like when it is right: two conditions a number or a match decides,
 and no third branch that only reformats.
 
+### A bounded loop
+
+Recursion: a node sends work back to an earlier node until it is good enough.
+Put `maxTraversals` (an **edge limit**) on the edge that loops back. Edge limits
+exist mainly to prevent runaway recursion: a cycle is legal only when an edge in
+it has one, and once it is used up the node is forced down another edge. So the
+node that holds the limited edge needs an unlimited exit edge.
+
+```text
+[ write ] ──► [ review ] ──(approve)──►  the person
+                  │
+                  └──(revise, maxTraversals: 2)──► [ write ]    ↺
+```
+
+The loop runs at most `1 + maxTraversals` times. A node that runs again sees its
+own previous output and which pass it is on; its other edges wait until the loop
+ends. Every pass is billed, so the minimum lists each node's `maxPasses`. Use a
+numeric exit condition (a score, a count), cap the limit low, and keep the loop's
+nodes few: a loop of strong models multiplies cost by the number of passes.
+
+What it looks like when it is right: the limit is the real budget for retries
+(1 to 3), the exit edge is decided by a predicate, and the reviewer says what to
+change, not just "again".
+
 ### The ending
 
 The last shape: one terminal node that a person reads, marked

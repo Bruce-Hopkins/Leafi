@@ -10,7 +10,7 @@ export const FLOW_SCHEMA = {
   $id: 'https://leafi.local/schema/flow.json',
   title: 'leafi flow',
   description:
-    'A flow document. Runtime-owned fields are not accepted; id, createdAt and updatedAt are added when the flow is loaded. Domain rules: at least one entry node (no incoming edges), all of which run in parallel and receive --input; the graph must be connected; every node reachable from an entry; no cycles; label, model and prompt non-empty; with more than one outgoing edge, a "branch" node needs a unique branch and a non-empty condition per edge, a "parallel" node takes them all. "leafi validate" additionally reports design warnings (severity "warning") and a per-node minimum (tokens the flow implies, a lower bound) for flows that would waste tokens or decide non-deterministically.',
+    'A flow document. Runtime-owned fields are not accepted; id, createdAt and updatedAt are added when the flow is loaded. Domain rules: at least one entry node (no incoming edges), all of which run in parallel and receive --input; the graph must be connected; every node reachable from an entry; no cycles, except a loop closed by an edge with maxTraversals (an edge limit, which prevents recursion running away); label, model and prompt non-empty; with more than one outgoing edge, a "branch" node needs a unique branch and a non-empty condition per edge, a "parallel" node takes them all. "leafi validate" additionally reports design warnings (severity "warning") and a per-node minimum (tokens the flow implies, a lower bound) for flows that would waste tokens or decide non-deterministically.',
   type: 'object',
   required: ['nodes', 'edges'],
   properties: {
@@ -136,6 +136,12 @@ export const FLOW_SCHEMA = {
           condition: {
             type: 'string',
             description: 'When this handoff applies. Required alongside branch; optional for a lone handoff.',
+          },
+          maxTraversals: {
+            type: 'integer',
+            minimum: 1,
+            description:
+              'Edge limit: how many times this edge may be taken in one run. Its purpose is to prevent runaway recursion. Put it on the edge that loops back to an earlier node (or to its own source): that is the only way a cycle is allowed. Once used up, the source is forced down another edge, so a branch node with a limited edge needs at least one unlimited edge as its exit.',
           },
         },
       },

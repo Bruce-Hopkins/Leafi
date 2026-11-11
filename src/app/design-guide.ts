@@ -82,6 +82,13 @@ unless you can name what it gets wrong.
 - fanout: "branch" (the default) picks one edge by branch name and condition;
   fanout: "parallel" takes every outgoing edge, up to MAX_PARALLEL_NODES at once.
 - Add a branch only for a real decision decided by a numeric predicate.
+- Recursion: an edge may carry maxTraversals (an edge limit), the number of times
+  it may be taken in a run. Its purpose is to prevent runaway recursion: a cycle,
+  or a node looping into itself, is valid only when an edge in it has one. Once
+  used up, the source is forced down another edge, so the node needs an unlimited
+  exit edge (no-exit-edge). The loop's nodes run again, seeing their previous
+  output and pass number; the minimum's maxPasses shows the worst case. Keep the
+  limit low (1 to 3) and the exit decided by a numeric predicate.
 - Nodes that may run at once share one workspace, so give each its own output
   path.
 

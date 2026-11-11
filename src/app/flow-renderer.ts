@@ -83,7 +83,7 @@ function nodeLevels(graph: Graph): Map<string, number> {
       return known;
     }
     visiting.add(nodeId);
-    const incoming = graph.edges.filter((edge) => edge.target === nodeId);
+    const incoming = graph.edges.filter((edge) => edge.target === nodeId && edge.maxTraversals === undefined);
     const level =
       incoming.length === 0
         ? 0
@@ -109,10 +109,12 @@ function edgeArrow(edge: GraphEdge): string {
 function edgeLabel(edge: GraphEdge): string {
   const branch = edge.branch?.trim();
   const condition = edge.condition?.trim();
-  if (branch && condition) {
-    return `${branch}: ${condition}`;
+  const text = branch && condition ? `${branch}: ${condition}` : branch || condition || '';
+  if (edge.maxTraversals === undefined) {
+    return text;
   }
-  return branch || condition || '';
+  const limit = `↺ at most ${edge.maxTraversals}×`;
+  return text ? `${text} (${limit})` : limit;
 }
 
 function labelOf(graph: Graph, nodeId: string): string {

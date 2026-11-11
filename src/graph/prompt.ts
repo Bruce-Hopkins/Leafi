@@ -1,4 +1,12 @@
-import { findNode, incomingEdges, outgoingEdges, type Handoff } from '../domain/graph-utils';
+import {
+  findNode,
+  forwardIncoming,
+  incomingEdges,
+  isLoopEdge,
+  loopNodeIds,
+  outgoingEdges,
+  type Handoff,
+} from '../domain/graph-utils';
 import { describeOutputSchema, hasOutputSchema } from '../domain/output-schema';
 import type { AgentNode, Graph } from '../domain/types';
 import type { RunState } from './run-state';
@@ -100,6 +108,10 @@ function requiredOutputSection(node: AgentNode): string[] {
   return ['', '# Required output shape', ...describeOutputSchema(node.outputSchema), ''];
 }
 
+/** Why an edge has a limit, told to the node that holds one. */
+const RECURSION_NOTE =
+  'A branch with a limit loops back so that work can be repeated; the limit is there to stop recursion running away. Once it is used up you must take another branch, even if the work is imperfect.';
+
 function finishingInstructions(graph: Graph, node: AgentNode, handoffs: Handoff[]): string[] {
   const outputBullet =
     node.audience === 'person'
@@ -124,7 +136,15 @@ function finishingInstructions(graph: Graph, node: AgentNode, handoffs: Handoff[
   if (handoffs.length > 1) {
     lines.push('- `next`: the branch to take. Choose the one whose condition matches the outcome:');
     for (const handoff of handoffs) {
-      lines.push(`  - "${handoff.name}" — ${handoff.condition || 'no condition given'}`);
+      if (handoff.usesLeft === 0) {
+        lines.push(`  - "${handoff.name}" — USED UP, you cannot choose it any more`);
+        continue;
+      }
+      const limit = handoff.usesLeft !== undefined ? ` (you may take this ${handoff.usesLeft} more time${handoff.usesLeft === 1 ? '' : 's'})` : '';
+      lines.push(`  - "${handoff.name}" — ${handoff.condition || 'no condition given'}${limit}`);
+    }
+    if (handoffs.some((handoff) => handoff.usesLeft !== undefined)) {
+      lines.push(RECURSION_NOTE);
     }
   } else if (handoffs[0]?.condition) {
     lines.push(`You are finished only when: ${handoffs[0].condition}`);
@@ -136,13 +156,15 @@ function finishingInstructions(graph: Graph, node: AgentNode, handoffs: Handoff[
 
 export function buildNodeInput(graph: Graph, node: AgentNode, state: RunState): string {
   const sources = declaredInputIds(graph, node);
-  const isEntry = incomingEdges(graph, node.id).length === 0;
+  const isEntry = forwardIncoming(graph, node.id).length === 0;
+  const pass = state.passes?.[node.id] ?? 1;
+  const prefix = passNote(graph, node, state, pass);
 
   if (sources.length === 0) {
     if (isEntry) {
-      return runInputSection(state);
+      return prefix + runInputSection(state);
     }
-    return '# Input from upstream agents\n\n(No handoff text was requested for this node.)';
+    return prefix + '# Input from upstream agents\n\n(No handoff text was requested for this node.)';
   }
 
   const sections = ['# Input from upstream agents'];
@@ -154,6 +176,9 @@ export function buildNodeInput(graph: Graph, node: AgentNode, state: RunState): 
     }
     const sourceLabel = findNode(graph, id)?.label ?? id;
     const output = state.outputs[id];
+    if (output === undefined && node.inputs === undefined && loopOnlySource(graph, node, id)) {
+      continue;
+    }
     if (output === undefined) {
       sections.push(`## ${sourceLabel}`, '(not run on this path)');
       continue;
@@ -173,7 +198,29 @@ export function buildNodeInput(graph: Graph, node: AgentNode, state: RunState): 
     sections.push('(No upstream agent produced output on this run.)');
   }
 
-  return sections.join('\n\n');
+  return prefix + sections.join('\n\n');
+}
+
+/** True when `sourceId` reaches `node` only along limited (looping-back) edges. */
+function loopOnlySource(graph: Graph, node: AgentNode, sourceId: string): boolean {
+  const edges = incomingEdges(graph, node.id).filter((edge) => edge.source === sourceId);
+  return edges.length > 0 && edges.every(isLoopEdge);
+}
+
+/** For a node inside a loop: which pass it is on, and what it said last time. */
+function passNote(graph: Graph, node: AgentNode, state: RunState, pass: number): string {
+  if (!loopNodeIds(graph).has(node.id)) {
+    return '';
+  }
+  const limit = incomingEdges(graph, node.id)
+    .filter(isLoopEdge)
+    .reduce((sum, edge) => sum + (edge.maxTraversals ?? 0), 0);
+  const lines = ['# Pass', limit > 0 ? `This is pass ${pass} of at most ${limit + 1}: this part of the flow repeats.` : `This is pass ${pass}: this part of the flow repeats.`];
+  const previous = state.outputs[node.id];
+  if (pass > 1 && previous !== undefined) {
+    lines.push('Your output on the previous pass:', previous);
+  }
+  return lines.join('\n') + '\n\n';
 }
 
 function runInputSection(state: RunState): string {

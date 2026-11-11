@@ -1,4 +1,4 @@
-import { findNode, incomingEdges, outgoingEdges, routesToAll } from '../domain/graph-utils';
+import { findNode, incomingEdges, outgoingEdges, routesToAll, usesLeft } from '../domain/graph-utils';
 import type { AgentNode, Graph, GraphEdge } from '../domain/types';
 import type { RunState } from './run-state';
 
@@ -23,9 +23,17 @@ export function takenIncoming(graph: Graph, nodeId: string, state: RunState): Gr
   return incomingEdges(graph, nodeId).filter((edge) => edgeStatus(graph, edge, state) === 'taken');
 }
 
-/** The edges a node takes after finishing with `next`. */
-export function takenOutgoing(graph: Graph, node: AgentNode, next: string | undefined): GraphEdge[] {
-  const outgoing = outgoingEdges(graph, node.id);
+/**
+ * The edges a node takes after finishing with `next`. A limited edge that has
+ * been used up is never taken, which is what forces the node down another edge.
+ */
+export function takenOutgoing(
+  graph: Graph,
+  node: AgentNode,
+  next: string | undefined,
+  counts?: Record<string, number>,
+): GraphEdge[] {
+  const outgoing = outgoingEdges(graph, node.id).filter((edge) => usesLeft(edge, counts) !== 0);
   if (routesToAll(graph, node)) {
     return outgoing;
   }

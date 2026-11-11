@@ -54,7 +54,8 @@ A flow is `{ name, nodes, edges }`. Domain rules, enforced by `validate`:
 - at least one entry node (a node with no incoming edges); every entry runs
   from the start and receives `--input`;
 - the graph is weakly connected — no island nodes;
-- every node reachable from an entry, and no cycles;
+- every node reachable from an entry, and no cycles — except a loop closed by an
+  edge with `maxTraversals` (see *Edge limits* below);
 - `label`, `model` and `prompt` non-empty on every node;
 - when a node has more than one outgoing edge, a `branch` node (the default)
   needs a unique `branch` and a non-empty `condition` per edge, while a
@@ -63,8 +64,10 @@ A flow is `{ name, nodes, edges }`. Domain rules, enforced by `validate`:
 ### How a flow runs
 
 An entry node runs when the run starts; a terminal node has no outgoing edges,
-and the run ends when it completes. A node runs once, never twice, and its
-whole conversation — tool calls, results, reasoning — stays inside it.
+and the run ends when it completes. A node runs once, and its whole
+conversation — tool calls, results, reasoning — stays inside it. The one
+exception is recursion through a limited edge (*Edge limits*), where a node runs
+again, each pass as a fresh conversation.
 
 ### What a link carries
 
@@ -176,6 +179,30 @@ with `"lintIgnore": ["<code>"]`.
 | `rigid-deliverable` | a template or a line check on a node a person reads (`audience: "person"`) |
 | `concurrent-write` | two nodes that may run at once writing the same workspace path |
 | `parallel-limit-one` | `MAX_PARALLEL_NODES` at 1 while two nodes can be ready at once, which loses outputs |
+
+### Edge limits (recursion)
+
+An edge may carry `maxTraversals`, the number of times it may be taken in one
+run. **Its purpose is to prevent runaway recursion.** A cycle (including a node
+looping into itself) is valid only when an edge in it has a limit; validation
+reports an unlimited cycle as `cycle`. When a limited edge is used up, the source
+is forced down a different edge, so a branch node with a limited edge needs at
+least one unlimited edge (`no-exit-edge`). A limit on an edge that is not part of
+a cycle is `limit-not-recursive`; a limit below 1 or not a whole number is
+`invalid-edge-limit`.
+
+When a node takes a limited edge, the nodes of that loop (those between the
+edge's target and its source) run again from the target, and the node's other
+edges wait until the loop ends. A node that runs again gets its own previous
+output and its pass number in its input; the latest output replaces the earlier
+one in the run's `outputs`. A branch node's prompt lists each limited branch with
+its remaining uses. Usage accumulates per node across passes, `maxPasses` in the
+`minimum` shows the worst case, and `MAX_RUN_STEPS` still caps the whole run.
+
+```json
+{ "id": "back", "source": "review", "target": "write", "branch": "revise",
+  "condition": "score below 8", "maxTraversals": 2 }
+```
 
 ## A node is a context boundary, not a step
 
