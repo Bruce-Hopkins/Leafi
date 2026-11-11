@@ -1,4 +1,4 @@
-import { ancestors, incomingEdges, outgoingEdges } from './graph-utils';
+import { ancestors, forwardIncoming, outgoingEdges } from './graph-utils';
 import type { AgentNode, Graph } from './types';
 
 export type LintCode =
@@ -77,7 +77,7 @@ export function lintParallelLimit(graph: Graph, maxParallelNodes: number): LintW
   if (maxParallelNodes > 1) {
     return [];
   }
-  const entries = graph.nodes.filter((node) => incomingEdges(graph, node.id).length === 0);
+  const entries = graph.nodes.filter((node) => forwardIncoming(graph, node.id).length === 0);
   const forks = graph.nodes.filter((node) => outgoingEdges(graph, node.id).length > 1);
   if (entries.length < 2 && forks.length === 0) {
     return [];
@@ -157,7 +157,7 @@ function qualitativeBranch({ graph, node }: LintContextInternal): LintWarning[] 
 }
 
 function downstreamReadsInput({ graph, node }: LintContextInternal): LintWarning[] {
-  const isEntry = incomingEdges(graph, node.id).length === 0;
+  const isEntry = forwardIncoming(graph, node.id).length === 0;
   if (isEntry || !INPUT_PATTERN.test(node.prompt)) {
     return [];
   }

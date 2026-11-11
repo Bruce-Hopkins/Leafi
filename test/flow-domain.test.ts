@@ -27,6 +27,59 @@ test('a cycle is reported', () => {
   assert.ok(validateGraph(graph).some((issue) => issue.code === 'cycle'));
 });
 
+const loopNode = (id: string) => ({ id, label: id.toUpperCase(), provider: 'openai', model: 'gpt-4o-mini', prompt: id });
+
+test('recursion is allowed only through an edge with a limit', () => {
+  const flow = (limit?: number) =>
+    new FlowService().loadPayload({
+      nodes: ['w', 'r', 'f'].map(loopNode),
+      edges: [
+        { id: 'e1', source: 'w', target: 'r' },
+        { id: 'e2', source: 'r', target: 'w', branch: 'revise', condition: 'needs work', ...(limit ? { maxTraversals: limit } : {}) },
+        { id: 'e3', source: 'r', target: 'f', branch: 'done', condition: 'good enough' },
+      ],
+    });
+  assert.ok(validateGraph(flow()).some((issue) => issue.code === 'cycle'));
+  assert.deepEqual(validateGraph(flow(2)), []);
+});
+
+test('a node may recurse into itself when the edge is limited', () => {
+  const build = (limit?: number) =>
+    new FlowService().loadPayload({
+      nodes: ['a', 'b'].map(loopNode),
+      edges: [
+        { id: 'e1', source: 'a', target: 'a', branch: 'again', condition: 'more to do', ...(limit ? { maxTraversals: limit } : {}) },
+        { id: 'e2', source: 'a', target: 'b', branch: 'done', condition: 'finished' },
+      ],
+    });
+  assert.ok(validateGraph(build()).some((issue) => issue.code === 'self-loop'));
+  assert.deepEqual(validateGraph(build(3)), []);
+});
+
+test('an edge limit must be a positive whole number on a cycle, with an exit', () => {
+  const nodes = ['a', 'b'].map(loopNode);
+  const bad = new FlowService().loadPayload({
+    nodes: [...nodes, loopNode('c')],
+    edges: [
+      { id: 'e1', source: 'a', target: 'b', maxTraversals: 2 },
+      { id: 'e2', source: 'b', target: 'c', maxTraversals: 1.5 },
+    ],
+  });
+  const codes = validateGraph(bad).map((issue) => issue.code);
+  assert.ok(codes.includes('limit-not-recursive'));
+  assert.ok(codes.includes('invalid-edge-limit'));
+
+  const trapped = new FlowService().loadPayload({
+    nodes,
+    edges: [
+      { id: 'e1', source: 'a', target: 'b' },
+      { id: 'e2', source: 'b', target: 'a', branch: 'x', condition: 'x', maxTraversals: 2 },
+      { id: 'e3', source: 'b', target: 'a', branch: 'y', condition: 'y', maxTraversals: 2 },
+    ],
+  });
+  assert.ok(validateGraph(trapped).some((issue) => issue.code === 'no-exit-edge'));
+});
+
 test('missing branch names are reported', () => {
   const graph = new FlowService().loadPayload({
     nodes: [

@@ -12,17 +12,19 @@
     "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\"",
     "build": "tsc -p tsconfig.json",
     "prepack": "npm run clean && npm run build",
-    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json && tsc --noEmit -p tsconfig.pi.json",
     "cli": "pnpm build && node dist/main.js",
     "dev": "tsx src/main.ts",
-    "test": "pnpm build && tsx --test test/*.test.ts",
+    "test": "pnpm build:pi && tsx --test test/*.test.ts",
     "start": "node dist/main.js",
     "build:plugin": "pnpm build && node scripts/build-hermes-plugin.mjs",
     "test:plugin": "pnpm build:plugin && tsx --test test/hermes-plugin.test.ts",
     "test:pack": "node scripts/pack-test.mjs",
     "bench": "tsx bench/node-bench.ts",
     "site:dev": "pnpm --filter leafi-site dev",
-    "site:build": "pnpm --filter leafi-site build"
+    "site:build": "pnpm --filter leafi-site build",
+    "build:pi": "pnpm build && node scripts/build-pi-extension.mjs",
+    "test:pi": "pnpm build:pi && tsx --test test/pi-extension.test.ts"
   },
   "dependencies": {
     "@langchain/anthropic": "^1.5.12",
@@ -37,9 +39,11 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@earendil-works/pi-coding-agent": "0.85.1",
     "@types/node": "^22.20.5",
     "esbuild": "^0.28.2",
     "tsx": "^4.20.6",
+    "typebox": "^1.4.6",
     "typescript": "^5.9.3"
   },
   "engines": {

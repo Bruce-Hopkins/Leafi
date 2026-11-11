@@ -1,4 +1,4 @@
-import { incomingEdges, outgoingEdges, findNode } from './graph-utils';
+import { outgoingEdges, findNode, forwardIncoming, isLoopEdge, loopRegion } from './graph-utils';
 import type { AgentNode, Graph, MinimumLimits, NodePermissions } from './types';
 
 /**
@@ -18,6 +18,8 @@ export interface NodeMinimum {
   /** Tokens re-sent per iteration: system prompt, task, schemas, handoffs. */
   contextTokens: number;
   totalTokens: number;
+  /** Most times the node can run when the flow recurses (edge limits); absent when it runs once. */
+  maxPasses?: number;
 }
 
 export interface FlowMinimum {
@@ -28,7 +30,7 @@ export interface FlowMinimum {
 }
 
 const MINIMUM_NOTE =
-  'Minimum only: a lower bound, not a forecast. Agents loop and every iteration re-sends the context so far, ' +
+  'Minimum only: a lower bound, not a forecast. It counts one pass of each node; a node with maxPasses can run that many times because of an edge limit. Agents loop and every iteration re-sends the context so far, ' +
   'so a real run spends more, by an amount that varies with the flow and the model. Compare with the run\'s costUsd.';
 
 /** Per-permission tool-schema cost, in tokens. Rough, but ordering-relevant. */
@@ -69,9 +71,20 @@ const TOOL_MENTIONS: { name: string; pattern: RegExp }[] = [
  * far, so tool results that arrive one turn at a time are paid for repeatedly.
  */
 export function minimumGraph(graph: Graph, limits: MinimumLimits): FlowMinimum {
-  const nodes = graph.nodes.map((node) => minimumNode(graph, node, limits));
+  const nodes = graph.nodes.map((node) => {
+    const maxPasses = maxPassesOf(graph, node.id);
+    return { ...minimumNode(graph, node, limits), ...(maxPasses > 1 ? { maxPasses } : {}) };
+  });
   const totalTokens = nodes.reduce((sum, node) => sum + node.totalTokens, 0);
   return { nodes, totalTokens, note: MINIMUM_NOTE };
+}
+
+/** One run, plus one more for every traversal of every limited edge whose loop holds the node. */
+function maxPassesOf(graph: Graph, nodeId: string): number {
+  return graph.edges
+    .filter(isLoopEdge)
+    .filter((edge) => loopRegion(graph, edge).has(nodeId))
+    .reduce((sum, edge) => sum + (edge.maxTraversals ?? 0), 1);
 }
 
 function minimumNode(graph: Graph, node: AgentNode, limits: MinimumLimits): NodeMinimum {
@@ -133,7 +146,7 @@ function inputSources(graph: Graph, node: AgentNode): string[] {
   if (node.inputs !== undefined) {
     return node.inputs.filter((id) => id !== '$input' && findNode(graph, id) !== undefined);
   }
-  return incomingEdges(graph, node.id).map((edge) => edge.source);
+  return forwardIncoming(graph, node.id).map((edge) => edge.source);
 }
 
 function outputTokensOf(node: AgentNode): number {

@@ -1,0 +1,58 @@
+{
+  "name": "Feature plan — review until ready",
+  "nodes": [
+    {
+      "id": "plan",
+      "label": "Planner",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "inputs": ["$input", "review"],
+      "needs": "a plan an engineer could implement today, with the bugs and edge cases already reasoned through",
+      "prompt": "You are the planning stage of a loop that does not stop until a code feature's implementation plan is genuinely ready to build.\n\nThe feature is described under \"# Run input\". On later passes the reviewer's critique arrives under \"## Reviewer\" and your own previous plan under \"# Pass\". Treat the reviewer's findings as this pass's work order: fix every blocker, resolve or explicitly dispute each finding with a reason, and keep whatever was already right. Never silently drop a finding.\n\nWrite a plan for a real codebase. Do not write the code; write the plan. Cover these sections, in this order and with these headings:\n\n1. Goal and scope — what the feature does, who uses it, what it changes, and what is explicitly out of scope.\n2. Approach — the design in enough detail to judge it: the modules, types, functions and data shapes that change or appear, and how they fit the existing code. Where a real choice exists, name the alternative you rejected and why.\n3. Steps — an ordered list, each step naming the files it touches, what changes in each, and how to tell it worked.\n4. Bugs, errors and edge cases — the part that matters most. Walk the feature's inputs and state: empty, missing, duplicate, oversized, malformed, out-of-order, concurrent, partial-failure, retry and rollback cases. For each, say what the code must do and what must never happen. Name the failure modes of each dependency you rely on.\n5. Tests — the specific cases that prove the plan, including the negative cases from section 4.\n6. Risks and open questions — anything the brief does not determine, and the decision it needs.\n\nRules: never invent a requirement, file path or API the brief does not imply — mark it \"unknown — needs <decision>\" instead. Prefer specifics (names, types, limits, orderings) over adjectives. If a section genuinely has nothing, say why in one line instead of padding it. Hand over the whole revised document, not a diff: the next reader sees only your output, never this conversation."
+    },
+    {
+      "id": "review",
+      "label": "Reviewer",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "needs": "an adversarial check of the current plan: what is wrong, what is missing, and a numeric verdict",
+      "outputSchema": {
+        "mustContain": ["SCORE:", "BLOCKERS:"]
+      },
+      "prompt": "You are the review stage of a loop. You receive the planner's current plan. Your job is to find what is wrong or missing before anyone builds it — not to praise it.\n\nBegin your output with exactly these two lines, then your findings:\nSCORE: <one integer, 0-10>\nBLOCKERS: <the number of findings below that would cause a bug or a wrong implementation if built as written>\n\nScore the plan as: 8-10 = ready to implement; 5-7 = the shape is right but there are real gaps; 0-4 = it would mislead an implementer. Give 8 or more only when you find no blocker and no material gap.\n\nCheck the plan against every one of these, and skip none:\n- Correctness: does the approach actually do what the goal says? Contradictions, wrong data flow, wrong ordering.\n- Bugs and edge cases: the cases a careless plan omits — empty, missing, duplicate, oversized, malformed, out-of-order, concurrent, partial failure, retry, rollback, idempotency. Name the case that was missed and what it must do.\n- Errors: what can fail in each step, what the caller sees, and what happens to state already written.\n- Interfaces: types, schemas, migrations, and their compatibility with existing data and existing callers.\n- Integration: does it fit the codebase and its dependencies as described, or does it assume something that may not exist?\n- Verification: can each step be tested as described? Name a test that would not actually prove its step.\n- Scope: work missing from the plan, and work that should not be in it.\n- Precision: a step a competent implementer could read two ways.\n\nRules: every finding names the section or step it concerns, states what is wrong, and states the concrete change required. \"Add more detail\" is not a finding. Do not invent problems to fill the list — three real blockers with an honest score beat ten invented ones. If a claim depends on a fact you cannot verify, mark it a risk rather than a blocker.\n\nWhen the plan scores 8 or more with 0 blockers, approve it: your findings then become the residual risks and open questions the final reader must see, so list them. If the revise branch has no uses left, take approve and put the outstanding blockers at the very top of your output so nothing is lost. Never approve a plan you believe is wrong just to end the loop; state the blockers either way."
+    },
+    {
+      "id": "final",
+      "label": "Plan brief for the reader",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v4.1-flash",
+      "audience": "person",
+      "inputs": ["plan", "review"],
+      "needs": "the finished document a person reads: the implementation-ready plan with its risks and open questions merged in",
+      "prompt": "Write the finished result for the person who will decide on and implement this feature.\n\nWho reads it: a competent software engineer — the person who asked for the feature, or the tech lead who will hand it to one. They are short on time and they will act on what you write. They need to know what will be built, why this shape, what could go wrong, and what is still undecided. They do not need the process, the scores, or the reviewer's wording.\n\nYou receive the plan and the reviewer's findings. Produce the implementation-ready plan itself: do not re-plan, do not re-review, and do not drop specifics. Keep every concrete detail the plan earned — names, types, files, orderings, limits, error behaviour, and the exact cases the risks refer to. Merge the review in as part of the plan: a fixed bug becomes a stated requirement or a named edge case, and anything still open becomes a clearly marked open question with the decision it needs. If the reviewer left a blocker that the plan never resolved, say so plainly near the top; never present an unresolved risk as settled.\n\nRegister: the way a sharp colleague briefs another over coffee — direct, concrete, warm but not chatty, no filler, no praise, no restating the question. Write it so it can be read in a few minutes and still be complete. Prose with a few clear headings is right; a rigid template is not, and neither is a wall of one-line bullets that leaves out the substance.\n\nEnd with the open questions and the residual risks, each paired with the decision or check that would close it."
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-plan-review",
+      "source": "plan",
+      "target": "review",
+      "condition": "The plan is complete enough to be reviewed."
+    },
+    {
+      "id": "e-approve",
+      "source": "review",
+      "target": "final",
+      "branch": "approve",
+      "condition": "SCORE is 8 or more and BLOCKERS is 0"
+    },
+    {
+      "id": "e-revise",
+      "source": "review",
+      "target": "plan",
+      "branch": "revise",
+      "condition": "SCORE is 7 or less, or BLOCKERS is 1 or more",
+      "maxTraversals": 5
+    }
+  ]
+}

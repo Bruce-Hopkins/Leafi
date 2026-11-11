@@ -1,41 +1,25 @@
-import { Annotation } from '@langchain/langgraph';
-
-const merge = <T>(current: Record<string, T>, next: Record<string, T>): Record<string, T> => ({
-  ...current,
-  ...next,
-});
-
-/** The LangGraph state threaded through one run. */
-export const RunStateAnnotation = Annotation.Root({
-  input: Annotation<string>({
-    reducer: (_current, next) => next,
-    default: () => '',
-  }),
-  /** Output of every node that ran. Each node writes only its own key. */
-  outputs: Annotation<Record<string, string>>({
-    reducer: merge,
-    default: () => ({}),
-  }),
-  /** The branch each branching node chose, keyed by node id. */
-  branches: Annotation<Record<string, string>>({
-    reducer: merge,
-    default: () => ({}),
-  }),
+/**
+ * The state threaded through one run. Plain data: the scheduler in
+ * `graph-compiler.ts` owns it and hands a snapshot to each node.
+ */
+export interface RunState {
+  input: string;
+  /** Latest output of every node that ran; a node that runs again replaces its own. */
+  outputs: Record<string, string>;
+  /** The branch each branching node chose on its latest pass, keyed by node id. */
+  branches: Record<string, string>;
   /** Nodes that hit their iteration limit and handed over a partial result. */
-  stoppedEarly: Annotation<Record<string, true>>({
-    reducer: merge,
-    default: () => ({}),
-  }),
+  stoppedEarly: Record<string, true>;
   /** Background jobs each node handed on: those still running when it finished. */
-  jobs: Annotation<Record<string, string[]>>({
-    reducer: merge,
-    default: () => ({}),
-  }),
-  /** Nodes skipped because no incoming edge was taken. */
-  skipped: Annotation<Record<string, true>>({
-    reducer: merge,
-    default: () => ({}),
-  }),
-});
+  jobs: Record<string, string[]>;
+  /** Nodes skipped because no incoming edge was taken (on their latest pass). */
+  skipped: Record<string, true>;
+  /** How many times each limited edge has been taken, by edge id. */
+  edgeCounts: Record<string, number>;
+  /** How many times each node has started, by node id (1 on its first run). */
+  passes: Record<string, number>;
+}
 
-export type RunState = typeof RunStateAnnotation.State;
+export function emptyRunState(input: string): RunState {
+  return { input, outputs: {}, branches: {}, stoppedEarly: {}, jobs: {}, skipped: {}, edgeCounts: {}, passes: {} };
+}

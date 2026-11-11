@@ -96,6 +96,13 @@ export interface GraphEdge {
   target: string;
   branch?: string;
   condition?: string;
+  /**
+   * Caps how many times this edge may be taken in a run. It exists to bound
+   * recursion: an edge that loops back to an earlier node needs one, and once it
+   * is used up the source is forced down a different edge. Only a limited edge
+   * may close a cycle.
+   */
+  maxTraversals?: number;
 }
 
 export interface GraphViewport {
@@ -291,7 +298,10 @@ export type ValidationCode =
   | 'unknown-input'
   | 'invalid-fanout'
   | 'branch-on-parallel'
-  | 'invalid-audience';
+  | 'invalid-audience'
+  | 'invalid-edge-limit'
+  | 'limit-not-recursive'
+  | 'no-exit-edge';
 
 /** Fields a caller may synthesize for the minimum; the calculation stays pure. */
 export interface MinimumLimits {

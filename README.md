@@ -18,6 +18,19 @@ On Windows, in PowerShell:
 irm https://raw.githubusercontent.com/Bruce-Hopkins/leafi/main/install.ps1 | iex
 ```
 
+### Install on Pi
+
+[Pi](https://pi.dev) installs leafi as an extension package, not through the installer above:
+
+```bash
+pi install npm:pi-leafi
+node ~/.pi/agent/npm/node_modules/pi-leafi/dist/server.mjs init   # in a normal terminal, not inside Pi
+```
+
+It adds `leafi_*` tools, a `/leafi` command and a skill. A run still going when you
+type `/new` or `/reload` is cancelled. [`pi-extension/README.md`](pi-extension/README.md)
+covers how it works and its security model.
+
 You can ask any agent to use the project:
 
 > Use leafi to find this month's most-cited arXiv papers on small code
@@ -103,6 +116,7 @@ pnpm install
 pnpm build
 node dist/main.js --help     # or: pnpm cli --help, which builds first
 pnpm build:plugin            # bundles the CLI and the server into hermes-plugin/dist/server.mjs
+pnpm build:pi                # bundles the Pi extension into pi-extension/dist (not committed)
 pnpm add -g "link:$PWD"      # optional: put this checkout on your PATH
 ```
 
@@ -114,6 +128,7 @@ pnpm typecheck
 pnpm build
 pnpm test
 pnpm test:plugin   # builds and exercises the bundled Hermes server
+pnpm test:pi       # builds and exercises the Pi extension against the real server
 pnpm test:pack     # packs the npm tarball, installs it and runs every command
 ```
 

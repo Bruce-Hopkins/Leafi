@@ -254,3 +254,73 @@ test('maxIterations must be a whole number of calls', () => {
   assert.throws(() => new FlowService().loadPayload(flow(0)), /maxIterations must be a whole number/);
   assert.throws(() => new FlowService().loadPayload(flow(2.5)), /maxIterations must be a whole number/);
 });
+
+const answer = (output: string, next?: string) => ({
+  content: '',
+  tool_calls: [{ name: 'complete_task', args: { output, ...(next ? { next } : {}) }, id: `call-${output}` }],
+  usage_metadata: { input_tokens: 10, output_tokens: 5, total_tokens: 15 },
+});
+
+function reviseLoop(limit: number) {
+  const node = (id: string) => ({ id, label: id.toUpperCase(), provider: 'openai', model: 'gpt-4o-mini', prompt: id });
+  return new FlowService().loadPayload({
+    name: 'loop',
+    nodes: ['w', 'r', 'f'].map(node),
+    edges: [
+      { id: 'e1', source: 'w', target: 'r' },
+      { id: 'e2', source: 'r', target: 'w', branch: 'revise', condition: 'needs work', maxTraversals: limit },
+      { id: 'e3', source: 'r', target: 'f', branch: 'done', condition: 'good enough' },
+    ],
+  });
+}
+
+test('an edge limit bounds recursion: the loop repeats, then the node is forced onward', async () => {
+  const dir = makeTempDir('leafi-exec-');
+  const config = new RuntimeConfig({ dataDir: dir });
+  const store = new RunStore(config);
+  const models = fakeModels(
+    answer('draft 1'), answer('weak', 'revise'),
+    answer('draft 2'), answer('weak', 'revise'),
+    answer('draft 3'), answer('fine', 'done'),
+    answer('published'),
+  );
+  const executor = new RunExecutor(config, store, models, new EmailService(config));
+  const graph = reviseLoop(2);
+  const run = store.createRun(graph, 'input', 'cli');
+  const taken: unknown[] = [];
+  await executor.execute(graph, run, 'input', {
+    save: false,
+    onEvent: (event) => {
+      if (event.type === 'edge_taken' && event.payload.limit !== undefined) {
+        taken.push([event.payload.count, event.payload.limit]);
+      }
+    },
+  });
+
+  assert.equal(run.status, 'completed', run.error);
+  assert.equal(run.outputs.w, 'draft 3');
+  assert.equal(run.outputs.f, 'published');
+  assert.equal(run.usage?.w?.iterations, 3);
+  assert.equal(run.usage?.r?.iterations, 3);
+  assert.equal(run.usage?.r?.total, 45);
+  assert.equal(run.usage?.f?.iterations, 1);
+  assert.deepEqual(taken, [[1, 2], [2, 2]]);
+});
+
+test('choosing a used-up branch fails the node instead of looping again', async () => {
+  const dir = makeTempDir('leafi-exec-');
+  const config = new RuntimeConfig({ dataDir: dir });
+  const store = new RunStore(config);
+  const models = fakeModels(
+    answer('draft 1'), answer('weak', 'revise'),
+    answer('draft 2'), answer('weak', 'revise'),
+  );
+  const executor = new RunExecutor(config, store, models, new EmailService(config));
+  const graph = reviseLoop(1);
+  const run = store.createRun(graph, 'input', 'cli');
+  await executor.execute(graph, run, 'input', { save: false });
+
+  assert.equal(run.status, 'failed');
+  assert.match(run.error ?? '', /Unknown branch "revise"/);
+  assert.equal(run.usage?.w?.iterations, 2);
+});
