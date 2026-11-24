@@ -93,6 +93,19 @@
   stroke-dashoffset: var(--pf);
 }
 
+/* Drawn pointing right from its tip, so it grows out of the line's end. */
+.arrow {
+  fill: var(--h-line);
+  stroke: var(--h-line);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  opacity: 0;
+  transform: scale(.3);
+  transform-box: fill-box;
+  transform-origin: 0% 50%;
+}
+.arrow.is-person { fill: var(--h-signal); stroke: var(--h-signal); }
+
 .node-core, .node-ripple { transform-box: fill-box; transform-origin: center; }
 
 .node-core { transform: scale(0); }
@@ -114,6 +127,7 @@
 .is-live .hub-fill,
 .is-live .hub-label,
 .is-live .hub-sub { animation: fade-in .5s ease var(--at) forwards; }
+.is-live .arrow { animation: arrow-in .28s cubic-bezier(.34, 1.56, .64, 1) var(--at) forwards; }
 .is-live .node-core { animation: grow .5s cubic-bezier(.34, 1.56, .64, 1) var(--at) forwards; }
 .is-live .node-ripple { animation: ripple 1s ease-out var(--at) forwards; }
 .is-live .node-text { animation: rise .5s ease calc(var(--at) + .12s) forwards; }
@@ -122,6 +136,7 @@
 @keyframes draw { to { stroke-dashoffset: 0; } }
 @keyframes fade-in { to { opacity: 1; } }
 @keyframes grow { to { transform: scale(1); } }
+@keyframes arrow-in { to { opacity: 1; transform: scale(1); } }
 @keyframes rise { to { opacity: 1; transform: none; } }
 @keyframes ripple {
   from { opacity: .8; transform: scale(1); }
@@ -139,7 +154,8 @@
   .ambient { opacity: 1; }
   .hub-stroke, .edge, .edge-glow { stroke-dashoffset: 0; }
   .hub-fill, .hub-label, .hub-sub, .node-text { opacity: 1; transform: none; }
-  .node-core { transform: none; }
+  .node-core, .arrow { transform: none; }
+  .arrow { opacity: 1; }
   .pulse, .node-ripple { display: none; }
 }
 
@@ -168,7 +184,7 @@
   padding: 7px 12px; border-radius: 999px; margin-bottom: 20px;
 }
 .pulse-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 0 3px rgba(0, 253, 186, .22), 0 0 12px var(--mint); }
-.hero h1 { font-size: clamp(36px, 5.6vw, 66px); font-weight: 700; max-width: 16ch; margin: 0 auto; }
+.hero h1 { font-size: clamp(36px, 5.6vw, 66px); font-weight: 700; max-width: 24ch; margin: 0 auto; text-wrap: balance; }
 .hero h1 em { font-style: normal; color: var(--h-accent); }
 /* The leaf's gradient from blue up, where the browser can clip a background to
    text: violet on navy is too dark to read. */

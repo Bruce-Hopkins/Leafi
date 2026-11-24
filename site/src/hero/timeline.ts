@@ -1,16 +1,17 @@
 // Turns a Layout into SVG paths and the moment each piece appears.
 //
-// Every line is drawn at one constant speed, starting when its parent node
-// appears, so the lines leaving one node grow together. Keep the timing
-// linear: never ease the draw.
+// Every line is drawn at one constant speed, starting when its source node
+// appears, so the lines leaving one node grow together. A node with several
+// lines coming in waits for the last of them, as a join does in a run. Keep
+// the timing linear: never ease the draw.
 
-import type { FlowNode, Layout, Pt } from "./layout";
+import type { FlowEdge, FlowNode, Layout, Pt } from "./layout";
 
 export const TIMING = {
-  /** Hermes's border starts drawing (s). */
+  /** The caller's border starts drawing (s). */
   callerStart: 0.15,
   callerDraw: 0.5,
-  /** leafi's border, once the line from Hermes reaches it. */
+  /** leafi's border, once the line from the caller reaches it. */
   hubDraw: 0.6,
   /** Pause after a box closes before its line leaves (s). */
   boxRest: 0.05,
@@ -23,11 +24,20 @@ export const TIMING = {
   pulseLength: 28,
   /** Quiet time between rounds of pulses (s). */
   pulseRest: 1.6,
+  /** Space between an arrow's tip and the node's ring, clear of the ring's stroke. */
+  arrowGap: 3,
 } as const;
 
+/** Where an arrowhead sits: its tip, and the direction it points, in degrees. */
+export interface Arrow {
+  x: number;
+  y: number;
+  angle: number;
+}
+
 export interface TimedEdge {
-  node: FlowNode;
-  center: Pt;
+  id: string;
+  edge: FlowEdge;
   d: string;
   /** Path length in viewBox units. */
   length: number;
@@ -37,6 +47,13 @@ export interface TimedEdge {
   arrive: number;
   /** Dash pattern for the travelling pulse, in pathLength units (the path is 1 long). */
   pulse: Pulse;
+  arrow: Arrow;
+}
+
+export interface TimedNode {
+  node: FlowNode;
+  /** When the last line into it arrives, and it pops in. */
+  arrive: number;
 }
 
 export interface Pulse {
@@ -56,13 +73,14 @@ export interface TimedBox {
   draw: number;
 }
 
-/** The line from Hermes down to leafi. */
+/** The line from the caller down to leafi. */
 export interface TimedLink {
   d: string;
   length: number;
   delay: number;
   duration: number;
   pulse: Pulse;
+  arrow: Arrow;
 }
 
 export interface Timeline {
@@ -70,6 +88,7 @@ export interface Timeline {
   hub: TimedBox;
   link: TimedLink;
   edges: TimedEdge[];
+  nodes: TimedNode[];
   /** When the last node has finished popping in. */
   end: number;
   pulsePeriod: number;
@@ -85,6 +104,23 @@ function at(points: readonly Pt[], i: number): Pt {
   const p = points[i];
   if (!p) throw new Error(`route point ${i} missing`);
   return p;
+}
+
+/**
+ * The arrowhead at the end of a route, its tip `gap` short of the last point,
+ * and how far back from that point the line should stop: inside the arrow,
+ * past its notch, so the line runs into the head with no seam.
+ */
+function arrowAt(points: readonly Pt[], gap: number, arrowLength: number): { arrow: Arrow; lineEnd: number } {
+  const end = at(points, points.length - 1);
+  const prev = at(points, points.length - 2);
+  const len = dist(prev, end);
+  const ux = (end[0] - prev[0]) / len;
+  const uy = (end[1] - prev[1]) / len;
+  return {
+    arrow: { x: n2(end[0] - ux * gap), y: n2(end[1] - uy * gap), angle: n2((Math.atan2(uy, ux) * 180) / Math.PI) },
+    lineEnd: gap + arrowLength * 0.5,
+  };
 }
 
 /** Shortens a route at either end so a line stops at a node's rim, not its centre. */
@@ -139,7 +175,7 @@ function roundedPath(points: readonly Pt[], radius: number): { d: string; length
 }
 
 /** A box's border as two halves that start at the top and meet at the bottom, where the trunk leaves. */
-function boxHalves({ x, y, w, h, r }: Layout["hub"]["box"]) {
+function boxHalves({ x, y, w, h, r }: Layout["caller"]["box"]) {
   const cx = x + w / 2;
   return {
     left: `M${cx} ${y} H${x + r} A${r} ${r} 0 0 0 ${x} ${y + r} V${y + h - r} A${r} ${r} 0 0 0 ${x + r} ${y + h} H${cx}`,
@@ -148,53 +184,79 @@ function boxHalves({ x, y, w, h, r }: Layout["hub"]["box"]) {
 }
 
 export function buildTimeline(layout: Layout): Timeline {
-  const { nodes, nodeRadius: R, cornerRadius } = layout;
+  const { nodes, edges, nodeRadius: R, cornerRadius } = layout;
 
-  // Hermes draws first, then its line drops to leafi, whose border draws from
-  // where the line lands. The agent lines leave leafi once it has closed.
+  // The caller draws first, then its line drops to leafi, whose border draws
+  // from where the line lands. The entry lines leave leafi once it has closed.
   const cb = layout.caller.box;
   const hb = layout.hub.box;
   const linkX = cb.x + cb.w / 2;
-  const linkLength = hb.y - (cb.y + cb.h);
+  // The link's arrow touches leafi's top border.
+  const linkArrow = arrowAt([[linkX, cb.y + cb.h], [linkX, hb.y]], 1, layout.arrow.length);
+  const linkLength = hb.y - linkArrow.lineEnd - (cb.y + cb.h);
   const caller: TimedBox = { ...boxHalves(cb), start: TIMING.callerStart, draw: TIMING.callerDraw };
   const linkDelay = caller.start + caller.draw + TIMING.boxRest;
   const linkDuration = linkLength / TIMING.speed;
   const hub: TimedBox = { ...boxHalves(hb), start: linkDelay + linkDuration, draw: TIMING.hubDraw };
   const linesStart = hub.start + hub.draw + TIMING.boxRest;
   const link = {
-    d: `M${n2(linkX)} ${n2(cb.y + cb.h)} L${n2(linkX)} ${n2(hb.y)}`,
+    d: `M${n2(linkX)} ${n2(cb.y + cb.h)} L${n2(linkX)} ${n2(hb.y - linkArrow.lineEnd)}`,
     length: linkLength,
     delay: linkDelay,
     duration: linkDuration,
     pulse: { dash: TIMING.pulseLength / linkLength, gap: 0, from: 0, to: 0, delay: 0 },
+    arrow: linkArrow.arrow,
   };
 
   const byId = new Map(nodes.map((n) => [n.id, n]));
-  const timed = new Map<string, TimedEdge>();
+  for (const e of edges) {
+    if (e.from !== "leafi" && !byId.has(e.from)) throw new Error(`edge to ${e.to}: unknown source ${e.from}`);
+    if (!byId.has(e.to)) throw new Error(`edge from ${e.from}: unknown target ${e.to}`);
+  }
+  const incoming = (id: string) => edges.filter((e) => e.to === id);
 
-  const visit = (node: FlowNode): TimedEdge => {
-    const done = timed.get(node.id);
+  const timedEdges = new Map<FlowEdge, TimedEdge>();
+  // A node appears, and its pulse leaves, once every line into it has arrived.
+  const nodeTimes = new Map<string, { arrive: number; pulse: number }>();
+  const visiting = new Set<string>();
+
+  const nodeTime = (id: string) => {
+    const done = nodeTimes.get(id);
+    if (done) return done;
+    if (visiting.has(id)) throw new Error(`node ${id}: the hero diagram cannot draw a loop`);
+    visiting.add(id);
+    const ins = incoming(id).map(edgeTime);
+    if (ins.length === 0) throw new Error(`node ${id}: no line reaches it`);
+    const t = {
+      arrive: Math.max(...ins.map((e) => e.arrive)),
+      pulse: Math.max(...ins.map((e) => e.pulse.delay + e.length / TIMING.pulseSpeed)),
+    };
+    nodeTimes.set(id, t);
+    return t;
+  };
+
+  const edgeTime = (edge: FlowEdge): TimedEdge => {
+    const done = timedEdges.get(edge);
     if (done) return done;
 
-    const fromHub = node.parent === "leafi";
+    const fromHub = edge.from === "leafi";
+    const first = at(edge.route, 0);
     let start = linesStart;
-    // A pulse leaves Hermes, runs the link, then crosses leafi top to bottom.
-    let pStart = (link.length + hb.h) / TIMING.pulseSpeed;
+    // A pulse leaves the caller, runs the link, then crosses leafi to where this line leaves it.
+    let pStart = (link.length + (first[1] - hb.y)) / TIMING.pulseSpeed;
     if (!fromHub) {
-      const parent = byId.get(node.parent);
-      if (!parent) throw new Error(`node ${node.id}: unknown parent ${node.parent}`);
-      const pe = visit(parent);
-      start = pe.arrive + TIMING.pop;
-      // The pulse runs the parent's line, then crosses the parent node (two radii).
-      pStart = pe.pulse.delay + (pe.length + 2 * R) / TIMING.pulseSpeed;
+      const src = nodeTime(edge.from);
+      start = src.arrive + TIMING.pop;
+      // The pulse crosses the source node (two radii) before it runs this line.
+      pStart = src.pulse + (2 * R) / TIMING.pulseSpeed;
     }
 
-    const center = at(node.route, node.route.length - 1);
-    const { d, length } = roundedPath(trim(node.route, fromHub ? 0 : R, R), cornerRadius);
+    const head = arrowAt(edge.route, R + TIMING.arrowGap, layout.arrow.length);
+    const { d, length } = roundedPath(trim(edge.route, fromHub ? 0 : R, head.lineEnd), cornerRadius);
     const duration = length / TIMING.speed;
-    const edge: TimedEdge = {
-      node,
-      center,
+    const timed: TimedEdge = {
+      id: `${edge.from}-${edge.to}`,
+      edge,
       d,
       length,
       delay: start,
@@ -202,18 +264,19 @@ export function buildTimeline(layout: Layout): Timeline {
       arrive: start + duration,
       // Filled in once the pulse period is known.
       pulse: { dash: TIMING.pulseLength / length, gap: 0, from: 0, to: 0, delay: pStart },
+      arrow: head.arrow,
     };
-    timed.set(node.id, edge);
-    return edge;
+    timedEdges.set(edge, timed);
+    return timed;
   };
-  nodes.forEach(visit);
 
-  const edges = nodes.map((n) => timed.get(n.id) as TimedEdge);
-  const end = Math.max(...edges.map((e) => e.arrive)) + 0.5;
+  const timedNodes = nodes.map((node) => ({ node, arrive: nodeTime(node.id).arrive }));
+  const lineList = edges.map(edgeTime);
+  const end = Math.max(...timedNodes.map((n) => n.arrive)) + 0.5;
 
   // One period for every pulse, long enough for the farthest leaf, so a round
-  // of pulses leaves Hermes together and splits at the same nodes as the lines.
-  const lines = [link, ...edges];
+  // of pulses leaves the caller together and splits at the same nodes as the lines.
+  const lines = [link, ...lineList];
   const travel = Math.max(...lines.map((e) => e.pulse.delay + (e.length + TIMING.pulseLength) / TIMING.pulseSpeed));
   const pulsePeriod = travel + TIMING.pulseRest;
   const pulsesBegin = end + 0.6;
@@ -229,5 +292,5 @@ export function buildTimeline(layout: Layout): Timeline {
     };
   }
 
-  return { caller, hub, link, edges, end, pulsePeriod: n2(pulsePeriod) };
+  return { caller, hub, link, edges: lineList, nodes: timedNodes, end, pulsePeriod: n2(pulsePeriod) };
 }

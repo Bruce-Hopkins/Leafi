@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import type { AgentCopy } from "../agent";
 import { GitHubStar, InstallTabs } from "../components";
 import { cssVars, useInViewOnce, useMediaQuery } from "../hooks";
 import { FlowDiagram } from "./FlowDiagram";
@@ -10,7 +11,7 @@ import { useParallax } from "./useParallax";
  * and the copy in front. The diagram's lines and nodes share one layer: on
  * separate layers they would slide apart as the page scrolls.
  */
-export function Hero() {
+export function Hero({ agent }: { agent: AgentCopy }) {
   const ref = useRef<HTMLElement>(null);
   const isPhone = useMediaQuery("(max-width: 719px)");
   const live = useInViewOnce(ref);
@@ -18,27 +19,46 @@ export function Hero() {
 
   return (
     <section className="hero" ref={ref} id="top">
-      <div className="hero-layer hero-bg" style={cssVars({ "--speed": 0.2, "--depth": -10 })} aria-hidden="true">
+      <div
+        className="hero-layer hero-bg"
+        style={cssVars({ "--speed": 0.2, "--depth": -10 })}
+        aria-hidden="true"
+      >
         <Ambient />
       </div>
 
       <div className="hero-stage">
-        <div className="hero-layer hero-diagram" style={cssVars({ "--speed": 0.55, "--depth": 18 })}>
+        <div
+          className="hero-layer hero-diagram"
+          style={cssVars({ "--speed": 0.55, "--depth": 18 })}
+        >
           <div className="hero-tilt">
-            <FlowDiagram key={isPhone ? "phone" : "wide"} layout={isPhone ? mobile : desktop} live={live} />
+            <FlowDiagram
+              key={isPhone ? "phone" : "wide"}
+              layout={isPhone ? mobile : desktop}
+              caller={agent.caller}
+              live={live}
+            />
           </div>
         </div>
       </div>
 
       <div className="hero-copy">
         <div className="wrap">
-          <span className="eyebrow"><span className="pulse-dot" />Open source · MIT · early prototype</span>
-          <h1>Automations built from <em>linked LLM&nbsp;agents</em>.</h1>
+          <span className="eyebrow">
+            <span className="pulse-dot" />
+            Open source · MIT · early prototype
+          </span>
+          <h1>
+            Create Usable Automations With <em>Linked&nbsp;Agents</em>.
+          </h1>
           <InstallTabs />
-          <p className="install-note">Needs Node.js 22 or newer. The installer finds Hermes and sets it up there.</p>
+          <p className="install-note">{agent.installNote}</p>
           <div className="cta-row">
             <GitHubStar />
-            <a className="btn ghost" href="#goals">Why use it</a>
+            <a className="btn ghost" href="#goals">
+              Why use it
+            </a>
           </div>
         </div>
       </div>
@@ -59,7 +79,11 @@ function Ambient() {
     { d: "M1610 160 H1520 V300 H1440", c: [1426, 300] },
   ];
   return (
-    <svg className="ambient" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice">
+    <svg
+      className="ambient"
+      viewBox="0 0 1600 1000"
+      preserveAspectRatio="xMidYMid slice"
+    >
       {lines.map(({ d, c }) => (
         <g key={d}>
           <path d={d} />

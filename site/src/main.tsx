@@ -1,5 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { agentCopy } from "./agent";
 import { App } from "./App";
 import "./styles/tokens.css";
 import "./styles/hero.css";
@@ -10,6 +11,6 @@ if (!root) throw new Error("#root missing from index.html");
 
 createRoot(root).render(
   <StrictMode>
-    <App />
+    <App agent={agentCopy(root.dataset.agent)} />
   </StrictMode>,
 );

@@ -21,8 +21,8 @@ function siteUrlInHtml(): Plugin {
   return { name: "site-url", transformIndexHtml: (html) => html.replaceAll("%SITE_URL%", siteUrl) };
 }
 
-// One HTML entry per landing page. Each agent gets its own page at /<agent>/;
-// for now / and /hermes/ both render the Hermes page.
+// One HTML entry per landing page. Each agent gets its own page at /<agent>/,
+// named by data-agent on its #root (see src/agent.ts); / speaks to any agent.
 const pages = {
   main: "index.html",
   hermes: "hermes/index.html",

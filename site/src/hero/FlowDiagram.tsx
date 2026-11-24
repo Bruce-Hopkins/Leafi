@@ -1,22 +1,28 @@
 import { useId, useMemo } from "react";
 import { cssVars, sec } from "../hooks";
-import type { Layout, Pt } from "./layout";
-import type { Hub } from "./layout";
-import { buildTimeline, type TimedBox, type TimedEdge } from "./timeline";
+import type { Hub, Layout, Pt } from "./layout";
+import { buildTimeline, type Arrow, type TimedBox, type TimedNode } from "./timeline";
+
+export interface Caller {
+  label: string;
+  sub: string;
+}
 
 interface Props {
   layout: Layout;
+  /** The agent the person asks, drawn in the box on top. */
+  caller: Caller;
   /** Start the build animation. Before this everything past the background is hidden. */
   live: boolean;
 }
 
-export function FlowDiagram({ layout, live }: Props) {
+export function FlowDiagram({ layout, caller, live }: Props) {
   const t = useMemo(() => buildTimeline(layout), [layout]);
   const ids = useId();
   const titleId = `${ids}-title`;
   const glowId = `${ids}-glow`;
   const { w, h } = layout.viewBox;
-  const lines = [{ id: "link", ...t.link }, ...t.edges.map((e) => ({ id: e.node.id, ...e }))];
+  const lines = [{ id: "link", ...t.link }, ...t.edges];
 
   return (
     <svg
@@ -26,7 +32,7 @@ export function FlowDiagram({ layout, live }: Props) {
       aria-labelledby={titleId}
       style={cssVars({ "--pulse-period": sec(t.pulsePeriod) })}
     >
-      <title id={titleId}>{describe(layout)}</title>
+      <title id={titleId}>{describe(layout, caller)}</title>
       <defs>
         <filter id={glowId} x="-20%" y="-20%" width="140%" height="140%">
           <feGaussianBlur stdDeviation="4" result="blur" />
@@ -37,8 +43,8 @@ export function FlowDiagram({ layout, live }: Props) {
         </filter>
       </defs>
 
-      {/* Hermes, then leafi below it: each border draws from the top and closes at the bottom, where its line leaves. */}
-      <HubBox hub={layout.caller} timing={t.caller} />
+      {/* The caller, then leafi below it: each border draws from the top and closes at the bottom. */}
+      <HubBox hub={{ ...layout.caller, ...caller }} timing={t.caller} />
       <HubBox hub={layout.hub} timing={t.hub} />
 
       <g className="edges">
@@ -59,10 +65,32 @@ export function FlowDiagram({ layout, live }: Props) {
         ))}
       </g>
 
+      {/* Arrowheads over the pulses, so a pulse runs into the head and is gone. */}
+      <g className="arrows">
+        {lines.map((e) => (
+          <Arrowhead
+            key={`a-${e.id}`} arrow={e.arrow} size={layout.arrow} at={e.delay + e.duration}
+            person={"edge" in e && layout.nodes.some((n) => n.id === e.edge.to && n.person)}
+          />
+        ))}
+      </g>
+
       <g className="nodes">
-        {t.edges.map((e) => <NodeMark key={e.node.id} edge={e} layout={layout} />)}
+        {t.nodes.map((n) => <NodeMark key={n.node.id} timed={n} layout={layout} />)}
       </g>
     </svg>
+  );
+}
+
+/** A notched arrowhead, tip at the given point. It pops in as its line arrives. */
+function Arrowhead({ arrow, size, at, person }: { arrow: Arrow; size: Layout["arrow"]; at: number; person: boolean }) {
+  const { length: l, width } = size;
+  const w = width / 2;
+  const d = `M0 0 L${-l} ${-w} Q${-l * 0.62} 0 ${-l} ${w} Z`;
+  return (
+    <g transform={`translate(${arrow.x} ${arrow.y}) rotate(${arrow.angle})`}>
+      <path className={`arrow${person ? " is-person" : ""}`} d={d} style={cssVars({ "--at": sec(at) })} />
+    </g>
   );
 }
 
@@ -98,13 +126,13 @@ function HubBox({ hub, timing }: { hub: Hub; timing: TimedBox }) {
   );
 }
 
-function NodeMark({ edge, layout }: { edge: TimedEdge; layout: Layout }) {
+function NodeMark({ timed, layout }: { timed: TimedNode; layout: Layout }) {
   const R = layout.nodeRadius;
-  const [x, y] = edge.center;
-  const { node } = edge;
-  const label = labelPlacement(edge.center, R, node.labelSide, layout.font);
+  const { node } = timed;
+  const [x, y] = node.at;
+  const label = labelPlacement(node.at, R, node.labelSide, layout.font);
   return (
-    <g className={`node${node.person ? " is-person" : ""}`} style={cssVars({ "--at": sec(edge.arrive) })}>
+    <g className={`node${node.person ? " is-person" : ""}`} style={cssVars({ "--at": sec(timed.arrive) })}>
       <circle className="node-ripple" cx={x} cy={y} r={R} />
       <g className="node-core">
         <circle className="node-ring" cx={x} cy={y} r={R} />
@@ -130,6 +158,10 @@ function labelPlacement(
     const labelY = y + R + 12 + font.label * 0.8;
     return { x, anchor: "middle", labelY, subY: labelY + font.sub + 8 };
   }
+  if (side === "above") {
+    const subY = y - R - 14;
+    return { x, anchor: "middle", labelY: subY - font.sub - 8, subY };
+  }
   const gap = R + 16;
   return {
     x: side === "left" ? x - gap : x + gap,
@@ -143,14 +175,14 @@ function drawVars(e: { delay: number; duration: number }) {
   return cssVars({ "--delay": sec(e.delay), "--dur": sec(e.duration) });
 }
 
-function describe(layout: Layout) {
-  const children = (parent: string) => layout.nodes.filter((n) => n.parent === parent);
-  const tell = (parent: string): string =>
-    children(parent)
-      .map((n) => {
-        const next = tell(n.id);
-        return next ? `${n.label} (which hands work on to ${next})` : n.label;
-      })
-      .join(" and ");
-  return `${layout.caller.label} hands a task to ${layout.hub.label}, which starts a flow of agent nodes: ${tell("leafi")}.`;
+function describe(layout: Layout, caller: Caller) {
+  const name = (id: string) => layout.nodes.find((n) => n.id === id)?.label ?? id;
+  const list = (items: string[]) =>
+    items.length < 2 ? items.join("") : `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`;
+  const entries = layout.edges.filter((e) => e.from === "leafi").map((e) => name(e.to));
+  const joins = layout.nodes
+    .map((n) => ({ n, from: layout.edges.filter((e) => e.to === n.id && e.from !== "leafi").map((e) => name(e.from)) }))
+    .filter((j) => j.from.length > 0)
+    .map(({ n, from }) => `${list(from)} ${from.length > 1 ? "feed" : "feeds"} ${n.label}${n.person ? ", which you read" : ""}`);
+  return `${caller.label} hands a task to ${layout.hub.label}, which starts ${list(entries)} at once. ${joins.join("; ")}.`;
 }

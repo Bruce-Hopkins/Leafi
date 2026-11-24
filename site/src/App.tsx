@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
+import type { AgentCopy } from "./agent";
 import { Hero } from "./hero/Hero";
 import { Footer, Goals, Prototype } from "./sections/Sections";
 
 const BASE = import.meta.env.BASE_URL;
 
-export function App() {
+export function App({ agent }: { agent: AgentCopy }) {
   return (
     <>
       <Nav />
       <main>
-        <Hero />
+        <Hero agent={agent} />
         <Goals />
         <Prototype />
       </main>
