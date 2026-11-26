@@ -1,6 +1,6 @@
 {
   "name": "leafi",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "private": true,
   "description": "Build, check and run automations made of linked LLM agents, from the terminal or from your agent",
   "packageManager": "pnpm@12.8.1",

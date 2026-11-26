@@ -136945,7 +136945,7 @@ function killProcessTree(child, signal) {
 }
 
 // src/version.ts
-var VERSION2 = true ? "0.0.3" : readPackageVersion();
+var VERSION2 = true ? "0.1.0" : readPackageVersion();
 
 // src/tools/mcp/mcp-client.ts
 var JSONRPC_VERSION = "2.0";
