@@ -52,7 +52,7 @@ export function Hero({ agent }: { agent: AgentCopy }) {
           <h1>
             Create Usable Automations With <em>Linked&nbsp;Agents</em>.
           </h1>
-          <InstallTabs />
+          <InstallTabs cmd={agent.install} />
           <p className="install-note">{agent.installNote}</p>
           <div className="cta-row">
             <GitHubStar />

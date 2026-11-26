@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { Fragment, useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 
 export const REPO = "https://github.com/Bruce-Hopkins/leafi";
 export const RAW = "https://raw.githubusercontent.com/Bruce-Hopkins/leafi/main";
@@ -56,7 +56,9 @@ const isWindows = () => {
   return /^win/i.test(nav.userAgentData?.platform || navigator.platform || "");
 };
 
-export function InstallTabs() {
+/** The install commands per OS: leafi's installer, or an agent's own commands (one per line). */
+export function InstallTabs({ cmd }: { cmd?: { unix: string; win: string } }) {
+  const commands = cmd ? INSTALL.map((o) => ({ ...o, cmd: cmd[o.id] })) : INSTALL;
   const [active, setActive] = useState<number>(() => (isWindows() ? 1 : 0));
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
 
@@ -87,9 +89,16 @@ export function InstallTabs() {
           </button>
         ))}
       </div>
-      {INSTALL.map((o, i) => (
+      {commands.map((o, i) => (
         <div key={o.id} className="cmd" role="tabpanel" id={`p-${o.id}`} aria-labelledby={`t-${o.id}`} hidden={active !== i}>
-          <pre><span className="p">{o.prompt} </span><code>{o.cmd}</code></pre>
+          <pre>
+            {o.cmd.split("\n").map((line, j) => (
+              <Fragment key={j}>
+                {j > 0 && "\n"}
+                <span className="p">{o.prompt} </span><code>{line}</code>
+              </Fragment>
+            ))}
+          </pre>
           <CopyButton text={o.cmd} label="Copy install command" />
         </div>
       ))}

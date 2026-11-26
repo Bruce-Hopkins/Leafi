@@ -8,6 +8,8 @@ export interface AgentCopy {
   caller: Caller;
   /** Who the person asks, in the section under the hero. */
   asker: string;
+  /** The install commands per OS, one per line. Without them, the leafi installer for the visitor's OS. */
+  install?: { unix: string; win: string };
   installNote: string;
 }
 
@@ -25,7 +27,11 @@ const AGENTS = {
   pi: {
     caller: { label: "Pi", sub: "your agent" },
     asker: "Pi",
-    installNote: "Needs Node.js 22 or newer.",
+    install: {
+      unix: "pi install npm:pi-leafi\nnode ~/.pi/agent/npm/node_modules/pi-leafi/dist/server.mjs init",
+      win: "pi install npm:pi-leafi\nnode $HOME\\.pi\\agent\\npm\\node_modules\\pi-leafi\\dist\\server.mjs init",
+    },
+    installNote: "Needs Node.js 22 or newer. The second sets your provider key and permissions.",
   },
 } satisfies Record<string, AgentCopy>;
 
