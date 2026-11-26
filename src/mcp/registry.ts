@@ -10,6 +10,7 @@ import { listRunsTool } from './tools/list-runs';
 import { renderFlowTool } from './tools/render-flow';
 import { startRunTool } from './tools/start-run';
 import { validateFlowTool } from './tools/validate-flow';
+import { waitRunTool } from './tools/wait-run';
 
 /** The one list. Adding a tool is one file and one line here. */
 export const TOOLS = [
@@ -22,6 +23,7 @@ export const TOOLS = [
   listFlowsTool,
   getFlowTool,
   getRunTool,
+  waitRunTool,
   getRunEventsTool,
   cancelRunTool,
   listRunsTool,

@@ -46,7 +46,10 @@ The rules that matter most:
 3. Before `start_run`, state the node → model mapping and the minimum tokens
    the flow implies. The minimum is a one-pass lower bound; real use can be much
    higher when nodes loop. Call `start_run` only after the user agrees.
-4. Poll `get_run` until the status is no longer `running`.
+4. Call `wait_run` with the run id right after `start_run`. The server holds
+   the call open and answers the moment the run finishes, so never poll
+   `get_run`. If it returns `"timedOut": true`, the run is still going: call it
+   again with `afterSeq` set to its `nextSeq`.
 5. Paste `personOutput` in full in your reply — or, when the deliverable is a
    file, its absolute path in the run workspace. Then report token usage, the
    minimum and `costUsd`, saying whether each node's cost was `billed` or at

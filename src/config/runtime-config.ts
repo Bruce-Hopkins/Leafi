@@ -35,6 +35,7 @@ const DEFAULTS = {
   mcpMaxConcurrentRuns: 2,
   mcpMaxFlowBytes: 256 * 1024,
   mcpMaxResultBytes: 256 * 1024,
+  mcpWaitSeconds: 50,
 } as const;
 
 export interface RuntimeConfigOptions {
@@ -75,6 +76,8 @@ export class RuntimeConfig {
   readonly mcpMaxConcurrentRuns: number;
   readonly mcpMaxFlowBytes: number;
   readonly mcpMaxResultBytes: number;
+  /** How long one `wait_run` call may hold, by default: below the 60 s most MCP clients allow a request. */
+  readonly mcpWaitSeconds: number;
   readonly isRoot: boolean;
 
   constructor(options: RuntimeConfigOptions = {}) {
@@ -100,6 +103,7 @@ export class RuntimeConfig {
     this.mcpMaxConcurrentRuns = readInt('MCP_MAX_CONCURRENT_RUNS', DEFAULTS.mcpMaxConcurrentRuns);
     this.mcpMaxFlowBytes = readInt('MCP_MAX_FLOW_BYTES', DEFAULTS.mcpMaxFlowBytes);
     this.mcpMaxResultBytes = readInt('MCP_MAX_RESULT_BYTES', DEFAULTS.mcpMaxResultBytes);
+    this.mcpWaitSeconds = readInt('MCP_WAIT_SECONDS', DEFAULTS.mcpWaitSeconds);
     this.isRoot = typeof process.getuid === 'function' && process.getuid() === 0;
   }
 

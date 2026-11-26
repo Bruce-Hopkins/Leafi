@@ -46,9 +46,15 @@ into its environment, and that must not become Pi's.
 | `leafi_validate_flow`, `leafi_render_flow` | Free checks and drawings |
 | `leafi_list_providers` | Which provider keys are set |
 | `leafi_start_run` | Starts a flow, after the permission check below |
-| `leafi_wait_run` | Waits for a run inside the extension, with progress, at no model cost. Esc stops the wait, not the run |
+| `leafi_wait_run` | Waits for a run in one call the server answers the moment it ends, with progress, at no model cost. Esc stops the wait, not the run |
 | `leafi_get_run`, `leafi_get_run_events`, `leafi_list_runs`, `leafi_cancel_run` | Inspect and cancel runs |
 | `leafi_list_flows`, `leafi_get_flow` | Saved flows |
+
+In an interactive session a run you start is drawn as it goes, in the status line and a
+widget above the editor, from progress the server pushes the moment it happens. The
+model is not involved until the run ends: then one message tells it to fetch the
+result, so it can end its turn while the flow runs. Without a UI (`pi -p`) the model
+calls `leafi_wait_run` instead.
 
 `/leafi runs` lists recent runs, `/leafi cancel <id>` cancels one, `/leafi status`
 shows whether the server is running and which providers are set, and

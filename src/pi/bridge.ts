@@ -1,7 +1,9 @@
 import { spawnSync } from 'node:child_process';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
-import { ElicitRequestSchema, type CallToolResult, type ElicitRequestFormParams, type ElicitResult } from '@modelcontextprotocol/sdk/types.js';
+import { ElicitRequestSchema, type CallToolResult, type ElicitRequestFormParams, type ElicitResult, type Progress } from '@modelcontextprotocol/sdk/types.js';
+import { z } from 'zod';
+import { RUN_EVENTS_CAPABILITY, RUN_NOTIFICATION, type RunNotificationParams } from '../mcp/run-notifications';
 
 /** What the child process may see of Pi's environment. Provider keys and LEAFI_* are what flows need. */
 const ENV_ALLOWLIST = [
@@ -37,7 +39,24 @@ export interface BridgeOptions<Context> {
   /** The environment to filter; Pi's own by default. */
   env?: NodeJS.ProcessEnv;
   version?: string;
+  /** Run progress the server pushes, the moment it happens. */
+  onRunNotification?: (params: RunNotificationParams) => void;
 }
+
+/** What `callTool` may add for a long call. */
+export interface CallOptions<Context> {
+  signal?: AbortSignal | undefined;
+  context: Context;
+  /** Overrides the per-tool timeout. */
+  timeoutMs?: number;
+  /** Progress the server sends for this call; each one also restarts the timeout. */
+  onProgress?: (progress: Progress) => void;
+}
+
+const RunNotificationSchema = z.object({
+  method: z.literal(RUN_NOTIFICATION),
+  params: z.record(z.string(), z.unknown()),
+});
 
 interface Connection {
   client: Client;
@@ -73,18 +92,15 @@ export class Bridge<Context> {
     return this.stderrTail.join('\n');
   }
 
-  async callTool(
-    name: string,
-    args: Record<string, unknown>,
-    options: { signal?: AbortSignal | undefined; context: Context },
-  ): Promise<CallToolResult> {
+  async callTool(name: string, args: Record<string, unknown>, options: CallOptions<Context>): Promise<CallToolResult> {
     const { client } = await this.ensure();
     const entry: InFlight<Context> = { tool: name, context: options.context };
     this.inFlight.add(entry);
     try {
       const result = await client.callTool({ name, arguments: args }, undefined, {
         signal: options.signal,
-        timeout: name === 'start_run' ? START_RUN_TIMEOUT_MS : CALL_TIMEOUT_MS,
+        timeout: options.timeoutMs ?? (name === 'start_run' ? START_RUN_TIMEOUT_MS : CALL_TIMEOUT_MS),
+        ...(options.onProgress ? { onprogress: options.onProgress, resetTimeoutOnProgress: true } : {}),
       });
       return result as CallToolResult;
     } finally {
@@ -158,8 +174,12 @@ export class Bridge<Context> {
 
     const client = new Client(
       { name: 'pi-leafi', version: this.options.version ?? '0.0.0' },
-      { capabilities: { elicitation: { form: {} } } },
+      // The experimental capability asks the server to push run progress, and makes start_run answer "delivery": "plugin".
+      { capabilities: { elicitation: { form: {} }, experimental: { [RUN_EVENTS_CAPABILITY]: {} } } },
     );
+    client.setNotificationHandler(RunNotificationSchema, (notification) => {
+      this.options.onRunNotification?.(notification.params as unknown as RunNotificationParams);
+    });
     client.setRequestHandler(ElicitRequestSchema, async (request) => {
       if (request.params.mode === 'url') {
         return { action: 'decline' };

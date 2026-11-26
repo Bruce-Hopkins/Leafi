@@ -14,7 +14,8 @@ const inputSchema = z.object({
 export const startRunTool: ToolDefinition<z.infer<typeof inputSchema>> = {
   name: 'start_run',
   description:
-    'Start a flow asynchronously and return its run id. Poll get_run for status and outputs; use get_run_events for progress. ' +
+    'Start a flow asynchronously and return its run id. Then follow "delivery" in the result: "wait" means call wait_run with the run id, ' +
+    'which returns the moment the run finishes (do not poll get_run); "plugin" means the leafi plugin shows progress and tells you when it finishes, so end your turn. ' +
     'Start only after the user has seen the diagram, each node\'s model and the minimum tokens, and agreed. ' +
     'If the flow needs a permission that is turned off, the server asks the user directly. ' +
     'The flow is saved under its name (replacing a saved flow with the same name) and "flowFile" is its path: ' +
@@ -28,6 +29,7 @@ export const startRunTool: ToolDefinition<z.infer<typeof inputSchema>> = {
     const warnings = lintParallelLimit(graph, context.config.maxParallelNodes).map(({ message, hint }) => `${message} ${hint}`);
     return context.results.json({
       ...run,
+      delivery: call.pluginDelivery ? 'plugin' : 'wait',
       ...(flowFile !== undefined ? { flowFile } : {}),
       ...(warnings.length > 0 ? { warnings } : {}),
     });

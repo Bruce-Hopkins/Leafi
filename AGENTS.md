@@ -429,10 +429,11 @@ logs go to stderr because stdout carries JSON-RPC.
 | `validate_flow` | `ok`, `issues`, `warnings`, each node's `minimum` and the ASCII `diagram`. |
 | `render_flow` | A drawing; `format` is `ascii`, `mermaid` or `dot`. |
 | `list_providers` | The providers whose keys are set, with their models. |
-| `start_run` | The run, with its `id` and `flowFile`; the run continues in the background. |
+| `start_run` | The run, with its `id`, `flowFile` and `delivery`; the run continues in the background. |
 | `list_flows` | Every saved flow, newest first: `name`, `file`, `nodes`, `savedAt`. |
 | `get_flow` | One saved flow's document and file, by `name`. |
 | `get_run` | `status`, `outputs`, `personOutput`, `usage`, `costUsd`, `jobs`, `error`. |
+| `wait_run` | Held open until the run finishes (`until: "node"`: until a node finishes), then `finished`, `timedOut`, `nextSeq`, the milestones and the run as `get_run` returns it. |
 | `get_run_events` | Events with `seq >= afterSeq` (`limit` 100 by default, at most 500); `reasoning: true` adds reasoning text. |
 | `cancel_run` | Whether an in-flight run was cancelled. |
 | `list_runs` | Recent runs, newest first (`limit` 20 by default, at most 100). |
@@ -441,9 +442,24 @@ The flow tools take exactly one of `flow` (the document) or `flowPath`, and
 `flowPath` works only while `LEAFI_ALLOW_FLOW_PATHS` is true. The
 loop is the one under *Delivery*: `validate_flow` and show its `diagram`, state
 the node → model mapping and the minimum, call `start_run` only once the user
-agrees, poll `get_run` until `status` is no longer `running`, then reproduce
-`personOutput` in full with `costUsd`. To follow progress, page
-`get_run_events` with `afterSeq` set to the last `seq` you saw plus one.
+agrees, call `wait_run` with the run id, then reproduce `personOutput` in full
+with `costUsd`. Never poll `get_run`: `wait_run` is answered the moment the run
+finishes, so waiting costs one call. If it comes back with `timedOut: true` the
+run is still going; call it again with `afterSeq` set to its `nextSeq`. One call
+holds for `MCP_WAIT_SECONDS` (50 by default, below the 60 s most clients allow a
+request) unless it passes `timeoutSeconds`. When the client sent a progress
+token, each milestone is also sent as a progress notification, with a keep-alive
+every 20 s, so a client that resets its timeout on progress can wait longer. For
+every event, page `get_run_events` with `afterSeq`.
+
+`start_run` returns `delivery`. `"wait"` is the loop above. `"plugin"` means the
+client declared the experimental capability `leafi/run-events`: the server then
+pushes `notifications/leafi/run` for every milestone (node started, finished,
+failed or skipped) and once when the run's record is final, and the plugin shows
+progress and tells the model when the run ends. The pushed text is written by
+the runtime (status, labels, cost), never node output. The Pi extension is such a
+plugin; a plain MCP client (Claude Code, Hermes) gets `"wait"`. Plugin code: the
+feed is `src/mcp/run-feed.ts`, the protocol `src/mcp/run-notifications.ts`.
 
 `start_run` saves every flow it runs to `<data dir>/flows/<name>.json`,
 replacing a saved flow with the same name, so a flow outlives the conversation

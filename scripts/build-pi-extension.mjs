@@ -49,7 +49,7 @@ try {
   fs.writeFileSync(manifestFile, `${JSON.stringify(manifest, null, 2)}\n`);
   fs.copyFileSync(path.join(root, 'LICENSE'), path.join(pkgDir, 'LICENSE'));
 
-  process.stderr.write(`Built ${path.relative(root, dist)} (${tools.length} tools + ${PREFIX}wait_run) and the Pi skill\n`);
+  process.stderr.write(`Built ${path.relative(root, dist)} (${tools.length} tools, wait_run as ${PREFIX}wait_run) and the Pi skill\n`);
 } catch (error) {
   process.stderr.write(`Pi extension build failed: ${error instanceof Error ? error.stack ?? error.message : String(error)}\n`);
   process.exit(1);
@@ -70,8 +70,11 @@ function piSkill(toolNames) {
   text = replaceOnce(text, 'through the leafi MCP tools', 'through the leafi tools');
   text = replaceOnce(
     text,
-    '4. Poll `leafi_get_run` until the status is no longer `running`.',
-    '4. Call `leafi_wait_run` with the run id right after `leafi_start_run`. It waits inside the extension, so it costs no model calls; do not poll `leafi_get_run` yourself.\n   If it reports the run is still going, call it again.',
+    /4\. Call `leafi_wait_run` with the run id right after `leafi_start_run`\.[\s\S]*?`nextSeq`\./,
+    '4. Follow `delivery` in the `leafi_start_run` result. With `"plugin"`, Pi shows the\n' +
+      '   run\'s progress and posts a message when it finishes: end your turn, and when that\n' +
+      '   message arrives call `leafi_get_run`. With `"wait"`, call `leafi_wait_run` with the\n' +
+      '   run id; it waits inside the extension at no model cost. Never poll `leafi_get_run`.',
   );
   text = replaceOnce(
     text,
@@ -97,15 +100,7 @@ function replaceOnce(text, pattern, replacement) {
   return next;
 }
 
-/** Tool descriptions name other tools; in Pi those carry the prefix, and waiting is leafi_wait_run. */
-function piDescription(name, description, namePattern) {
-  let text = description.replace(namePattern, `${PREFIX}$1`);
-  if (name === 'start_run') {
-    text = replaceOnce(
-      text,
-      `Poll ${PREFIX}get_run for status and outputs; use ${PREFIX}get_run_events for progress.`,
-      `Then call ${PREFIX}wait_run with the run id; it waits without spending model calls.`,
-    );
-  }
-  return text;
+/** Tool descriptions name other tools; in Pi those carry the prefix. */
+function piDescription(_name, description, namePattern) {
+  return description.replace(namePattern, `${PREFIX}$1`);
 }

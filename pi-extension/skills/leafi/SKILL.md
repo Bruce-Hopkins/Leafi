@@ -47,8 +47,10 @@ The rules that matter most:
 3. Before `leafi_start_run`, state the node → model mapping and the minimum tokens
    the flow implies. The minimum is a one-pass lower bound; real use can be much
    higher when nodes loop. Call `leafi_start_run` only after the user agrees.
-4. Call `leafi_wait_run` with the run id right after `leafi_start_run`. It waits inside the extension, so it costs no model calls; do not poll `leafi_get_run` yourself.
-   If it reports the run is still going, call it again.
+4. Follow `delivery` in the `leafi_start_run` result. With `"plugin"`, Pi shows the
+   run's progress and posts a message when it finishes: end your turn, and when that
+   message arrives call `leafi_get_run`. With `"wait"`, call `leafi_wait_run` with the
+   run id; it waits inside the extension at no model cost. Never poll `leafi_get_run`.
 5. Paste `personOutput` in full in your reply — or, when the deliverable is a
    file, its absolute path in the run workspace. Then report token usage, the
    minimum and `costUsd`, saying whether each node's cost was `billed` or at

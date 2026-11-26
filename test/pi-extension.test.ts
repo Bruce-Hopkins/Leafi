@@ -8,6 +8,7 @@ import { pathToFileURL } from "node:url";
 import type { ElicitRequestFormParams } from "@modelcontextprotocol/sdk/types.js";
 import { allowedEnvironment, nodeCommand } from "../src/pi/bridge";
 import { askPerson } from "../src/pi/elicitation";
+import { RunWatcher } from "../src/pi/run-watch";
 import { waitForRun, type WaitDeps } from "../src/pi/wait-run";
 
 const pkgDir = path.resolve("pi-extension");
@@ -266,60 +267,106 @@ test("the child environment is an allowlist and Pi's binary is never used as nod
   assert.equal(nodeCommand("/usr/local/bin/pi"), "node");
 });
 
-function fakeRun(statuses: string[], events: object[][]): { deps: WaitDeps; calls: string[] } {
-  const calls: string[] = [];
-  let poll = 0;
-  const text = (value: unknown) => ({ content: [{ type: "text" as const, text: JSON.stringify(value) }] });
+function fakeWait(body: unknown, progress: string[] = []): { deps: WaitDeps; calls: { name: string; args: Record<string, unknown>; timeoutMs: number }[] } {
+  const calls: { name: string; args: Record<string, unknown>; timeoutMs: number }[] = [];
   return {
     calls,
     deps: {
-      async call(name, args) {
-        calls.push(`${name}:${JSON.stringify(args)}`);
-        if (name === "get_run") {
-          return text({ id: "r1", status: statuses[Math.min(poll, statuses.length - 1)] });
-        }
-        const page = events[Math.min(poll, events.length - 1)] ?? [];
-        poll += 1;
-        return text({ runId: "r1", events: page });
+      async call(name, args, extra) {
+        calls.push({ name, args, timeoutMs: extra.timeoutMs });
+        for (const message of progress) extra.onProgress(message);
+        return { content: [{ type: "text" as const, text: JSON.stringify(body) }] };
       },
-      sleep: async () => undefined,
     },
   };
 }
 
-test("wait_run polls inside the extension, streams progress and returns the finished run", async () => {
-  const { deps, calls } = fakeRun(
-    ["running", "running", "completed"],
-    [
-      [{ seq: 0, type: "node_started", nodeId: "a", payload: { label: "Fetch" } }],
-      [{ seq: 0, type: "node_started", nodeId: "a", payload: { label: "Fetch" } }, { seq: 1, type: "node_completed", nodeId: "a", payload: {} }],
-      [{ seq: 2, type: "run_completed", payload: {} }],
-    ],
+test("leafi_wait_run is one held wait_run call: progress streams in and the finished run comes back", async () => {
+  const { deps, calls } = fakeWait(
+    { finished: true, timedOut: false, nextSeq: 3, events: [], run: { id: "r1", status: "completed" } },
+    ["▶ Fetch", "still running", "✔ Fetch", "run completed"],
   );
   const lines: string[] = [];
-  const outcome = await waitForRun(deps, { runId: "r1", maxWaitMs: 60000, pollMs: 1, signal: undefined, onProgress: (line) => lines.push(line) });
+  const outcome = await waitForRun(deps, { runId: "r1", maxWaitMs: 600_000, signal: undefined, onProgress: (line) => lines.push(line) });
   assert.equal(outcome.finished, true);
   assert.equal(JSON.parse(outcome.text).status, "completed");
-  assert.deepEqual(lines, ["▶ Fetch", "✔ a", "run completed"]);
-  // Events are asked for from the first one not yet shown, never from the start again.
-  assert.deepEqual(
-    calls.filter((call) => call.startsWith("get_run_events")).map((call) => JSON.parse(call.slice(call.indexOf(":") + 1)).afterSeq),
-    [0, 1, 2],
-  );
+  assert.deepEqual(lines, ["▶ Fetch", "✔ Fetch", "run completed"], "keep-alives are not shown");
+  assert.equal(calls.length, 1, "no polling: one call");
+  assert.deepEqual(calls[0]?.args, { runId: "r1", until: "done", timeoutSeconds: 600 });
+  assert.ok((calls[0]?.timeoutMs ?? 0) > 600_000, "the client outlasts the server's own wait");
 });
 
-test("wait_run reports a run that outlasts the wait, and stops on abort without touching the run", async () => {
-  const { deps } = fakeRun(["running"], [[]]);
-  const outcome = await waitForRun(deps, { runId: "r1", maxWaitMs: 0, pollMs: 1, signal: undefined, onProgress: () => undefined });
+test("leafi_wait_run reports a run that outlasts the wait, and stops on abort without touching the run", async () => {
+  const { deps } = fakeWait({ finished: false, timedOut: true, nextSeq: 5, events: [], run: { id: "r1", status: "running" } });
+  const outcome = await waitForRun(deps, { runId: "r1", maxWaitMs: 1000, signal: undefined, onProgress: () => undefined });
   assert.equal(outcome.finished, false);
   assert.match(outcome.text, /still running.*leafi_wait_run again/);
 
   const controller = new AbortController();
   controller.abort();
-  const { deps: second, calls } = fakeRun(["running"], [[]]);
+  const calls: string[] = [];
+  const aborting: WaitDeps = {
+    async call(name) {
+      calls.push(name);
+      throw new Error("AbortError: This operation was aborted");
+    },
+  };
   await assert.rejects(
-    waitForRun(second, { runId: "r1", maxWaitMs: 60000, pollMs: 1, signal: controller.signal, onProgress: () => undefined }),
+    waitForRun(aborting, { runId: "r1", maxWaitMs: 60000, signal: controller.signal, onProgress: () => undefined }),
     /Stopped waiting/,
   );
-  assert.ok(!calls.some((call) => call.startsWith("cancel_run")));
+  assert.deepEqual(calls, ["wait_run"], "abort never cancels the run");
+});
+
+function fakeUi() {
+  const status: (string | undefined)[] = [];
+  const widgets = new Map<string, string[] | undefined>();
+  const notes: string[] = [];
+  return {
+    status,
+    widgets,
+    notes,
+    ui: {
+      setStatus: (_key: string, text: string | undefined) => status.push(text),
+      setWidget: (key: string, content: string[] | undefined) => widgets.set(key, content),
+      notify: (message: string) => notes.push(message),
+    },
+  };
+}
+
+const ev = (seq: number, type: string, label?: string) => ({ runId: "r1", kind: "event" as const, event: { seq, type, nodeId: "a", ...(label ? { label } : {}), at: "" } });
+const done = { runId: "r1", kind: "settled" as const, status: "completed" as const, costUsd: 0.0012, hasPersonOutput: true };
+
+test("the watcher draws pushed progress and wakes the model once, with runtime text only", () => {
+  const sent: { message: { content: string }; options: unknown }[] = [];
+  const watcher = new RunWatcher((message, options) => sent.push({ message, options }));
+  const { ui, status, widgets, notes } = fakeUi();
+
+  watcher.handle(ev(0, "node_started", "Fetch")); // before watch: start_run's reply comes after the run begins
+  watcher.watch("r1", ui);
+  assert.equal(status.at(-1), "leafi r1: ▶ Fetch");
+  watcher.handle(ev(1, "node_completed", "Fetch"));
+  assert.deepEqual(widgets.get("leafi:r1"), ["leafi run r1", "  ▶ Fetch", "  ✔ Fetch"]);
+  assert.equal(sent.length, 0, "progress never reaches the model");
+
+  watcher.handle(done);
+  assert.equal(status.at(-1), undefined, "status cleared");
+  assert.equal(widgets.get("leafi:r1"), undefined, "widget cleared");
+  assert.match(notes[0] ?? "", /completed/);
+  assert.equal(sent.length, 1);
+  assert.deepEqual(sent[0]?.options, { triggerTurn: true, deliverAs: "followUp" });
+  assert.match(sent[0]?.message.content ?? "", /leafi_get_run.*"r1"/);
+});
+
+test("the watcher handles a run that ended before it was watched, and stays quiet while leafi_wait_run waits", async () => {
+  const sent: unknown[] = [];
+  const watcher = new RunWatcher((message) => sent.push(message));
+  watcher.handle(done);
+  watcher.watch("r1", fakeUi().ui);
+  assert.equal(sent.length, 1, "a run that already settled is reported on watch");
+
+  const quiet = new RunWatcher((message) => sent.push(message));
+  quiet.watch("r1", fakeUi().ui);
+  await quiet.waitingOn("r1", async () => quiet.handle(done));
+  assert.equal(sent.length, 1, "leafi_wait_run reports the end itself; no second turn");
 });

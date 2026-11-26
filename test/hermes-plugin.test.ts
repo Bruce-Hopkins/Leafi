@@ -153,6 +153,7 @@ test("bundled MCP server serves inspection tools and rejects dangerous flows", {
       "list_runs",
       "render_flow",
       "validate_flow",
+      "wait_run",
     ]);
 
     const example = await client.callTool({

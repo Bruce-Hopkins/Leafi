@@ -6,6 +6,7 @@ import { Type } from 'typebox';
 import { Bridge } from './bridge';
 import { registerCommands } from './commands';
 import { askPerson } from './elicitation';
+import { RunWatcher, type WatchUi } from './run-watch';
 import { textOf, waitForRun } from './wait-run';
 
 /** Set by the extension bundle to the folder holding it; unset when run from source. */
@@ -26,19 +27,24 @@ export interface LeafiOptions {
 }
 
 const DEFAULT_WAIT_SECONDS = 600;
-const POLL_MS = 3000;
 
 /** Registers everything and returns the bridge, so a test can inspect or stop it. Starts nothing. */
 export function registerLeafi(pi: ExtensionAPI, options: LeafiOptions): Bridge<ExtensionContext> {
   const env = options.env ?? process.env;
+  const watcher = new RunWatcher((message, sendOptions) => pi.sendMessage(message, sendOptions));
   const bridge = new Bridge<ExtensionContext>({
     serverPath: options.serverPath,
     env,
     version: options.manifest.version,
     elicit: (params, context) => askPerson(params, context),
+    onRunNotification: (params) => watcher.handle(params),
   });
 
   for (const tool of options.manifest.tools) {
+    // The extension's own leafi_wait_run (below) wraps it, adding progress in Pi's UI.
+    if (tool.name === 'wait_run') {
+      continue;
+    }
     const { $schema: _ignored, ...schema } = tool.inputSchema;
     pi.registerTool({
       name: `${TOOL_PREFIX}${tool.name}`,
@@ -47,7 +53,7 @@ export function registerLeafi(pi: ExtensionAPI, options: LeafiOptions): Bridge<E
       parameters: Type.Unsafe<Record<string, unknown>>(schema),
       async execute(_toolCallId, params, signal, _onUpdate, ctx) {
         const result = await bridge.callTool(tool.name, params, { signal, context: ctx });
-        return toPiResult(result);
+        return tool.name === 'start_run' ? startedRun(result, ctx, watcher) : toPiResult(result);
       },
     });
   }
@@ -57,7 +63,8 @@ export function registerLeafi(pi: ExtensionAPI, options: LeafiOptions): Bridge<E
     label: 'leafi wait run',
     description:
       'Wait for a leafi run to finish without spending model calls, then return the run exactly as leafi_get_run does. ' +
-      'Call it right after leafi_start_run instead of polling leafi_get_run. If the wait times out it says the run is still going; call it again. ' +
+      'Call it right after leafi_start_run when its result says "delivery": "wait"; never poll leafi_get_run. ' +
+      'The call returns the moment the run ends. If the wait times out it says the run is still going; call it again. ' +
       'Pressing Esc stops the wait, not the run.',
     parameters: Type.Object({
       runId: Type.String({ minLength: 1 }),
@@ -65,21 +72,27 @@ export function registerLeafi(pi: ExtensionAPI, options: LeafiOptions): Bridge<E
     }),
     async execute(_toolCallId, params, signal, onUpdate, ctx) {
       const lines: string[] = [];
-      const outcome = await waitForRun(
-        {
-          call: async (name, args) => bridge.callTool(name, args, { signal, context: ctx }),
-          sleep: (ms) => sleep(ms, signal),
-        },
-        {
-          runId: params.runId,
-          maxWaitMs: (params.maxWaitSeconds ?? DEFAULT_WAIT_SECONDS) * 1000,
-          pollMs: POLL_MS,
-          signal,
-          onProgress: (line) => {
-            lines.push(line);
-            onUpdate?.({ content: [{ type: 'text', text: lines.slice(-8).join('\n') }], details: {} });
+      const outcome = await watcher.waitingOn(params.runId, () =>
+        waitForRun(
+          {
+            call: (name, args, extra) =>
+              bridge.callTool(name, args, {
+                signal,
+                context: ctx,
+                timeoutMs: extra.timeoutMs,
+                onProgress: (progress) => extra.onProgress(progress.message ?? ''),
+              }),
           },
-        },
+          {
+            runId: params.runId,
+            maxWaitMs: (params.maxWaitSeconds ?? DEFAULT_WAIT_SECONDS) * 1000,
+            signal,
+            onProgress: (line) => {
+              lines.push(line);
+              onUpdate?.({ content: [{ type: 'text', text: lines.slice(-8).join('\n') }], details: {} });
+            },
+          },
+        ),
       );
       return { content: [{ type: 'text', text: outcome.text }], details: {} };
     },
@@ -93,6 +106,7 @@ export function registerLeafi(pi: ExtensionAPI, options: LeafiOptions): Bridge<E
 
   // Idempotent: /new, /reload, /resume and quitting all end here.
   pi.on('session_shutdown', async () => {
+    watcher.clear();
     await bridge.close();
   });
 
@@ -113,20 +127,25 @@ function toPiResult(result: CallToolResult): { content: { type: 'text'; text: st
   return { content: [{ type: 'text', text }], details: {} };
 }
 
-function sleep(ms: number, signal: AbortSignal | undefined): Promise<void> {
-  return new Promise((resolve, reject) => {
-    if (signal?.aborted) {
-      reject(new Error('Stopped waiting. The run is still going; cancel it with leafi_cancel_run.'));
-      return;
-    }
-    const timer = setTimeout(() => {
-      signal?.removeEventListener('abort', onAbort);
-      resolve();
-    }, ms);
-    const onAbort = (): void => {
-      clearTimeout(timer);
-      reject(new Error('Stopped waiting. The run is still going; cancel it with leafi_cancel_run.'));
-    };
-    signal?.addEventListener('abort', onAbort, { once: true });
-  });
+/**
+ * With a UI, the watcher draws the run and tells the model when it ends, so
+ * the model can end its turn. Without one (`pi -p`) nothing would be drawn
+ * and the process may exit when the turn ends, so the model waits instead.
+ */
+function startedRun(result: CallToolResult, ctx: ExtensionContext | undefined, watcher: RunWatcher): ReturnType<typeof toPiResult> {
+  const piResult = toPiResult(result);
+  let run: { id?: string; delivery?: string };
+  try {
+    run = JSON.parse(piResult.content[0]?.text ?? '');
+  } catch {
+    return piResult;
+  }
+  if (run.delivery !== 'plugin' || typeof run.id !== 'string') {
+    return piResult;
+  }
+  if (ctx?.hasUI) {
+    watcher.watch(run.id, ctx.ui as WatchUi);
+    return piResult;
+  }
+  return { content: [{ type: 'text', text: JSON.stringify({ ...run, delivery: 'wait' }, null, 2) }], details: {} };
 }
