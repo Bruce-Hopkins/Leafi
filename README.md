@@ -27,15 +27,6 @@ pi install npm:pi-leafi
 node ~/.pi/agent/npm/node_modules/pi-leafi/dist/server.mjs init   # in a normal terminal, not inside Pi
 ```
 
-It adds `leafi_*` tools, a `/leafi` command and a skill. A run still going when you
-type `/new` or `/reload` is cancelled. [`pi-extension/README.md`](pi-extension/README.md)
-covers how it works and its security model.
-
-You can ask any agent to use the project:
-
-> Use leafi to find this month's most-cited arXiv papers on small code
-> models and brief me on them in a few paragraphs. You may use web, not bash.
-
 ### Install Manually
 
 With Hermes, on macOS and Linux:
@@ -64,12 +55,13 @@ node ~/.leafi/server.mjs init
 the entry to paste into your client's `mcpServers`. To fill in the settings by
 hand instead, copy from [`.env.example`](.env.example).
 
-### Changing permissions later
+## How to use
 
-`bash`, `email` and `mcp` start off. When a flow needs one, you're asked
-before it runs, and can allow it once or always. To change them yourself, run
-the server with `settings`, then restart Hermes or your client. It changes the
-permissions for every agent you installed into:
+Your agent should already know how to use it. If you ask it to build an automation, it will design the flow, ask you about what it built, and ask for permission to run it. For an example prompt, ask this:
+
+> Use leafi to find this month's most-cited arXiv papers on small code models and brief me on them in a few paragraphs. You may use web, not bash.
+
+You can also change the settings by running:
 
 ```bash
 leafi settings
@@ -79,59 +71,3 @@ If you installed by hand, run `node <server> settings` instead, where the
 server is `~/.leafi/server.mjs`, or
 `~/.hermes/plugins/leafi/dist/server.mjs` for the Hermes plugin.
 
-[`hermes-plugin/README.md`](hermes-plugin/README.md) covers updating the plugin
-and what happens during a run.
-
-### Coming from agents-automations
-
-leafi was called agents-automations until 0.0.3. Run the installer again and it
-moves `~/.agents-automations` to `~/.leafi`, with your settings, saved flows and
-runs, and replaces the old entry in each agent you tick in its checklist. The
-old `agents-automations` command keeps working and runs leafi.
-
-Settings named `AGENTS_AUTOMATIONS_*` are still read, with a warning, as their
-`LEAFI_*` names. `leafi settings` renames them in every settings file it
-manages, Hermes's `.env` included. The Hermes plugin passes on only the new
-names, so run it once after installing the plugin. Then remove the old plugin
-with `hermes plugins remove agents-automations`, after copying any saved flows
-you want from its data folder.
-
-## Security
-
-A node with `bash` can run any command you can, and an `mcp` node (a headless
-Chrome by default) can reach your local network: neither is sandboxed. Text from web pages and emails can
-steer an agent, so a node that reads untrusted content should not also hold
-`bash` or `write`. Read [`SECURITY.md`](SECURITY.md) before running a flow you
-did not write; it also explains how to report a vulnerability.
-
-
-## Development
-
-To work from source, you also need pnpm:
-
-```bash
-git clone https://github.com/Bruce-Hopkins/leafi.git
-cd leafi
-pnpm install
-pnpm build
-node dist/main.js --help     # or: pnpm cli --help, which builds first
-pnpm build:plugin            # bundles the CLI and the server into hermes-plugin/dist/server.mjs
-pnpm build:pi                # bundles the Pi extension into pi-extension/dist (not committed)
-pnpm add -g "link:$PWD"      # optional: put this checkout on your PATH
-```
-
-`pnpm cli` and `pnpm dev` read the same settings as the installed CLI,
-`~/.leafi/.env`. The checks:
-
-```bash
-pnpm typecheck
-pnpm build
-pnpm test
-pnpm test:plugin   # builds and exercises the bundled Hermes server
-pnpm test:pi       # builds and exercises the Pi extension against the real server
-pnpm test:pack     # packs the npm tarball, installs it and runs every command
-```
-
-Hermes doesn't build the plugin when it installs it, so after changing the
-server, run `pnpm build:plugin` and commit `hermes-plugin/dist/`. Before a
-release, `hermes plugins validate ./hermes-plugin --json` must pass.
