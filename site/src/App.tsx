@@ -11,7 +11,7 @@ export function App({ agent }: { agent: AgentCopy }) {
       <Nav />
       <main>
         <Hero agent={agent} />
-        <Goals />
+        <Goals agent={agent} />
         <Prototype />
       </main>
       <Footer />

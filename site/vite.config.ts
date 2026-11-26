@@ -26,6 +26,7 @@ function siteUrlInHtml(): Plugin {
 const pages = {
   main: "index.html",
   hermes: "hermes/index.html",
+  pi: "pi/index.html",
 };
 
 export default defineConfig({
