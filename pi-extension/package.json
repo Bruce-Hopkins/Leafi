@@ -1,6 +1,6 @@
 {
   "name": "pi-leafi",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Design, validate, draw and run leafi flows of linked LLM agents from Pi",
   "keywords": [
     "pi-package",
